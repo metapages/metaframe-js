@@ -1,0 +1,1 @@
+../client/src/shared/config.ts

@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.151.0/http/server.ts";
 import { LRU } from "https://deno.land/x/lru@1.0.2/mod.ts";
-import { Config, urlToConfig } from "../client/src/shared/config.ts";
+// import { Config, urlToConfig } from "../client/src/shared/config.ts";
+import { Config, urlToConfig } from "./config.ts";
 
 const CACHE = new LRU<string>(500); // define your max amount of entries, in this example is 500
 
