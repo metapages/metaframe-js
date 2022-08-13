@@ -1,7 +1,47 @@
 import { serve } from "https://deno.land/std@0.151.0/http/server.ts";
 import { LRU } from "https://deno.land/x/lru@1.0.2/mod.ts";
+// MANUALLY COPYING FOR NOW HOW UGH
 // import { Config, urlToConfig } from "../client/src/shared/config.ts";
-import { Config, urlToConfig } from "./config.ts";
+// https://github.com/denoland/deploy_feedback/issues/264
+// Shared between client and server
+
+export interface Config {
+  modules: string[];
+}
+
+interface UrlEncodedConfigV1 {
+  modules: string[];
+}
+
+export const urlToConfig = (url: URL) : Config => {
+  const version :string | null = url.searchParams.get("v");
+  const encodedConfigString :string | null = url.searchParams.get("c");
+  if (!version || !encodedConfigString) {
+      return {modules: []};
+  }
+  switch(version) {
+      case "1":
+          return urlTokenV1ToConfig(encodedConfigString);
+      default:
+          return {modules: []};
+  }
+}
+
+export const configToUrl = (url:URL, config: Config) : URL => {
+  // On new versions, this will need conversion logic
+  url.searchParams.set("v", "1");
+  url.searchParams.set("c", btoa(JSON.stringify(config)));
+  return url;
+}
+
+const urlTokenV1ToConfig = (encoded: string) : Config => {
+  const configV1: UrlEncodedConfigV1 = JSON.parse(atob(encoded));
+  // No need to case because it's the same FOR NOW
+  return configV1;
+}
+
+
+
 
 const CACHE = new LRU<string>(500); // define your max amount of entries, in this example is 500
 
