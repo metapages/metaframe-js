@@ -1,0 +1,16 @@
+{
+	"version": "0.3",
+	"metadata": {
+		"title": "metaframe-template"
+	},
+	"inputs": {
+		"*": {
+			"type": "application/octet-stream:base64"
+		}
+	},
+    "outputs": {
+		"*": {
+			"type": "application/octet-stream:base64"
+		}
+	}
+}
