@@ -55,6 +55,10 @@ dev server="js.mtfm.io:443": _mkcert _ensure_npm_modules
         VITE_SERVER_ORIGIN={{server}}
         echo "Browser development pointing to: ${VITE_SERVER_ORIGIN}"
     fi
+    MAYBE_OPEN_BROWSER=""
+    if [ ! -f /.dockerenv ]; then
+        export MAYBE_OPEN_BROWSER="--open";
+    fi
     npm i
     just _tsc "--build"
     export HOST={{APP_FQDN}}
