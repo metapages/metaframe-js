@@ -121,7 +121,8 @@ _npm_version npmversionargs="patch":
 
 # update "gh-pages" branch with the (versioned and default) current build (./docs) (and keeping all previous versions)
 _githubpages_publish:
-    deno run --unstable --allow-all {{DENO_SOURCE}}/browser/gh-pages-publish-to-docs.ts
+    VITE_SERVER_ORIGIN={{SERVER_ORIGIN}} \
+        deno run --unstable --allow-all {{DENO_SOURCE}}/browser/gh-pages-publish-to-docs.ts
 
 @_ensureGitPorcelain:
     deno run --allow-all --unstable https://deno.land/x/metapages@v0.0.13/git/git-fail-if-uncommitted-files.ts
