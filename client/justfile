@@ -55,7 +55,6 @@ dev server="js.mtfm.io:443": _mkcert _ensure_npm_modules
         VITE_SERVER_ORIGIN={{server}}
         echo "Browser development pointing to: ${VITE_SERVER_ORIGIN}"
     fi
-    deno run --allow-all --unstable https://deno.land/x/metapages@v0.0.17/exec/open_url.ts https://metapages.github.io/load-page-when-available/?url=https://${APP_FQDN}:${APP_PORT_BROWSER}
     npm i
     just _tsc "--build"
     export HOST={{APP_FQDN}}
@@ -122,11 +121,10 @@ _npm_version npmversionargs="patch":
 
 # update "gh-pages" branch with the (versioned and default) current build (./docs) (and keeping all previous versions)
 _githubpages_publish:
-    VITE_SERVER_ORIGIN={{SERVER_ORIGIN}} \
-        deno run --unstable --allow-all {{DENO_SOURCE}}/browser/gh-pages-publish-to-docs.ts
+    deno run --unstable --allow-all {{DENO_SOURCE}}/browser/gh-pages-publish-to-docs.ts
 
 @_ensureGitPorcelain:
-    deno run --allow-all --unstable https://deno.land/x/metapages@v0.0.13/git/git-fail-if-uncommitted-files.ts
+    deno run --allow-all --unstable https://deno.land/x/metapages@v0.0.12/git/git_fail_if_uncommitted_files.ts
 
 @_require_NPM_TOKEN:
 	if [ -z "{{NPM_TOKEN}}" ]; then echo "Missing NPM_TOKEN env var"; exit 1; fi
