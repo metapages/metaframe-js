@@ -34,3 +34,17 @@ clean:
     just ingress/clean
     just client/clean
     docker-compose down -v
+
+
+# start:
+#     deno run --import-map=importMap.json -A --unstable server.js
+
+# cache:
+#     deno cache --import-map=importMap.json --reload server.js
+
+# vendor:
+#     deno run --import-map=importMap.json -A --unstable https://deno.land/x/ultra/vendor.ts
+
+# DEV: generate TLS certs for HTTPS over localhost https://blog.filippo.io/mkcert-valid-https-certificates-for-localhost/
+# @_mkcert:
+#     APP_FQDN={{SERVER_FQDN}} deno run --allow-all --unstable https://deno.land/x/metapages@v0.0.12/commands/ensure_mkcert.ts
