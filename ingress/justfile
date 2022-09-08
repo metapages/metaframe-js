@@ -18,7 +18,7 @@ normal                             := '\033[0m'
 
 # DEV: generate TLS certs for HTTPS over localhost https://blog.filippo.io/mkcert-valid-https-certificates-for-localhost/
 @mkcert:
-    APP_FQDN={{APP_FQDN}} CERTS_DIR=conf.d/certs deno run --allow-all --unstable https://deno.land/x/metapages@v0.0.12/commands/ensure_mkcert.ts
+    APP_FQDN={{APP_FQDN}} CERTS_DIR=conf.d/certs deno run --allow-all --unstable https://deno.land/x/metapages@v0.0.13/commands/ensure_mkcert.ts
     # Copy certs for where the client expects
     rm -rf ../.certs
     cp -r conf.d/certs ../.certs

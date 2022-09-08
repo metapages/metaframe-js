@@ -47,4 +47,4 @@ clean:
 
 # DEV: generate TLS certs for HTTPS over localhost https://blog.filippo.io/mkcert-valid-https-certificates-for-localhost/
 # @_mkcert:
-#     APP_FQDN={{SERVER_FQDN}} deno run --allow-all --unstable https://deno.land/x/metapages@v0.0.12/commands/ensure_mkcert.ts
+#     APP_FQDN={{SERVER_FQDN}} deno run --allow-all --unstable https://deno.land/x/metapages@v0.0.13/commands/ensure_mkcert.ts
