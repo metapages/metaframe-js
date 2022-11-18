@@ -37,8 +37,8 @@ https://js.mtfm.io/#?js=<<span style="color:blue">javascript</span>>&c=<<span st
 
  - no state is stored on the server (all embedded in the URL)
    - this imposes some limits but current URL lengths are large or not specifically limited
- - The final URL is ready by the server to create the single `index.html` with the modules and css embedded
- - The final URL then runs the embedded javascript
+ - The final URL is parsed by the server to create the single `index.html` with the modules and css embedded
+ - The client then runs the embedded javascript (the javascript code is **not** sent to the server)
 
 The server runs on https://deno.com/deploy which is
 
