@@ -1,29 +1,28 @@
 import { useMetaframeUrl } from '/@/hooks/useMetaframeUrl';
 
-import { ExternalLinkIcon } from '@chakra-ui/icons';
 import {
-  IconButton,
+  Icon,
   Link,
-  MenuItem,
+  Tooltip,
 } from '@chakra-ui/react';
+import { ArrowSquareOut } from '@phosphor-icons/react';
 
-export const ButtonGotoExternalLink: React.FC<{ menuitem?: boolean }> = ({
-  menuitem,
-}) => {
+export const ButtonGotoExternalLink: React.FC = () => {
   const { url } = useMetaframeUrl();
-
-  if (menuitem) {
-    return (
-      <MenuItem w="100%" as="a" href={url} target="_parent">
-        <ExternalLinkIcon />
-        &nbsp; Go to source URL
-      </MenuItem>
-    );
-  }
 
   return (
     <Link _hover={undefined} href={url} isExternal target="_parent">
-      <IconButton variant="ghost" aria-label="go to source url" icon={<ExternalLinkIcon />} />
+      <Tooltip label={"Go to source URL"}>
+        <Icon
+          aria-label="go to source url" 
+          _hover={{ bg: "gray.300" }}
+          bg={"none"}
+          p={"3px"}
+          borderRadius={5}
+          as={ArrowSquareOut}
+          boxSize="7"
+        />
+      </Tooltip>
     </Link>
   );
 };

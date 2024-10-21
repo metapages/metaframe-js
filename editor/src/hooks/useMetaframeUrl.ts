@@ -20,10 +20,12 @@ export const useMetaframeUrl = () => {
   const [config] = useHashParamJson<ConfigOptions>("c");
   const [metaframeDef] = useHashParamJson<MetaframeDefinitionV6>("mfjson");
   const [modules] = useHashParamJson<string[]>("modules");
+
   // update the url
   useEffect(() => {
+    let hash = window.location.hash.substring(1);
+    let hashParams = new URLSearchParams(hash);
     // const url = new URL(window.location.href);
-
     let href = window.location.href;
     if (metaframeDef) {
       href = setHashValueJsonInUrl(href, "mfjson", metaframeDef);
@@ -39,8 +41,8 @@ export const useMetaframeUrl = () => {
 
     // I am not sure about this anymore
     url.pathname = "";
-    url.host = import.meta.env.VITE_SERVER_ORIGIN.split(":")[0];
-    url.port = import.meta.env.VITE_SERVER_ORIGIN.split(":")[1];
+    url.host = (import.meta as any).env.VITE_SERVER_ORIGIN.split(":")[0];
+    url.port = (import.meta as any).env.VITE_SERVER_ORIGIN.split(":")[1];
 
     // WATCH THIS DIFFERENCE BETWEEN THIS AND BELOW
     // 1!

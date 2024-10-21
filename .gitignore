@@ -8,3 +8,6 @@
 docs
 # Assets ready for publishing are put here
 /deploy
+
+#dependencies
+node_modules

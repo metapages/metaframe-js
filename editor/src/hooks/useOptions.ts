@@ -1,6 +1,6 @@
 import { useHashParamJson } from '@metapages/hash-query';
 
-export type Theme = "light" | "vs-dark";
+export type Theme = "light" | "vs-dark" | "system";
 
 export type Options = {
   theme?: Theme | undefined;

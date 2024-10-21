@@ -1,13 +1,21 @@
-import { ResizingTabPanel } from '/@/components/layout/ResizingTabPanel';
-import { NonMainPanelMargin } from '/@/constants';
+import { PanelHeader } from '../../common/PanelHeader';
 
 import { Box } from '@chakra-ui/react';
 
-export const PanelHelp: React.FC = () => {
+export const PanelDocs: React.FC = () => {
   return (
-    <ResizingTabPanel>
-      <Box w="100%" h="100%" m={NonMainPanelMargin} overflowY="scroll">
-        <Box className="iframe-container" >
+    <Box
+      position={'absolute'}
+      borderLeft={'1px'}
+      top={'3rem'}
+      bg={'white'}
+      w={"calc(100% - 4rem)"}
+      h={"calc(100vh - 3rem)"}
+      right={0}
+      overflowY="scroll"
+    >
+    <PanelHeader title={'Docs'}/>
+        <Box className="iframe-container" bg={"gray.100"}>
           <iframe
             className="iframe"
             src={`https://markdown.mtfm.io/#?hm=disabled&url=${
@@ -23,7 +31,6 @@ export const PanelHelp: React.FC = () => {
           />
         </Box>
       </Box>
-    </ResizingTabPanel>
   );
 
 };

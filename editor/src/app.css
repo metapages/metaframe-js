@@ -1,7 +1,5 @@
 .iframe-container {
   overflow: hidden;
-  /* 16:9 aspect ratio */
-  /* padding-top: 56.25%; */
   position: relative;
   width: 100%;
   height: 100%;
@@ -16,8 +14,7 @@
 }
 
 body {
-  background:none transparent;
-  /* background:red; */
+  background:none transparent !important;
   width: 100%;
   height: 100%;
   margin: 0px;
