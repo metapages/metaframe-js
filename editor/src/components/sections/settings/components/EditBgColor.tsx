@@ -18,12 +18,6 @@ interface FormType extends yup.InferType<typeof validationSchema> {}
 export const EditBgColor: React.FC = () => {
   const [bgColor, setbgColor] = useHashParam("bgColor", undefined);
 
-  // const handleChange = useCallback(
-  //   (nextValue: string) => {
-  //     setbgColor(nextValue);
-  //   },
-  //   [bgColor, setbgColor]
-  // );
   const onSubmit = useCallback(
     (values: FormType) => {
       if (values.color) {

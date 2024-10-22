@@ -1,6 +1,5 @@
 import React, {
   useCallback,
-  useEffect,
   useRef,
 } from 'react';
 import stringify from "safe-stable-stringify";

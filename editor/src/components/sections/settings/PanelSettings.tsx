@@ -4,7 +4,6 @@ import { SectionModules } from '/@/components/sections/settings/components/Secti
 import { PanelHeader } from '/@/components/common/PanelHeader';
 import { SectionOptions } from '/@/components/sections/settings/components/SectionOptions';
 
-// TODO fix height variable
 export const PanelSettings: React.FC = () => {
   return (
       <Box
