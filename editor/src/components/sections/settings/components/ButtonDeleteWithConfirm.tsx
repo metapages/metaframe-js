@@ -29,6 +29,7 @@ export const ButtonDeleteWithConfirm: React.FC<{
   }, [callback, onClose]);
 
   // const isEnterPressed = useKeyPress({ targetKey: "Enter" });
+
   // useEffect(() => {
   //   if (isEnterPressed && isOpen) {
   //     callback();
