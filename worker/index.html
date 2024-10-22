@@ -755,26 +755,31 @@
         // ensure all modules are loaded
         await Promise.all(window.__metaframejs.awaiting);
 
+        const [_, hashParams] = getUrlHashParamsFromHashString(
+          window.location.hash
+        );
+        const percentage = hashParams['editorPercentage'] || 50;
+        const inEditMode = hashParams['edit'] === 'true';
+        const defaultBgColor = hashParams['bgColor'];
+        if (!inEditMode) {
+          removeEditor();
+        } else {
+          const draggable = document.getElementById('draggable');
+          draggable.style.display = 'block';
+        }
+
+        // set up (maybe re-override globals)
+        const root = document.getElementById("root");
+        root.style.width = inEditMode ? `${100 - parseInt(percentage)}%` : '100%';
+        if (defaultBgColor) {
+          root.style.background = defaultBgColor;
+        }
+
+        const editor = document.getElementById("editor-root");
+        editor.style.width = inEditMode ? `${parseInt(percentage)}%` : '0%';
+
         if (js) {
-          try {            
-            let hash = window.location.hash.substring(1);
-            let hashParams = new URLSearchParams(hash);
-            const percentage = hashParams.get('editorPercentage') || 50;
-            const inEditMode = hashParams.get('edit') === 'true';
-            if (!inEditMode) {
-              removeEditor();
-            } else {
-              const draggable = document.getElementById('draggable');
-              draggable.style.display = 'block';
-            }
-
-            // set up (maybe re-override globals)
-            const root = document.getElementById("root");
-            root.style.width = inEditMode ? `${100 - parseInt(percentage)}%` : '100%';
-
-            const editor = document.getElementById("editor-root");
-            editor.style.width = inEditMode ? `${parseInt(percentage)}%` : '0%';
-
+          try {
             globalThis.root = root;
             globalThis.setOutput = (key, value) => {
               metaframe.setOutput(key, value);
@@ -829,7 +834,7 @@
 
               if (document.getElementById('draggable')) {
                 const draggable = document.getElementById('draggable');
-                const editorPercentage = hashParams.get('editorPercentage') || 50;
+                const editorPercentage = hashParams['editorPercentage'] || 50;
                 const left = window.innerWidth - (window.innerWidth * (parseInt(editorPercentage)/100));
                 draggable.style.left = left + 'px';
               }
