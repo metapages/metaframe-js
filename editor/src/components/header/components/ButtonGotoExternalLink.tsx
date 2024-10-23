@@ -12,7 +12,7 @@ export const ButtonGotoExternalLink: React.FC = () => {
 
   return (
     <Link _hover={undefined} href={url} isExternal target="_parent">
-      <Tooltip label={"Go to source URL"}>
+      <Tooltip label={"Go to Source URL"}>
         <Icon
           aria-label="go to source url" 
           _hover={{ bg: "gray.300" }}

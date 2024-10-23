@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from "react";
-// import { useKeyPress } from "@react-typed-hooks/use-key-press";
+import { useKeyPress } from "@react-typed-hooks/use-key-press";
 import {
   Button,
   Modal,
@@ -28,14 +28,14 @@ export const ButtonDeleteWithConfirm: React.FC<{
     onClose();
   }, [callback, onClose]);
 
-  // const isEnterPressed = useKeyPress({ targetKey: "Enter" });
+  const isEnterPressed = useKeyPress({ targetKey: "Enter" });
 
-  // useEffect(() => {
-  //   if (isEnterPressed && isOpen) {
-  //     callback();
-  //     onClose();
-  //   }
-  // }, [callback, onClose, isEnterPressed]);
+  useEffect(() => {
+    if (isEnterPressed && isOpen) {
+      callback();
+      onClose();
+    }
+  }, [callback, onClose, isEnterPressed]);
 
   return (
     <>
