@@ -10,14 +10,14 @@ export const PanelSettings: React.FC = () => {
         position={'absolute'}
         borderLeft={'1px'}
         top={'3rem'}
-        bg={'white'}
-        w={"calc(100% - 4rem)"}
+        w={"100%"}
         h={"calc(100% - 3rem)"}
         right={0}
         overflowY="scroll"
+        bg={'gray.100'}
       >
         <PanelHeader title={'settings'}/>
-        <VStack bg={'gray.100'}  h={"calc(100% - 1.5rem)"} gap={6}>
+        <VStack h={"calc(100% - 1.5rem)"} gap={3}>
           <SectionModules />
           <SectionOptions />
         </VStack>

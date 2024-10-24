@@ -50,15 +50,6 @@
         padding: 8px;
       }
 
-      #draggable {
-          width: 15px;
-          height: 100vh;
-          background-color: transparent;
-          cursor: col-resize;
-          position: absolute; /* Allow absolute positioning */
-          z-index: 5;
-      }
-
       .editor-container-hidden {
         position: absolute;
         display: flex;
@@ -73,6 +64,8 @@
         height: 100vh;
         z-index: 3;
         right: 0px;
+        max-width: 100vw;
+        min-width: 10ch;
       }
 
       .root {
@@ -89,6 +82,8 @@
           max-height: 100vh;
           z-index: 2;
           overflow: hidden;
+          max-width: calc(100vw - 10ch);
+          min-width: 0px;
         }
 
       /**
@@ -758,25 +753,22 @@
         const [_, hashParams] = getUrlHashParamsFromHashString(
           window.location.hash
         );
-        const percentage = hashParams['editorPercentage'] || 50;
+        const editorWidth = hashParams['editorWidth'] || 80;
         const inEditMode = hashParams['edit'] === 'true';
         const defaultBgColor = hashParams['bgColor'];
         if (!inEditMode) {
           removeEditor();
-        } else {
-          const draggable = document.getElementById('draggable');
-          draggable.style.display = 'block';
         }
 
         // set up (maybe re-override globals)
         const root = document.getElementById("root");
-        root.style.width = inEditMode ? `${100 - parseInt(percentage)}%` : '100%';
+        root.style.width = inEditMode ? `calc(100% - ${editorWidth}ch)` : '100%';
         if (defaultBgColor) {
           root.style.background = defaultBgColor;
         }
 
         const editor = document.getElementById("editor-root");
-        editor.style.width = inEditMode ? `${parseInt(percentage)}%` : '0%';
+        editor.style.width = inEditMode ? `${editorWidth}ch` : '0%';
 
         if (js) {
           try {
@@ -830,13 +822,6 @@
                 } catch (err) {
                   console.error("Error running handleResize", err);
                 }
-              }
-
-              if (document.getElementById('draggable')) {
-                const draggable = document.getElementById('draggable');
-                const editorPercentage = hashParams['editorPercentage'] || 50;
-                const left = window.innerWidth - (window.innerWidth * (parseInt(editorPercentage)/100));
-                draggable.style.left = left + 'px';
               }
             };
 
@@ -961,8 +946,6 @@
             "root borderFatSolidGreen";
           document.getElementById("editor-root").className =
             "editor-container-hidden borderDashedBlue";
-          const draggable = document.getElementById('draggable');
-          draggable.style.display = 'none';
       };
 
       const onMenuClick = async () => {
@@ -1016,15 +999,8 @@
         mp.addListener(globalThis.metapage.Metapage.DEFINITION, (event) => {
           const url = event?.definition?.metaframes?.editor?.url;
           if (url) {
-            // editorPercentage is getting clobbered here
-            // this is a hack to make sure the value the editor code has reference to doesn't
-            // overwrite the real value
-            let hash = window.location.hash.substring(1);
-            let hashParams = new URLSearchParams(hash);
-            const percentage = hashParams.get('editorPercentage') || 50;
             const urlBlob = new URL(url);
-            const newHash = setHashValueInHashString(urlBlob.hash, 'editorPercentage', percentage);
-            updateCode(newHash);
+            updateCode(urlBlob);
           }
         });
       };
@@ -1045,73 +1021,5 @@
     </script>
     <div id="root" class="root borderFatSolidGreen transparent"></div>
     <div id="editor-root" class="editor-container-hidden borderDashedPurple transparent"></div>
-    <div id="draggable"></div>
-    <!-- resizing element control -->
-    <script>
-      const editorPercentage = hashParams.get('editorPercentage') || 50;
-      const startingX = window.innerWidth - (window.innerWidth * (parseInt(editorPercentage)/100));
-      const draggable = document.getElementById('draggable');
-      if (!isEditMode) {
-        draggable.style.display = 'none';
-      }
-      draggable.style.left = startingX + 'px';
-      let isDragging = false;
-      let offsetX;
-
-      // Debounce function to limit how often the updatePosition function can be called
-      function debounce(func, delay) {
-        let timeoutId;
-        return function(...args) {
-          if (timeoutId) {
-            clearTimeout(timeoutId);
-          }
-          timeoutId = setTimeout(() => {
-            func.apply(this, args);
-          }, delay);
-        };
-      };
-
-      const updatePosition = (event) => {
-        const max = window.innerWidth - 400;
-        const min = 100;
-        let newLeft = event.clientX - offsetX; // Calculate the change in X
-        if (newLeft < min) newLeft = min;
-        if (newLeft > max) newLeft = max;
-        draggable.style.left = newLeft + 'px'; // Set the new left position
-        setEditorPercentage(newLeft);
-      };
-
-      // Create a debounced version of the updatePosition function
-      const debouncedUpdatePosition = debounce(updatePosition, 16); // Approximately 60fps
-
-      const setEditorPercentage = (xPos) => {
-        const newLeft = xPos - offsetX; // Calculate the change in X
-        const percentage = (100 - ((newLeft/window.innerWidth) * 100)).toFixed(2);
-        setHashParamInWindow("editorPercentage", percentage);
-      }
-
-      draggable.addEventListener('pointerdown', (event) => {
-        isDragging = true;
-        draggable.setPointerCapture(event.pointerId);
-        offsetX = event.clientX - draggable.getBoundingClientRect().left; // Calculate the offset
-        event.preventDefault();
-      });
-
-      document.addEventListener('pointermove', (event) => {
-        if (isDragging) {
-          debouncedUpdatePosition(event);
-        }
-      });
-
-      document.addEventListener('pointerup', (event) => {
-        isDragging = false;
-      });
-
-      draggable.addEventListener('pointerleave', (event) => {
-        if (isDragging) {
-          isDragging = false;
-        }
-      });
-    </script>
   </body>
 </html>

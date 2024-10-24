@@ -2,7 +2,7 @@ import React from "react";
 
 import { useStore } from "/@/store";
 
-import {Box, HStack, Icon, Text, Tooltip } from "@chakra-ui/react";
+import {Box, HStack, Icon, Button, Flex, Tooltip, useMediaQuery } from "@chakra-ui/react";
 import { useHashParam } from "@metapages/hash-query";
 import { Gear, X, QuestionMark } from "@phosphor-icons/react";
 import { ButtonCopyExternalLink } from "./components/ButtonCopyExternalLink";
@@ -15,6 +15,7 @@ export const capitalize = (str: string): string => {
 
 export const MainHeader: React.FC = () => {
   const [_edit, setEdit] = useHashParam("edit", "true");
+  const [isLargerThan400] = useMediaQuery("(min-width: 400px)");
 
   // only show the edit button if the command points to a script in the inputs
   const setShownPanel = useStore(state => state.setShownPanel);
@@ -37,12 +38,15 @@ export const MainHeader: React.FC = () => {
       </Box>
     );
   };
+  if (!isLargerThan400) {
+    return <HStack p={5} justify={"flex-end"} minW={'100%'} h={"headerHeight"} bg={"gray.100"} borderBottom={"1px"}>
+      {icon(X, "close", () => setEdit("false"))}
+    </HStack> 
+  }
 
   return (
     <HStack p={0} justify={"space-between"} minWidth={"100%"} h={"headerHeight"} bg={"gray.100"} borderBottom={"1px"}>
-      <HStack px={5}>
-        <Text>Javascript</Text>
-      </HStack>
+      <Button mx={5} onClick={() => setShownPanel(null)} variant={"ghost"} _hover={{bg: 'gray.300'}} fontWeight={400} color={'gray.600'}>Javascript</Button>
       <HStack borderLeft={"1px"} right={0} px={4} bg={"gray.100"} justifyContent={"space-around"} h={'headerHeight'} w={'16rem'}>
         {icon(Gear, "settings", () => setShownPanel(shownPanel === "settings" ? null : "settings"), true)}
         {icon(QuestionMark, "docs", () => setShownPanel(shownPanel === "docs" ? null : "docs"), true)}

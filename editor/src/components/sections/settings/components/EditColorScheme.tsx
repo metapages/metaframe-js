@@ -49,7 +49,7 @@ export const EditColorScheme: React.FC = () => {
 
   return <form onSubmit={formik.handleSubmit}>
   <FormControl pb="1rem">
-    <Text fontWeight={700} pb={4}>
+    <Text fontWeight={700} pb={2}>
       {OptionDescription["theme"]}
     </Text>
     <RadioGroup
@@ -62,7 +62,7 @@ export const EditColorScheme: React.FC = () => {
       value={formik.values.theme || defaultOptions.theme}
     >
       <VStack
-        spacing={5}
+        spacing={3}
         alignItems={'flex-start'}
       >
         <Radio value="light" colorScheme={"blackAlpha"} defaultChecked><Text>Light</Text></Radio>

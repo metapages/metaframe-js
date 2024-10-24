@@ -10,26 +10,26 @@ import {
 import { useHashParam } from '@metapages/hash-query';
 
 const validationSchema = yup.object({
-  color: yup.string(),
+  editorWidth: yup.string(),
 });
 interface FormType extends yup.InferType<typeof validationSchema> {}
 
 
-export const EditBgColor: React.FC = () => {
-  const [bgColor, setbgColor] = useHashParam("bgColor", undefined);
+export const EditEditorWidth: React.FC = () => {
+  const [editorWidth, setEditorWidth] = useHashParam("editorWidth", 80);
 
   const onSubmit = useCallback(
     (values: FormType) => {
-      if (values.color) {
-        setbgColor(values.color);
+      if (values.editorWidth) {
+        setEditorWidth(values.editorWidth);
       }
     },
-    [setbgColor],
+    [setEditorWidth],
   );
 
   const formik = useFormik({
     initialValues: {
-      color: bgColor || '',
+      editorWidth: editorWidth || '',
     },
     onSubmit,
     validationSchema,
@@ -38,14 +38,14 @@ export const EditBgColor: React.FC = () => {
 
   return (
     <VStack align="flex-start" w="100%" minW={'100%'}>
-      <Text fontWeight={700}>Default Background Color</Text>
+      <Text fontWeight={700}>Editor Width (ch)</Text>
       <form onSubmit={formik.handleSubmit}>
         <Input
-          id="color"
-          name="color"
+          id="editorWidth"
+          name="editorWidth"
           type="text"
           onChange={formik.handleChange}
-          value={formik.values.color}
+          value={formik.values.editorWidth}
         />
       </form>
     </VStack>

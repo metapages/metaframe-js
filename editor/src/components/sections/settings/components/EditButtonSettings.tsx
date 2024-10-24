@@ -23,9 +23,9 @@ export const EditButtonSettings: React.FC = () => {
 
   return (
     <VStack align="flex-start" w="100%" minW={'100%'}>
-      <Text fontWeight={700} pb={4}>Button Visibility</Text>
+      <Text fontWeight={700}>Button Visibility</Text>
       <RadioGroup id="mode" onChange={handleRadio} value={mode || DefaultMode} w="100%">
-        <VStack alignItems={'flex-start'} w={'100%'} spacing={5} >
+        <VStack alignItems={'flex-start'} w={'100%'} spacing={3} >
           <Radio colorScheme={"blackAlpha"} value="visible"><Text>Always Visible</Text></Radio>
           <Radio colorScheme={"blackAlpha"} value="invisible" defaultChecked><Text>Visible on Hover</Text></Radio>
           <Radio colorScheme={"blackAlpha"} value="disabled"><Text>Hidden</Text></Radio>

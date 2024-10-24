@@ -15,7 +15,7 @@ export const PanelHeader: React.FC<PanelHeaderProps> = ({ title }) => {
   const titleText = title.toUpperCase();
   return (
     <PanelHeaderContainer>
-      <HStack justify={"space-between"} px={6} w={"100%"} bg={'gray.100'}>
+      <HStack justify={"space-between"} px={6} w={"100%"}>
         <Text fontSize={"0.7rem"}>{titleText}</Text>
         <HStack>
           <Icon boxSize={"1rem"} as={X} onClick={() => setShownPanel(null)}></Icon>
