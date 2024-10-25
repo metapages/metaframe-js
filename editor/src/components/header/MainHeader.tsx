@@ -40,6 +40,7 @@ export const MainHeader: React.FC = () => {
   };
   if (!isLargerThan400) {
     return <HStack p={5} justify={"flex-end"} minW={'100%'} h={"headerHeight"} bg={"gray.100"} borderBottom={"1px"}>
+      {icon(Gear, "settings", () => setShownPanel(shownPanel === "settings" ? null : "settings"), true)}
       {icon(X, "close", () => setEdit("false"))}
     </HStack> 
   }
