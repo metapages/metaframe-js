@@ -49,6 +49,11 @@ publish: _ensure_deployctl
   cd deploy
   deployctl deploy --project=metaframe-js --prod server.ts
 
+# Checks and tests
+@test:
+  just editor/test
+  just worker/test
+
 # Delete all cached and generated files, and docker volumes
 clean:
     just editor/clean

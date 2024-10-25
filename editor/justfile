@@ -69,6 +69,7 @@ build BASE="editor": _css-debug-layer-setup _ensure_npm_modules (_tsc "--build")
 
 # Test: currently bare minimum: only building. Need proper test harness.
 @test: _css-debug-layer-setup (_tsc "--build")
+    echo "✅ editor typescript compilation"
 
 # Publish to npm and github pages.
 publish npmversionargs="patch": _ensureGitPorcelain test (_npm_version npmversionargs) _githubpages_publish

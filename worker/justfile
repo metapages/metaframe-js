@@ -10,3 +10,7 @@ dev:
     deno run --allow-all --unstable HTTPS://deno.land/x/metapages@v0.0.17/exec/open_url.ts https://metapages.github.io/load-page-when-available/?url=http://${APP_FQDN}:${SERVER_PORT}
     PORT={{SERVER_PORT}} APP_FQDN={{APP_FQDN}} deno run --watch -A --unstable ./server.ts
     
+# Quick type check
+@test:
+    deno check server.ts
+    echo "✅ worker typescript compilation"
