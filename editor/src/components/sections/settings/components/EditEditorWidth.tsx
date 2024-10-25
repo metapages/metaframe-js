@@ -16,7 +16,7 @@ interface FormType extends yup.InferType<typeof validationSchema> {}
 
 
 export const EditEditorWidth: React.FC = () => {
-  const [editorWidth, setEditorWidth] = useHashParam("editorWidth", 80);
+  const [editorWidth, setEditorWidth] = useHashParam("editorWidth", "80");
 
   const onSubmit = useCallback(
     (values: FormType) => {
