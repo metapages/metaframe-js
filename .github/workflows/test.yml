@@ -3,39 +3,21 @@ name: Test
 on:
   push:
     branches:
-      - '!!main'
+      - "**"
+      - "!main"
+      - "!master"
 
 jobs:
   test:
     name: Test
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write # Needed for auth with Deno Deploy
-      contents: read # Needed to clone the repository
+    runs-on: self-hosted
 
     steps:
       - name: Clone repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          # token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           fetch-depth: '0'
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
-
-      - name: Setup just
-        uses: extractions/setup-just@v1
-        with:
-          just-version: '1.25.2'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Setup deno
-        uses: denoland/setup-deno@v1
-        with:
-          deno-version: v2.0.1
-
-      # TODO: add a build step here
       - name: test
         run: just test
 
