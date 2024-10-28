@@ -1,8 +1,8 @@
 import { Box, VStack } from '@chakra-ui/react';
 
-import { SectionModules } from '/@/components/sections/settings/components/SectionModules';
+import { SectionModules } from './settings/SectionModules';
 import { PanelHeader } from '/@/components/common/PanelHeader';
-import { SectionOptions } from '/@/components/sections/settings/components/SectionOptions';
+import { SectionOptions } from './settings/SectionOptions';
 
 export const PanelSettings: React.FC = () => {
   return (

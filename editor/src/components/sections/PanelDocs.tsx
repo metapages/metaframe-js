@@ -1,4 +1,4 @@
-import { PanelHeader } from '../../common/PanelHeader';
+import { PanelHeader } from '/@/components/common/PanelHeader';
 
 import { Box } from '@chakra-ui/react';
 

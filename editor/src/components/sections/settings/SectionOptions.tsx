@@ -2,10 +2,10 @@ import React from 'react';
 
 import { VStack } from '@chakra-ui/react';
 
-import { EditButtonSettings } from '/@/components/sections/settings/components/EditButtonSettings';
-import { EditColorScheme } from '/@/components/sections/settings/components/EditColorScheme';
-import { EditBgColor } from '/@/components/sections/settings/components/EditBgColor';
-import { EditEditorWidth } from '/@/components/sections/settings/components/EditEditorWidth';
+import { EditButtonSettings } from './EditButtonSettings';
+import { EditColorScheme } from './EditColorScheme';
+import { EditBgColor } from './EditBgColor';
+import { EditEditorWidth } from './EditEditorWidth';
 
 export const SectionOptions: React.FC = () => {
   return (
