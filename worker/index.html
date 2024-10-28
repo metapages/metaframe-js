@@ -162,10 +162,6 @@
 
     <!-- Misc generic and specific functions -->
     <script>
-      let hash = window.location.hash.substring(1);
-      let hashParams = new URLSearchParams(hash);
-      const isEditMode = hashParams.get('edit') === 'true';
-
       globalThis.logStdout = (s) => {
         const root = document.getElementById("root");
         const pre = document.createElement("pre");
@@ -430,9 +426,8 @@
         const [_, hashParams] = getUrlHashParamsFromHashString(
           window.location.hash
         );
-        const isEditMode = hashParams['edit'] === 'true';
-
-        if (isEditMode) {
+        const inEditMode = hashParams['edit'] === 'true';
+        if (inEditMode) {
           // do NOT change the visibility of the edit buttons
           return;
         }
@@ -565,7 +560,7 @@
                   return;
                 }
               } catch (e) {
-                console.log("error loading module", s);
+                console.log("Error loading module", s);
                 window.logStderr(`error loading module: ${s}`);
                 return;
               }
@@ -1011,7 +1006,11 @@
 
       refreshUpdateSvgButton();
 
-      if (isEditMode || !getJsFromUrl()) {
+      const [_, hashParams] = getUrlHashParamsFromHashString(
+          window.location.hash
+        );
+      const inEditMode = hashParams['edit'] === 'true';
+      if (inEditMode || !getJsFromUrl()) {
         // if editing, force showing the menu
         window.addEventListener("load", () => {
           onMenuClick();
