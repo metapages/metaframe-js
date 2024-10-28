@@ -6,9 +6,9 @@ import { useStore } from '/@/store';
 import { VStack } from '@chakra-ui/react';
 
 import { MainHeader } from '/@/components/header/MainHeader';
-import { PanelCode } from '/@/components/sections/code/PanelCode';
-import { PanelDocs } from '/@/components/sections/docs/PanelDocs';
-import { PanelSettings } from '/@/components/sections/settings/PanelSettings';
+import { PanelCode } from './components/sections/PanelCode';
+import { PanelDocs } from '/@/components/sections/PanelDocs';
+import { PanelSettings } from './components/sections/PanelSettings';
 
 export const App: React.FC = () => {
   const shownPanel = useStore(state => state.shownPanel);
