@@ -25,7 +25,7 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@fontsource-variable/jetbrains-mono": "^5.1.1",
-    "@metapages/hash-query": "^0.4.8",
+    "@metapages/hash-query": "^0.4.19",
     "@metapages/metaframe-hook": "^1.0.12",
     "@metapages/metapage": "^0.13.9",
     "@metapages/metapage-embed-react": "^0.0.20",
