@@ -3,7 +3,7 @@ import { StrictMode } from 'react';
 
 import { App } from '/@/App';
 import { createRoot } from 'react-dom/client';
-import { theme } from "/@/styles/theme";
+import { mfTheme } from "/@/styles/theme";
 
 import {
   ChakraProvider,
@@ -14,7 +14,7 @@ const container = document.getElementById("root");
 const root = createRoot(container!);
 root.render(
   <StrictMode>
-    <ChakraProvider theme={theme}>
+    <ChakraProvider theme={mfTheme}>
       <WithMetaframe>
         <App />
       </WithMetaframe>
