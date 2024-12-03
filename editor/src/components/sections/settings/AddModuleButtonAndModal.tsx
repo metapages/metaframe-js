@@ -60,14 +60,11 @@ export const AddModuleButtonAndModal: React.FC<{
         leftIcon={<Icon as={Plus} boxSize={6} />}
         onClick={onToggle}
         aria-label="add module"
+        disabled={isReadOnly}
       >
         {text}
       </Button>
 
-	    {/* <HStack onClick={onToggle} aria-label="add module">
-        <Icon boxSize={6} as={Plus} />
-        {text ? <Text size={"med"}>{text}</Text> : null}
-      </HStack> */}
       <Modal isOpen={isOpen} onClose={closeAndClear}>
         <ModalOverlay />
         <ModalContent>
