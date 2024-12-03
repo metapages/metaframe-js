@@ -11,6 +11,7 @@ import { MetaframeInputMap } from '@metapages/metapage';
 import { MetaframeStandaloneComponent } from '@metapages/metapage-embed-react';
 import { Box } from '@chakra-ui/react';
 import { useOptions } from '/@/hooks/useOptions';
+import { useIsReadOnly } from "/@/hooks/isReadOnly";
 
 export const encodeOptions = (options: any): string => {
   const text: string = stringify(options) || "";
@@ -34,6 +35,7 @@ const LocalEditor: React.FC<{
   // only use the code prop initially, but then ignore so we don't get clobbering
   const codeInternal = useRef<string>(code);
   const inputs = useRef<{ text: string }>({ text: codeInternal.current });
+  const isReadOnly = useIsReadOnly()
 
   const urlWithOptions = () => {
     const options =  encodeOptions({
@@ -41,6 +43,7 @@ const LocalEditor: React.FC<{
       hidemenuififrame: true,
       mode: "javascript",
       theme: themeOptions?.theme || "vs-light",
+      readOnly: isReadOnly
     });
     return `https://editor.mtfm.io/#?hm=disabled&options=${options}`
   }
