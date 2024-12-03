@@ -20,7 +20,7 @@ export const ButtonCopyExternalLink: React.FC = () => {
   useEffect(() => {
     if (!url) return;
     const isLocal = window.location.hostname.includes('localhost');
-    let newUrl = setHashValueInHashString(url, 'edit', 'false')
+    let newUrl = setHashValueInHashString(url, 'edit', undefined)
     if (isLocal) {
       // TODO: swap localhost in for url val, useMetaframeUrl uses env variables to construct the path
       setUrlForCopy(newUrl);

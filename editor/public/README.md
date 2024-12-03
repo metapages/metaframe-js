@@ -1,5 +1,8 @@
 # Javascript embedded in the URL: run and edit 
 
+Run code and edit javascript code in the browser. No server required.
+
+### Longer description
 Run arbitrary user javascript modules embedded in the URL. Designed for [metapages](https://metapage.io) so you can connect inputs + outputs to other metaframe URLs.
 
 ## Javascript high level
@@ -13,7 +16,7 @@ Run arbitrary user javascript modules embedded in the URL. Designed for [metapag
 
 ## Useful code snippets
 
-### Inputs and outputs
+### Handling Inputs and outputs in code
 
 Simply export a function (arrow function also good 👍) called `onInputs`:
 
@@ -44,6 +47,16 @@ setOutputs({
 ```
 
 Output values can be strings, JSON, objects, arrays, numbers, ArrayBuffers, typed arrays such as `Uint8Array`;
+
+### Define Inputs and Outputs
+
+In `Settings` you can define inputs and outputs. This doesn't change how the code runs, but it allows much easier connecting upstream and downstream metaframes when editing [metapages](https://metapage.io).
+
+In this example, we defined an input: `input.json` and an output `data.csv`:
+
+![inputs](/editor/readme-images/io.png "Inputs and outputs defined in Settings")
+
+You will see these inputs and outputs automatically in the metapage editor.
 
 ### The root display div element is exposed in the scope
 

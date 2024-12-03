@@ -2,6 +2,11 @@ import { PanelHeader } from '/@/components/common/PanelHeader';
 
 import { Box } from '@chakra-ui/react';
 
+const MarkdownUrlOrigin = "https://markdown.mtfm.io";
+// Useful replacement for local testing:
+// const MarkdownUrlOrigin = "https://metaframe1.localhost:8443";
+
+
 export const PanelDocs: React.FC = () => {
   return (
     <Box
@@ -18,7 +23,7 @@ export const PanelDocs: React.FC = () => {
         <Box className="iframe-container">
           <iframe
             className="iframe"
-            src={`https://markdown.mtfm.io/#?hm=disabled&url=${
+            src={`${MarkdownUrlOrigin}/#?hm=disabled&url=${
               window.location.origin
             }${
               window.location.pathname.endsWith("/")

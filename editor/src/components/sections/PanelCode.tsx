@@ -8,7 +8,7 @@ import { useMetaframeUrl } from '/@/hooks/useMetaframeUrl';
 
 import { useHashParamBase64 } from '@metapages/hash-query';
 import { MetaframeInputMap } from '@metapages/metapage';
-import { MetaframeStandaloneComponent } from '@metapages/metapage-embed-react';
+import { MetaframeStandaloneComponent } from '@metapages/metapage-react';
 import { Box } from '@chakra-ui/react';
 import { useOptions } from '/@/hooks/useOptions';
 import { useIsReadOnly } from "/@/hooks/isReadOnly";

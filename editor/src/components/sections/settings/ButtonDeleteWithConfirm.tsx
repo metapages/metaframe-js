@@ -1,26 +1,31 @@
-import React, { useCallback, useEffect } from "react";
-import { useKeyPress } from "@react-typed-hooks/use-key-press";
+import React, {
+  useCallback,
+  useEffect,
+} from 'react';
+
 import {
   Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Icon,
-  useDisclosure,
-  Text,
   Container,
   HStack,
-} from "@chakra-ui/react";
-import { TrashSimple } from "@phosphor-icons/react";
+  Icon,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalOverlay,
+  Text,
+  useDisclosure,
+} from '@chakra-ui/react';
+import { TrashSimple } from '@phosphor-icons/react';
+import { useKeyPress } from '@react-typed-hooks/use-key-press';
 
 // Delete icon with a confirmation modal
 export const ButtonDeleteWithConfirm: React.FC<{
   callback: () => void;
   modalHeader?: string;
-}> = ({ callback, modalHeader = "Confirm deletion?" }) => {
+  iconColor?: string;
+}> = ({ callback, modalHeader = "Confirm deletion?", iconColor }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onClickDelete = useCallback(() => {
@@ -39,7 +44,7 @@ export const ButtonDeleteWithConfirm: React.FC<{
 
   return (
     <>
-      <Icon as={TrashSimple} aria-label="delete" onClick={onOpen} />
+      <Icon color={iconColor} as={TrashSimple} aria-label="delete" onClick={onOpen} />
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>

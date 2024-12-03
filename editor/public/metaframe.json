@@ -1,16 +1,6 @@
 {
-	"version": "0.3",
+	"version": "1",
 	"metadata": {
 		"title": "Javascript Metaframe"
-	},
-	"inputs": {
-		"*": {
-			"type": "application/octet-stream:base64"
-		}
-	},
-    "outputs": {
-		"*": {
-			"type": "application/octet-stream:base64"
-		}
 	}
 }

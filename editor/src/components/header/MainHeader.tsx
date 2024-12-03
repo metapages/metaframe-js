@@ -2,8 +2,8 @@ import React from "react";
 
 import { useStore } from "/@/store";
 
-import {Box, HStack, Icon, Button, Flex, Tooltip, useMediaQuery } from "@chakra-ui/react";
-import { useHashParam } from "@metapages/hash-query";
+import {Box, HStack, Icon, Button, Tooltip, useMediaQuery } from "@chakra-ui/react";
+import { useHashParamBoolean } from "@metapages/hash-query";
 import { Gear, X, QuestionMark } from "@phosphor-icons/react";
 import { ButtonCopyExternalLink } from "./components/ButtonCopyExternalLink";
 import { ButtonGotoExternalLink } from "./components/ButtonGotoExternalLink";
@@ -14,7 +14,7 @@ export const capitalize = (str: string): string => {
 };
 
 export const MainHeader: React.FC = () => {
-  const [_edit, setEdit] = useHashParam("edit", "true");
+  const [_edit, setEdit] = useHashParamBoolean("edit");
   const [isLargerThan400] = useMediaQuery("(min-width: 400px)");
 
   // only show the edit button if the command points to a script in the inputs
@@ -41,7 +41,7 @@ export const MainHeader: React.FC = () => {
   if (!isLargerThan400) {
     return <HStack p={5} justify={"flex-end"} minW={'100%'} h={"headerHeight"} bg={"gray.100"} borderBottom={"1px"}>
       {icon(Gear, "settings", () => setShownPanel(shownPanel === "settings" ? null : "settings"), true)}
-      {icon(X, "close", () => setEdit("false"))}
+      {icon(X, "close", () => setEdit(false))}
     </HStack> 
   }
 
@@ -53,7 +53,7 @@ export const MainHeader: React.FC = () => {
         {icon(QuestionMark, "docs", () => setShownPanel(shownPanel === "docs" ? null : "docs"), true)}
         <ButtonCopyExternalLink/>
         <ButtonGotoExternalLink />
-        {icon(X, "close", () => setEdit("false"))}
+        {icon(X, "close", () => setEdit(false))}
       </HStack>
     </HStack>
   );

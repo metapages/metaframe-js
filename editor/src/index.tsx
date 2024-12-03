@@ -1,14 +1,13 @@
-import "@fontsource-variable/jetbrains-mono";
+import '@fontsource-variable/jetbrains-mono';
+
 import { StrictMode } from 'react';
 
 import { App } from '/@/App';
+import { mfTheme } from '/@/styles/theme';
 import { createRoot } from 'react-dom/client';
-import { mfTheme } from "/@/styles/theme";
 
-import {
-  ChakraProvider,
-} from '@chakra-ui/react';
-import { WithMetaframe } from '@metapages/metaframe-hook';
+import { ChakraProvider } from '@chakra-ui/react';
+import { WithMetaframe } from '@metapages/metapage-react';
 
 const container = document.getElementById("root");
 const root = createRoot(container!);

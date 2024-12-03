@@ -160,8 +160,30 @@
       }
     </style>
 
-    <!-- Misc generic and specific functions -->
-    <script>
+  </head>
+  <body>
+    <button id="menu-button">
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="#818382" viewBox="0 0 256 256"><path d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z"></path></svg>
+      <span>Edit</span>
+    </button>
+
+    <div id="root" class="root borderFatSolidGreen transparent"></div>
+    <div id="editor-root" class="editor-container-hidden borderDashedPurple transparent"></div>
+
+    <script type="module">
+      import {
+        getUrlHashParamsFromHashString,
+        blobFromBase64String,
+        getHashParamValueJsonFromWindow,
+        setHashParamValueJsonInHashString,
+        setHashParamInWindow,
+      } from "https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.6.5";
+      import {
+        Metapage,
+        Metaframe,
+        isIframe,
+      } from "https://cdn.jsdelivr.net/npm/@metapages/metapage@1.4.1";
+
       globalThis.logStdout = (s) => {
         const root = document.getElementById("root");
         const pre = document.createElement("pre");
@@ -180,166 +202,7 @@
         root.appendChild(pre);
         root.scrollTop = root.scrollHeight;
       };
-
-    </script>
-
-    <!-- Manually converted ts-js from https://github.com/metapages/hash-query/blob/main/src/lib/util.ts -->
-    <script>
-      const isIframe = () => {
-        //http://stackoverflow.com/questions/326069/how-to-identify-if-a-webpage-is-being-loaded-inside-an-iframe-or-directly-into-t
-        try {
-          return window !== window.top;
-        } catch (ignored) {
-          return false;
-        }
-      };
-
-      const blobToBase64String = (blob) => {
-        return btoa(encodeURIComponent(JSON.stringify(blob)));
-      };
-
-      const blobFromBase64String = (value) => {
-        if (value && value.length > 0) {
-          const blob = JSON.parse(decodeURIComponent(atob(value)));
-          return blob;
-        }
-        return undefined;
-      };
-
-      // Get everything after # then after ?
-      const getUrlHashParams = (url) => {
-        const urlBlob = new URL(url);
-        return getUrlHashParamsFromHashString(urlBlob.hash);
-      };
-
-      const getUrlHashParamsFromHashString = (hash) => {
-        let hashString = hash;
-        while (hashString.startsWith("#")) {
-          hashString = hashString.substring(1);
-        }
-
-        const queryIndex = hashString.indexOf("?");
-        if (queryIndex === -1) {
-          return [hashString, {}];
-        }
-        const preHashString = hashString.substring(0, queryIndex);
-        hashString = hashString.substring(queryIndex + 1);
-        const hashObject = {};
-        hashString
-          .split("&")
-          .filter((s) => s.length > 0)
-          .map((s) => {
-            const dividerIndex = s.indexOf("=");
-            if (dividerIndex === -1) {
-              return [s, ""];
-            }
-            const key = s.substring(0, dividerIndex);
-            const value = s.substring(dividerIndex + 1);
-            return [key, value];
-          })
-          .forEach(([key, value]) => {
-            hashObject[key] = value;
-          });
-
-        Object.keys(hashObject).forEach((key) => {
-          try {
-            hashObject[key] = decodeURI(hashObject[key]);
-          } catch (ignored) {
-            hashObject[key] = hashObject[key];
-          }
-        });
-        return [preHashString, hashObject];
-      };
-
-      const getHashParamValue = (url, key) => {
-        const [_, hashParams] = getUrlHashParams(url);
-        return hashParams[key];
-      };
-
-      const getHashParamValueJson = (url, key) => {
-        const valueString = getHashParamValue(url, key);
-        if (valueString && valueString !== "") {
-          const value = blobFromBase64String(valueString);
-          return value;
-        }
-        return;
-      };
-
-      const getHashParamValueJsonFromWindow = (key) => {
-        return getHashParamValueJson(window.location.href, key);
-      };
-
-      const setHashParamInWindow = (key, value, opts) => {
-        const hash = window.location.hash.startsWith("#")
-          ? window.location.hash.substring(1)
-          : window.location.hash;
-        const newHash = setHashValueInHashString(hash, key, value);
-        if (newHash === hash) {
-          return;
-        }
-
-        if (opts?.modifyHistory) {
-          // adds to browser history, so affects back button
-          // fires "hashchange" event
-          window.location.hash = newHash;
-        } else {
-          // The following will NOT work to trigger a 'hashchange' event:
-          // Replace the state so the back button works correctly
-          window.history.replaceState(
-            null,
-            document.title,
-            `${window.location.pathname}${window.location.search}${
-              newHash.startsWith("#") ? "" : "#"
-            }${newHash}`
-          );
-          // Manually trigger a hashchange event:
-          // I don't know how to add the previous and new url parameters
-          window.dispatchEvent(new HashChangeEvent("hashchange"));
-        }
-      };
-
-      // returns hash string
-      const setHashValueInHashString = (hash, key, value) => {
-        const [preHashParamString, hashObject] =
-          getUrlHashParamsFromHashString(hash);
-
-        let changed = false;
-        if (
-          (hashObject.hasOwnProperty(key) && value === null) ||
-          value === undefined
-        ) {
-          delete hashObject[key];
-          changed = true;
-        } else {
-          if (hashObject[key] !== value) {
-            hashObject[key] = value;
-            changed = true;
-          }
-        }
-
-        // don't do work if unneeded
-        if (!changed) {
-          return hash;
-        }
-
-        const keys = Object.keys(hashObject);
-        keys.sort();
-        const hashStringNew = keys
-          .map((key, i) => {
-            return `${key}=${encodeURI(hashObject[key])}`;
-          })
-          .join("&");
-        // replace after the ? but keep before that
-        return `${preHashParamString}?${hashStringNew}`;
-      };
-
-      const setHashValueJsonInHashString = (hash, key, value) => {
-        const valueString = value ? blobToBase64String(value) : undefined;
-        return setHashValueInHashString(hash, key, valueString);
-      };
-
-
-
+     
       // Ripped from dataref lib. Should be moved to a shared lib
       const resolveDataRef = async (ref) => {
         switch (ref.type) {
@@ -416,9 +279,7 @@
           DataRefTypesSet.has(ref?.type)
         );
       };
-    </script>
 
-    <script>
       const refreshUpdateSvgButton = () => {
         // only show the edit button if we are NOT in an iframe
         // or explicitly edit=true is in the hash params
@@ -514,7 +375,7 @@
           newUrl.searchParams.delete("modules");
 
           let currentHash = newUrl.hash;
-          currentHash = setHashValueJsonInHashString(
+          currentHash = setHashParamValueJsonInHashString(
             currentHash,
             "modules",
             modules
@@ -522,7 +383,7 @@
           // TODO This works because we don't currently use config, but this will break stuff later
           v1Config = v1Config || {};
           delete v1Config.modules;
-          currentHash = setHashValueJsonInHashString(
+          currentHash = setHashParamValueJsonInHashString(
             currentHash,
             "c",
             Object.keys(v1Config).length === 0 ? undefined : v1Config
@@ -734,6 +595,7 @@
             console.error("Error running globalThis.scriptUnload()", err);
           }
         }
+
         // Older user scripts set this themselves. To handle those old metaframes
         // make sure we clear it out here to detect if the user set it
         globalThis.scriptUnload = null;
@@ -885,13 +747,6 @@
           }
         }
       };
-    </script>
-
-    <script type="module">
-      import {
-        Metapage,
-        Metaframe,
-      } from "https://cdn.jsdelivr.net/npm/@metapages/metapage@1.0.8";
 
       // Examine URL, and add modules
       globalThis.metapage = {
@@ -904,18 +759,14 @@
       }
       var metaframe = globalThis.metaframe;
 
+      metaframe.connected().then(() => metaframe.log("connected"));
+
       // document.addEventListener("DOMContentLoaded", runJsFromUrl);
       globalThis.addEventListener("load", runJsFromUrl);
       // reload on hash changes
       globalThis.addEventListener("hashchange", runJsFromUrl, false);
-    </script>
-  </head>
-  <body>
-    <button id="menu-button">
-      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="#818382" viewBox="0 0 256 256"><path d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z"></path></svg>
-      <span>Edit</span>
-    </button>
-    <script>
+
+
       const metapageDef = {
         metaframes: {
           editor: {
@@ -936,7 +787,7 @@
           }
           refreshUpdateSvgButton();
 
-          setHashParamInWindow("edit", false);
+          setHashParamInWindow("edit", undefined);
           document.getElementById("root").className =
             "root borderFatSolidGreen";
           document.getElementById("editor-root").className =
@@ -1016,9 +867,6 @@
           onMenuClick();
         });
       }
-
     </script>
-    <div id="root" class="root borderFatSolidGreen transparent"></div>
-    <div id="editor-root" class="editor-container-hidden borderDashedPurple transparent"></div>
   </body>
 </html>

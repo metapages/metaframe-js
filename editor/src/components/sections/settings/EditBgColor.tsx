@@ -1,11 +1,12 @@
 import { useCallback } from 'react';
-import { useFormik } from "formik";
-import * as yup from "yup";
+
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 
 import {
-  VStack,
-  Text,
   Input,
+  Text,
+  VStack,
 } from '@chakra-ui/react';
 import { useHashParam } from '@metapages/hash-query';
 
@@ -37,7 +38,7 @@ export const EditBgColor: React.FC = () => {
 
 
   return (
-    <VStack align="flex-start" w="100%" minW={'100%'}>
+    <VStack align="flex-start" w="100%" minW={'100%'} p={6}>
       <Text fontWeight={700}>Default Background Color</Text>
       <form onSubmit={formik.handleSubmit}>
         <Input

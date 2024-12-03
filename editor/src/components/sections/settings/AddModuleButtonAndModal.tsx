@@ -18,7 +18,6 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { Plus } from "@phosphor-icons/react";
-import {useIsReadOnly} from "/@/hooks/isReadOnly";
 
 const validationSchema = yup.object({
   modulePath: yup.string(),
@@ -30,7 +29,7 @@ export const AddModuleButtonAndModal: React.FC<{
   text?: string;
 }> = ({ add, text }) => {
   const { isOpen, onClose, onToggle } = useDisclosure();
-  const isReadOnly = useIsReadOnly();
+
   const onSubmit = useCallback(
     (values: FormType) => {
       if (values.modulePath) {
@@ -56,16 +55,7 @@ export const AddModuleButtonAndModal: React.FC<{
 
   return (
     <>
-      <HStack
-          opacity={isReadOnly ? 0.5 : 1}
-          cursor={isReadOnly ? 'not-allowed' : 'pointer'}
-          onClick={() => {
-            if (!isReadOnly) {
-              onToggle();
-            }
-          }}
-          aria-label="add input"
-      >
+      <HStack onClick={onToggle} aria-label="add input">
         <Icon boxSize={6} as={Plus} />
         {text ? <Text size={"med"}>{text}</Text> : null}
       </HStack>

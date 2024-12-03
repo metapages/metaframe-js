@@ -3,8 +3,8 @@ import { useCallback } from 'react';
 import {
   Radio,
   RadioGroup,
-  VStack,
   Text,
+  VStack,
 } from '@chakra-ui/react';
 import { useHashParam } from '@metapages/hash-query';
 
@@ -22,7 +22,7 @@ export const EditButtonSettings: React.FC = () => {
   );
 
   return (
-    <VStack align="flex-start" w="100%" minW={'100%'}>
+    <VStack align="flex-start" w="100%" minW={'100%'} p={6}>
       <Text fontWeight={700}>Button Visibility</Text>
       <RadioGroup id="mode" onChange={handleRadio} value={mode || DefaultMode} w="100%">
         <VStack alignItems={'flex-start'} w={'100%'} spacing={3} >

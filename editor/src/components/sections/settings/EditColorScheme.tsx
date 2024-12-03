@@ -1,8 +1,23 @@
+import { useCallback } from 'react';
+
+import {
+  Options,
+  Theme,
+  useOptions,
+} from '/@/hooks/useOptions';
+import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { FormControl, RadioGroup, VStack, Radio, FormLabel, Checkbox, Button, Text } from "@chakra-ui/react";
-import { Options, useOptions, Theme } from "/@/hooks/useOptions";
-import { useFormik } from "formik";
-import { useCallback } from "react";
+
+import {
+  Button,
+  Checkbox,
+  FormControl,
+  FormLabel,
+  Radio,
+  RadioGroup,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 
 export const defaultOptions: Options = {
   theme: "light",
@@ -48,7 +63,7 @@ export const EditColorScheme: React.FC = () => {
   });
 
   return <form onSubmit={formik.handleSubmit}>
-  <FormControl pb="1rem">
+  <FormControl pb="1rem" p={6}>
     <Text fontWeight={700} pb={2}>
       {OptionDescription["theme"]}
     </Text>
