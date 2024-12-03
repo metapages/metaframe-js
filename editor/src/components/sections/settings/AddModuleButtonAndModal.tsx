@@ -1,11 +1,10 @@
-import React, { useCallback } from "react";
+import React, { useCallback } from 'react';
 
-import { useFormik } from "formik";
-import * as yup from "yup";
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 
 import {
   Button,
-  HStack,
   Icon,
   Input,
   Modal,
@@ -16,8 +15,9 @@ import {
   ModalOverlay,
   Text,
   useDisclosure,
-} from "@chakra-ui/react";
-import { Plus } from "@phosphor-icons/react";
+} from '@chakra-ui/react';
+import { Plus } from '@phosphor-icons/react';
+import {useIsReadOnly} from "/@/hooks/isReadOnly";
 
 const validationSchema = yup.object({
   modulePath: yup.string(),
@@ -29,7 +29,7 @@ export const AddModuleButtonAndModal: React.FC<{
   text?: string;
 }> = ({ add, text }) => {
   const { isOpen, onClose, onToggle } = useDisclosure();
-
+  const isReadOnly = useIsReadOnly();
   const onSubmit = useCallback(
     (values: FormType) => {
       if (values.modulePath) {
@@ -37,7 +37,7 @@ export const AddModuleButtonAndModal: React.FC<{
       }
       onClose();
     },
-    [onClose, add],
+    [onClose, add]
   );
 
   const formik = useFormik({
@@ -55,10 +55,16 @@ export const AddModuleButtonAndModal: React.FC<{
 
   return (
     <>
-      <HStack onClick={onToggle} aria-label="add input">
-        <Icon boxSize={6} as={Plus} />
-        {text ? <Text size={"med"}>{text}</Text> : null}
-      </HStack>
+      <Button
+        variant="ghost"
+        leftIcon={<Icon as={Plus} boxSize={6} />}
+        onClick={onToggle}
+        aria-label="add module"
+        disabled={isReadOnly}
+      >
+        {text}
+      </Button>
+
       <Modal isOpen={isOpen} onClose={closeAndClear}>
         <ModalOverlay />
         <ModalContent>
