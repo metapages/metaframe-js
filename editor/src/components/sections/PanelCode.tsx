@@ -54,20 +54,11 @@ const LocalEditor: React.FC<{
   );
 
   return (
-  //  <Box id={"BORK"} overflow={'hidden'} h={`calc(100vh - 3rem)`} minH={`calc(100vh - 3rem)`} width={"100%"} bg={'white'}>
+   <Box overflow={'hidden'} h={'panelContentHeight'} minH={`calc(100vh - 3rem)`} w={"100%"} bg={'white'}>
       <MetaframeStandaloneComponent
         url={urlWithOptions()}
         inputs={inputs.current}
         onOutputs={onCodeOutputsUpdate}
-        style={{
-          backgroundColor: 'white',
-          // border: '1px solid red',
-          height: `calc(100vh - 3rem)`,
-          width: '100%',
-          // left: 0,
-          // position: 'absolute',
-          // top: 0,
-        }}
       />
       // {/* <Box id={"BORK2"} h={`100%`}  minHeight={`100%`} width={"100%"} bg={'green'}></Box> */}
     // </Box>
