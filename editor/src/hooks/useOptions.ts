@@ -1,4 +1,4 @@
-import { useHashParamJson } from '@metapages/hash-query';
+import {useHashParamJson} from "@metapages/hash-query/react-hooks";
 
 export type Theme = "light" | "vs-dark" | "system";
 

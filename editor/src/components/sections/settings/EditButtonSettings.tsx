@@ -6,7 +6,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { useHashParam } from '@metapages/hash-query';
+import { useHashParam } from '@metapages/hash-query/react-hooks';
 
 export type Modes = "visible" | "invisible" | "disabled";
 export const DefaultMode :Modes = "invisible";

@@ -6,12 +6,10 @@ import stringify from "safe-stable-stringify";
 
 import { useMetaframeUrl } from '/@/hooks/useMetaframeUrl';
 
-import { useHashParamBase64 } from '@metapages/hash-query';
+import { useHashParamBoolean, useHashParamBase64 } from '@metapages/hash-query/react-hooks';
 import { MetaframeInputMap } from '@metapages/metapage';
 import { MetaframeStandaloneComponent } from '@metapages/metapage-react';
-import { Box } from '@chakra-ui/react';
 import { useOptions } from '/@/hooks/useOptions';
-import { useIsReadOnly } from "/@/hooks/isReadOnly";
 
 export const encodeOptions = (options: any): string => {
   const text: string = stringify(options) || "";
@@ -35,7 +33,7 @@ const LocalEditor: React.FC<{
   // only use the code prop initially, but then ignore so we don't get clobbering
   const codeInternal = useRef<string>(code);
   const inputs = useRef<{ text: string }>({ text: codeInternal.current });
-  const isReadOnly = useIsReadOnly()
+  const [isReadOnly] = useHashParamBoolean("readonly", false);
 
   const urlWithOptions = () => {
     const options =  encodeOptions({

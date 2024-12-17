@@ -17,7 +17,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { Plus } from '@phosphor-icons/react';
-import {useIsReadOnly} from "/@/hooks/isReadOnly";
+import {useHashParamBoolean} from "@metapages/hash-query/react-hooks";
 
 const validationSchema = yup.object({
   modulePath: yup.string(),
@@ -29,7 +29,7 @@ export const AddModuleButtonAndModal: React.FC<{
   text?: string;
 }> = ({ add, text }) => {
   const { isOpen, onClose, onToggle } = useDisclosure();
-  const isReadOnly = useIsReadOnly();
+  const [isReadOnly] = useHashParamBoolean("readonly", undefined)
   const onSubmit = useCallback(
     (values: FormType) => {
       if (values.modulePath) {

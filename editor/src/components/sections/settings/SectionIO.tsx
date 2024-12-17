@@ -25,10 +25,9 @@ import {
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import { useHashParamJson } from "@metapages/hash-query";
+import {useHashParamBoolean, useHashParamJson} from "@metapages/hash-query/react-hooks";
 import { isEmptyMetaframeDefinition, MetaframeDefinitionV1 } from "@metapages/metapage";
 import { DownloadSimple, Plus, UploadSimple } from "@phosphor-icons/react";
-import {useIsReadOnly} from "/@/hooks/isReadOnly";
 
 import { ButtonDeleteWithConfirm } from "./ButtonDeleteWithConfirm";
 
@@ -44,7 +43,7 @@ export const SectionIO: React.FC = () => {
   const [definition, setDefinition] = useHashParamJson<
     MetaframeDefinitionV1 | undefined
   >("definition");
-  const isReadOnly = useIsReadOnly();
+  const [isReadOnly] = useHashParamBoolean("readonly", undefined);
 
   const deleteInput = useCallback(
     (isInput: boolean, name: string) => {

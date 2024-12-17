@@ -8,7 +8,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { useHashParamJson } from '@metapages/hash-query';
+import { useHashParamJson } from '@metapages/hash-query/react-hooks';
 import { AddModuleButtonAndModal } from './AddModuleButtonAndModal';
 import { ModuleRow } from './ModuleRow';
 

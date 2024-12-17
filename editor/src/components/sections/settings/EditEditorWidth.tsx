@@ -8,7 +8,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { useHashParam } from '@metapages/hash-query';
+import { useHashParam } from '@metapages/hash-query/react-hooks';
 
 const validationSchema = yup.object({
   editorWidth: yup.string(),

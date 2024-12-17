@@ -3,7 +3,7 @@ import React from "react";
 import { useStore } from "/@/store";
 
 import {Box, HStack, Icon, Button, Tooltip, useMediaQuery } from "@chakra-ui/react";
-import { useHashParamBoolean } from "@metapages/hash-query";
+import { useHashParamBoolean } from "@metapages/hash-query/react-hooks";
 import { Gear, X, QuestionMark } from "@phosphor-icons/react";
 import { ButtonCopyExternalLink } from "./components/ButtonCopyExternalLink";
 import { ButtonGotoExternalLink } from "./components/ButtonGotoExternalLink";
