@@ -6,10 +6,9 @@ import stringify from "safe-stable-stringify";
 
 import { useMetaframeUrl } from '/@/hooks/useMetaframeUrl';
 
-import { useHashParamBase64 } from '@metapages/hash-query';
+import { useHashParamBoolean, useHashParamBase64 } from '@metapages/hash-query/react-hooks';
 import { MetaframeInputMap } from '@metapages/metapage';
 import { MetaframeStandaloneComponent } from '@metapages/metapage-react';
-import { Box } from '@chakra-ui/react';
 import { useOptions } from '/@/hooks/useOptions';
 
 export const encodeOptions = (options: any): string => {
@@ -34,6 +33,7 @@ const LocalEditor: React.FC<{
   // only use the code prop initially, but then ignore so we don't get clobbering
   const codeInternal = useRef<string>(code);
   const inputs = useRef<{ text: string }>({ text: codeInternal.current });
+  const [isReadOnly] = useHashParamBoolean("readonly", false);
 
   const urlWithOptions = () => {
     const options =  encodeOptions({
@@ -41,6 +41,7 @@ const LocalEditor: React.FC<{
       hidemenuififrame: true,
       mode: "javascript",
       theme: themeOptions?.theme || "vs-light",
+      readOnly: isReadOnly
     });
     return `https://editor.mtfm.io/#?hm=disabled&options=${options}`
   }
@@ -53,23 +54,20 @@ const LocalEditor: React.FC<{
   );
 
   return (
-  //  <Box id={"BORK"} overflow={'hidden'} h={`calc(100vh - 3rem)`} minH={`calc(100vh - 3rem)`} width={"100%"} bg={'white'}>
       <MetaframeStandaloneComponent
-        url={urlWithOptions()}
-        inputs={inputs.current}
-        onOutputs={onCodeOutputsUpdate}
-        style={{
-          backgroundColor: 'white',
-          // border: '1px solid red',
-          height: `calc(100vh - 3rem)`,
-          width: '100%',
-          // left: 0,
-          // position: 'absolute',
-          // top: 0,
-        }}
+          url={urlWithOptions()}
+          inputs={inputs.current}
+          onOutputs={onCodeOutputsUpdate}
+          style={{
+            backgroundColor: 'white',
+            // border: '1px solid red',
+            height: `calc(100vh - 3rem)`,
+            width: '100%',
+            // left: 0,
+            // position: 'absolute',
+            // top: 0,
+          }}
       />
-      // {/* <Box id={"BORK2"} h={`100%`}  minHeight={`100%`} width={"100%"} bg={'green'}></Box> */}
-    // </Box>
   );
 };
 // overflow={'hidden'}

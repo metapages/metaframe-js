@@ -25,7 +25,7 @@ import {
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import { useHashParamJson } from "@metapages/hash-query";
+import {useHashParamBoolean, useHashParamJson} from "@metapages/hash-query/react-hooks";
 import { isEmptyMetaframeDefinition, MetaframeDefinitionV1 } from "@metapages/metapage";
 import { DownloadSimple, Plus, UploadSimple } from "@phosphor-icons/react";
 
@@ -43,6 +43,7 @@ export const SectionIO: React.FC = () => {
   const [definition, setDefinition] = useHashParamJson<
     MetaframeDefinitionV1 | undefined
   >("definition");
+  const [isReadOnly] = useHashParamBoolean("readonly", undefined);
 
   const deleteInput = useCallback(
     (isInput: boolean, name: string) => {
@@ -127,6 +128,7 @@ export const SectionIO: React.FC = () => {
               leftIcon={<Icon as={DownloadSimple} boxSize={6} />}
               rightIcon={<Icon as={Plus} boxSize={6} />}
               onClick={toggleInputModal}
+              disabled={isReadOnly}
               aria-label="add input"
             >
               Inputs
@@ -156,6 +158,7 @@ export const SectionIO: React.FC = () => {
               rightIcon={<Icon as={Plus} boxSize={6} />}
               onClick={toggleOutputModal}
               aria-label="add output"
+              disabled={isReadOnly}
             >
               Outputs
             </Button>

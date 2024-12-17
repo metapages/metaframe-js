@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { Link } from "@phosphor-icons/react";
 import {
-  setHashValueInHashString,
+  setHashParamValueInUrl
 } from '@metapages/hash-query';
 
 export const ButtonCopyExternalLink: React.FC = () => {
@@ -20,7 +20,7 @@ export const ButtonCopyExternalLink: React.FC = () => {
   useEffect(() => {
     if (!url) return;
     const isLocal = window.location.hostname.includes('localhost');
-    let newUrl = setHashValueInHashString(url, 'edit', undefined)
+    let newUrl = setHashParamValueInUrl(url, 'edit', undefined)
     if (isLocal) {
       // TODO: swap localhost in for url val, useMetaframeUrl uses env variables to construct the path
       setUrlForCopy(newUrl);

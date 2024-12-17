@@ -18,6 +18,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
+import {useHashParamBoolean} from "@metapages/hash-query/react-hooks";
 
 export const defaultOptions: Options = {
   theme: "light",
@@ -40,6 +41,7 @@ interface FormType extends yup.InferType<typeof validationSchema> {}
 
 export const EditColorScheme: React.FC = () => {
   const [options, setOptions] = useOptions();
+  const [isReadOnly] = useHashParamBoolean('readonly', undefined);
 
   const onSubmit = useCallback(
     (values: FormType) => {
@@ -69,6 +71,7 @@ export const EditColorScheme: React.FC = () => {
     </Text>
     <RadioGroup
       id="theme"
+      isDisabled={isReadOnly}
       onChange={(e) => {
         // currently RadioGroup needs this to work
         formik.setFieldValue("theme", e);
