@@ -8,7 +8,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { useHashParam } from '@metapages/hash-query/react-hooks';
+import {useHashParam, useHashParamBoolean} from '@metapages/hash-query/react-hooks';
 
 const validationSchema = yup.object({
   color: yup.string(),
@@ -18,6 +18,7 @@ interface FormType extends yup.InferType<typeof validationSchema> {}
 
 export const EditBgColor: React.FC = () => {
   const [bgColor, setbgColor] = useHashParam("bgColor", undefined);
+  const [isReadOnly] = useHashParamBoolean('readonly', undefined);
 
   const onSubmit = useCallback(
     (values: FormType) => {
@@ -43,6 +44,7 @@ export const EditBgColor: React.FC = () => {
       <form onSubmit={formik.handleSubmit}>
         <Input
           id="color"
+          isDisabled={isReadOnly}
           name="color"
           type="text"
           onChange={formik.handleChange}
