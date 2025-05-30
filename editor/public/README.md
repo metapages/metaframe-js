@@ -73,9 +73,17 @@ You can also just get it with:
 document.getElementById("root")
 ```
 
-### Window resize
+### Height / width / window resize
 
-Simply export a function (arrow function also good 👍) called `onResize`. This will be called when either the window resizes event and/or the local `div` element resizes:
+To get the root element width/height:
+
+```javascript
+const width = root.getBoundingClientRect().width;
+const height = root.getBoundingClientRect().height;
+```
+
+
+For automatically resizing: export a function (arrow function also good 👍) called `onResize`. This will be called when either the window resizes event and/or the local `div` element resizes:
 
 ```javascript
 // regular js function
@@ -86,6 +94,22 @@ export function onResize(width, height) {
 export const onResize = (width, height) => {
   // Your own code here, handling the resize of the root div
 }
+```
+
+### Prevent scroll events from propagating to the parent window
+
+Often if you use (wheel) scroll events to interact with content, the event is also propagated to the parent window, scrolling the entire metapage, which is almost always undesired.
+
+To prevent this, on the dom element you intercept wheel scroll events, add this code to prevent the event from propagating up. Replace `myContainer` with your dom element:
+
+```javascript
+// prevent parent from scrolling when zooming
+function maybeScroll(event) {
+  if (myContainer.contains(event.target)) {
+    event.preventDefault();
+  } 
+}
+window.addEventListener('wheel', maybeScroll, {passive: false})
 ```
 
 ### Unload/cleanup
