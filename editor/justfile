@@ -47,7 +47,7 @@ dev server="js.mtfm.io:443": _css-debug-layer-setup _mkcert _ensure_npm_modules
         VITE_SERVER_ORIGIN={{server}}
         echo "Browser development pointing to: ${VITE_SERVER_ORIGIN}"
     fi
-    deno run --allow-all --unstable https://deno.land/x/metapages@v0.0.17/exec/open_url.ts https://metapages.github.io/load-page-when-available/?url=https://${APP_FQDN}:${APP_PORT_BROWSER}
+    deno run --allow-all https://deno.land/x/metapages@v0.0.17/exec/open_url.ts https://metapages.github.io/load-page-when-available/?url=https://${APP_FQDN}:${APP_PORT_BROWSER}
     npm i
     just _tsc "--build"
     export HOST={{APP_FQDN}}
@@ -65,7 +65,7 @@ build BASE="editor": _css-debug-layer-setup _ensure_npm_modules (_tsc "--build")
     PORT={{APP_PORT}} \
     OUTDIR=dist \
     BASE={{BASE}} \
-        deno run --allow-all --unstable {{DENO_SOURCE}}/browser/vite-build.ts 
+        deno run --allow-all {{DENO_SOURCE}}/browser/vite-build.ts 
 
 # typescript check
 @check: _css-debug-layer-setup (_tsc "--build")
@@ -160,7 +160,7 @@ _npm_version npmversionargs="patch":
 # update "gh-pages" branch with the (versioned and default) current build (./docs) (and keeping all previous versions)
 _githubpages_publish:
     VITE_SERVER_ORIGIN={{SERVER_ORIGIN}} \
-        deno run --allow-all --unstable {{DENO_SOURCE}}/browser/gh-pages-publish-to-docs.ts
+        deno run --allow-all {{DENO_SOURCE}}/browser/gh-pages-publish-to-docs.ts
 
 @_ensureGitPorcelain:
-    deno run --allow-all --unstable https://deno.land/x/metapages@v0.0.13/git/git-fail-if-uncommitted-files.ts
+    deno run --allow-all https://deno.land/x/metapages@v0.0.13/git/git-fail-if-uncommitted-files.ts
