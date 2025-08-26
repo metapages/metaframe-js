@@ -67,6 +67,10 @@ build BASE="editor": _css-debug-layer-setup _ensure_npm_modules (_tsc "--build")
     BASE={{BASE}} \
         deno run --allow-all --unstable {{DENO_SOURCE}}/browser/vite-build.ts 
 
+# typescript check
+@check: _css-debug-layer-setup (_tsc "--build")
+    echo -e "✅ {{ green }}TypeScript{{ normal }} check passed"
+
 # Test: currently bare minimum: only building. Need proper test harness.
 @test: _css-debug-layer-setup (_tsc "--build")
     echo "✅ editor typescript compilation"

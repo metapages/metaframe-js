@@ -15,9 +15,8 @@ const validationSchema = yup.object({
 });
 interface FormType extends yup.InferType<typeof validationSchema> {}
 
-
 export const EditEditorWidth: React.FC = () => {
-  const [editorWidth, setEditorWidth] = useHashParam("editorWidth", "80");
+  const [editorWidth, setEditorWidth] = useHashParam("editorWidth", "80ch");
 
   const onSubmit = useCallback(
     (values: FormType) => {
@@ -25,21 +24,20 @@ export const EditEditorWidth: React.FC = () => {
         setEditorWidth(values.editorWidth);
       }
     },
-    [setEditorWidth],
+    [setEditorWidth]
   );
 
   const formik = useFormik({
     initialValues: {
-      editorWidth: editorWidth || '',
+      editorWidth: editorWidth || "",
     },
     onSubmit,
     validationSchema,
   });
 
-
   return (
-    <VStack align="flex-start" w="100%" minW={'100%'} p={6}>
-      <Text fontWeight={700}>Editor Width (ch)</Text>
+    <VStack align="flex-start" w="100%" minW={"100%"} p={6}>
+      <Text fontWeight={700}>Editor Width (e.g. 80ch, 50%. Default unit is 'ch')</Text>
       <form onSubmit={formik.handleSubmit}>
         <Input
           id="editorWidth"

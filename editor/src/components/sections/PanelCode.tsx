@@ -13,16 +13,18 @@ import { MetaframeStandaloneComponent } from '@metapages/metapage-react';
 
 export const encodeOptions = (options: any): string => {
   const text: string = stringify(options) || "";
-  const b64 = btoa(encodeURIComponent(text));
+  const b64 = btoa(text);
   return b64;
 };
 
 export const PanelCode: React.FC = () => {
-  const [code, setCode] = useHashParamBase64("js");
+  let [code, setCode] = useHashParamBase64("js");
   const { url } = useMetaframeUrl();
-  return (
-      url ? <LocalEditor code={code} setCode={setCode} /> : <></>
-  );
+  // deal with bad double encoded data from old version of hash-query
+  if (code && (code.startsWith("%") || (code.indexOf("\n") === -1 && code.indexOf("%") > -1))) {
+    code = decodeURIComponent(code);
+  }
+  return url ? <LocalEditor code={code} setCode={setCode} /> : <></>;
 };
 
 const LocalEditor: React.FC<{
@@ -34,15 +36,15 @@ const LocalEditor: React.FC<{
   const codeInternal = useRef<string>(code);
   const inputs = useRef<{ text: string }>({ text: codeInternal.current });
 
-  const urlWithOptions = () => {
-    const options =  encodeOptions({
+  const urlWithOptions = useCallback(() => {
+    const options = encodeOptions({
       autosend: true,
       hidemenuififrame: true,
       mode: "javascript",
       theme: themeOptions?.theme || "vs-light",
     });
-    return `https://editor.mtfm.io/#?hm=disabled&options=${options}`
-  }
+    return `https://editor.mtfm.io/#?hm=disabled&options=${options}`;
+  }, [themeOptions]);
 
   const onCodeOutputsUpdate = useCallback(
     (outputs: MetaframeInputMap) => {
@@ -52,22 +54,22 @@ const LocalEditor: React.FC<{
   );
 
   return (
-  //  <Box id={"BORK"} overflow={'hidden'} h={`calc(100vh - 3rem)`} minH={`calc(100vh - 3rem)`} width={"100%"} bg={'white'}>
-      <MetaframeStandaloneComponent
-        url={urlWithOptions()}
-        inputs={inputs.current}
-        onOutputs={onCodeOutputsUpdate}
-        style={{
-          backgroundColor: 'white',
-          // border: '1px solid red',
-          height: `calc(100vh - 3rem)`,
-          width: '100%',
-          // left: 0,
-          // position: 'absolute',
-          // top: 0,
-        }}
-      />
-      // {/* <Box id={"BORK2"} h={`100%`}  minHeight={`100%`} width={"100%"} bg={'green'}></Box> */}
+    //  <Box id={"BORK"} overflow={'hidden'} h={`calc(100vh - 3rem)`} minH={`calc(100vh - 3rem)`} width={"100%"} bg={'white'}>
+    <MetaframeStandaloneComponent
+      url={urlWithOptions()}
+      inputs={inputs.current}
+      onOutputs={onCodeOutputsUpdate}
+      style={{
+        backgroundColor: "white",
+        // border: '1px solid red',
+        height: `calc(100vh - 3rem)`,
+        width: "100%",
+        // left: 0,
+        // position: 'absolute',
+        // top: 0,
+      }}
+    />
+    // {/* <Box id={"BORK2"} h={`100%`}  minHeight={`100%`} width={"100%"} bg={'green'}></Box> */}
     // </Box>
   );
 };
