@@ -775,17 +775,24 @@
             );
             resizeObserver.observe(root);
 
+            const options = getHashParamValueJsonFromWindow("options");
+
+            const disableDatarefs = options?.disableDatarefs;
+            
             const handleInputs = async (inputs) => {
               if (module.onInputs) {
                 try {
-                  const datarefKeys = inputs
-                    ? Object.keys(inputs).filter((key) =>
-                        isDataRef(inputs[key])
-                      )
-                    : null;
-                  if (datarefKeys && datarefKeys.length > 0) {
-                    for (const key of datarefKeys) {
-                      inputs[key] = await resolveDataRef(inputs[key]);
+                  // Check if dataref conversion is disabled                  
+                  if (!disableDatarefs) {
+                    const datarefKeys = inputs
+                      ? Object.keys(inputs).filter((key) =>
+                          isDataRef(inputs[key])
+                        )
+                      : null;
+                    if (datarefKeys && datarefKeys.length > 0) {
+                      for (const key of datarefKeys) {
+                        inputs[key] = await resolveDataRef(inputs[key]);
+                      }
                     }
                   }
                   module.onInputs(inputs);
@@ -958,7 +965,7 @@
       }
     </script>
 
-   
+
 </body>
 
 </html>
