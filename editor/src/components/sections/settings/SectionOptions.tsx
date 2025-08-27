@@ -8,6 +8,7 @@ import {
 import { EditBgColor } from './EditBgColor';
 import { EditButtonSettings } from './EditButtonSettings';
 import { EditColorScheme } from './EditColorScheme';
+import { EditDisableDatarefs } from './EditDisableDatarefs';
 import { EditEditorWidth } from './EditEditorWidth';
 
 export const SectionOptions: React.FC = () => {
@@ -26,6 +27,8 @@ export const SectionOptions: React.FC = () => {
         <EditBgColor />
         <Divider />
         <EditEditorWidth />
+        <Divider />
+        <EditDisableDatarefs />
       </VStack>
   );
 };
