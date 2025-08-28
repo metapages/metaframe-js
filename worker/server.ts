@@ -16,26 +16,6 @@ const DEFAULT_METAFRAME_DEFINITION: MetaframeDefinitionV1 = {
   version: MetaframeVersionCurrent,
   metadata: {
     name: "Javascript code runner",
-    // operations: {
-    //   edit: {
-    //     type: "url",
-    //     url: "https://js.mtfm.io/#?edit=1",
-    //     params: [
-    //       {
-    //         from: "js",
-    //         to: "js",
-    //       },
-    //       {
-    //         from: "modules",
-    //         to: "modules",
-    //       },
-    //       {
-    //         from: "c",
-    //         to: "c",
-    //       },
-    //     ],
-    //   },
-    // },
   },
   inputs: {},
   outputs: {},

@@ -201,7 +201,7 @@
         getHashParamValueJsonFromWindow,
         setHashParamValueJsonInHashString,
         setHashParamInWindow,
-      } from "https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.9.6";
+      } from "https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.9.7";
       import {
         Metapage,
         Metaframe,
@@ -421,54 +421,6 @@
       // and listen to the load events
       const ensureModulesLoaded = async () => {
         let modules = getHashParamValueJsonFromWindow("modules");
-        let resetUrlWithFixedModules = false;
-        if (!modules) {
-          let moduleString = new URL(window.location.href).searchParams.get(
-            "modules"
-          );
-          if (moduleString) {
-            modules = JSON.parse(stringFromBase64String(moduleString));
-            resetUrlWithFixedModules = true;
-          }
-        }
-
-        let v1Config;
-        if (!modules) {
-          v1Config = getQueryParamValueJsonFromWindow("c");
-          if (!v1Config) {
-            v1Config = getHashParamValueJsonFromWindow("c");
-          }
-          modules = v1Config?.modules;
-          if (modules) {
-            resetUrlWithFixedModules = true;
-          }
-        }
-
-        if (resetUrlWithFixedModules) {
-          const newUrl = new URL(window.location.href);
-          newUrl.searchParams.delete("c");
-          newUrl.searchParams.delete("modules");
-
-          let currentHash = newUrl.hash;
-          currentHash = setHashParamValueJsonInHashString(
-            currentHash,
-            "modules",
-            modules
-          );
-          // TODO This works because we don't currently use config, but this will break stuff later
-          v1Config = v1Config || {};
-          delete v1Config.modules;
-          currentHash = setHashParamValueJsonInHashString(
-            currentHash,
-            "c",
-            Object.keys(v1Config).length === 0 ? undefined : v1Config
-          );
-          newUrl.hash = currentHash;
-          newUrl.searchParams.delete("v");
-          // drastic, force reload, this could be done better
-          window.history.replaceState(null, document.title, newUrl.href);
-        }
-
         // Load a single script, module, or css, awaiting until done
         const loadModuleOrCss = async (s) => {
           return new Promise((resolve, reject) => {

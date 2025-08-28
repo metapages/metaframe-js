@@ -5,17 +5,13 @@ import React, {
 
 import { useMetaframeUrl } from '/@/hooks/useMetaframeUrl';
 import { useOptions } from '/@/hooks/useOptions';
-import stringify from 'safe-stable-stringify';
 
-import { useHashParamBase64 } from '@metapages/hash-query/react-hooks';
+import {
+  blobToBase64String,
+  useHashParamBase64,
+} from '@metapages/hash-query/react-hooks';
 import { MetaframeInputMap } from '@metapages/metapage';
 import { MetaframeStandaloneComponent } from '@metapages/metapage-react';
-
-export const encodeOptions = (options: any): string => {
-  const text: string = stringify(options) || "";
-  const b64 = btoa(text);
-  return b64;
-};
 
 export const PanelCode: React.FC = () => {
   let [code, setCode] = useHashParamBase64("js");
@@ -37,7 +33,7 @@ const LocalEditor: React.FC<{
   const inputs = useRef<{ text: string }>({ text: codeInternal.current });
 
   const urlWithOptions = useCallback(() => {
-    const options = encodeOptions({
+    const options = blobToBase64String({
       autosend: true,
       hidemenuififrame: true,
       mode: "javascript",
