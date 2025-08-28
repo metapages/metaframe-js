@@ -383,40 +383,6 @@
       // global object to store loading state
       window.__metaframejs = { awaiting: [] };
 
-      const getQueryParamValueJsonFromWindow = (key) => {
-        const url = new URL(window.location.href);
-        const valueString = url.searchParams.get(key);
-
-        if (valueString && valueString !== "") {
-          const value = blobFromBase64String(valueString);
-          return value;
-        }
-        return;
-      };
-
-      const stringFromBase64String = (value) => {
-        if (value && value.length > 0) {
-          try {
-            // https://github.com/metapages/metaframe-js/issues/11
-            while (value.endsWith("%3D")) {
-              value = value.slice(0, -3);
-            }
-            return atob(value);
-          } catch (err) {
-            console.error(err);
-            try {
-              return atob(value);
-            } catch (err) {
-              console.error(err);
-              return undefined;
-            }
-          }
-        }
-        return undefined;
-      };
-
-      // let foundImportMap = false;
-
       // Dynamically add <script> and <link> tags to the document.head
       // and listen to the load events
       const ensureModulesLoaded = async () => {
@@ -608,10 +574,6 @@
         }
 
         return jsFromUrl;
-      };
-
-      const setJsInUrl = (js) => {
-        setHashParamInWindow("js", stringToBase64String(js));
       };
 
       // TODO: do same as above (modules in hash params) for config
