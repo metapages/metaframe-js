@@ -4,8 +4,8 @@ import {
 } from 'react';
 
 import {
+  deleteHashParamFromUrl,
   setHashParamValueBase64EncodedInUrl,
-  setHashParamValueInUrl,
   setHashParamValueJsonInUrl,
   useHashParamBase64,
   useHashParamJson,
@@ -44,8 +44,8 @@ export const useMetaframeUrl = () => {
       url = setHashParamValueBase64EncodedInUrl(url, "js", checkedCode);
     }
     // Remove the c and v hash params since they are set in the searchParams
-      url = setHashParamValueInUrl(url, "c", null);
-      url = setHashParamValueInUrl(url, "v", null);
+      url = deleteHashParamFromUrl(url, "c");
+      url = deleteHashParamFromUrl(url, "v");
     setUrl(url.href);
   }, [code, metaframeDef, modules, setUrl]);
 
