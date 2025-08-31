@@ -27,7 +27,7 @@
     "@fontsource-variable/jetbrains-mono": "^5.1.1",
     "@metapages/hash-query": "^0.9.8",
     "@metapages/metaframe-chakra-theme": "^0.0.16",
-    "@metapages/metapage": "^1.8.13",
+    "@metapages/metapage": "^1.8.17",
     "@metapages/metapage-react": "^0.2.5",
     "@phosphor-icons/react": "^2.1.7",
     "@react-typed-hooks/use-key-press": "^1.0.5",
