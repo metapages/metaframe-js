@@ -683,10 +683,12 @@
               }
             };
 
-            globalThis.addEventListener("resize", ourHandleResize, false);
+            // Theoretically we can not use this but keep this here
+            // just in case
+            // globalThis.addEventListener("resize", ourHandleResize, false);
 
             const resizeObserver = new ResizeObserver(
-              (entries) => ourHandleResize
+              (entries) => ourHandleResize()
             );
             resizeObserver.observe(root);
 
@@ -774,8 +776,13 @@
 
       metaframe.connected().then(() => metaframe.log("connected"));
 
-      // document.addEventListener("DOMContentLoaded", runJsFromUrl);
-      globalThis.addEventListener("load", runJsFromUrl);
+      // Handle Safari timing issue: check if page is already loaded
+      if (document.readyState === 'complete') {
+        runJsFromUrl();
+      } else {
+        globalThis.addEventListener("load", runJsFromUrl);
+      }
+      
       // reload on hash changes
       globalThis.addEventListener("hashchange", runJsFromUrl, false);
 
