@@ -5,9 +5,12 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
+import { CacheManagement } from './CacheManagement';
 import { EditBgColor } from './EditBgColor';
 import { EditButtonSettings } from './EditButtonSettings';
 import { EditColorScheme } from './EditColorScheme';
+import { EditDebugMode } from './EditDebugMode';
+import { EditDisableCache } from './EditDisableCache';
 import { EditDisableDatarefs } from './EditDisableDatarefs';
 import { EditEditorWidth } from './EditEditorWidth';
 
@@ -29,6 +32,12 @@ export const SectionOptions: React.FC = () => {
         <EditEditorWidth />
         <Divider />
         <EditDisableDatarefs />
+        <Divider />
+        <EditDisableCache />
+        <Divider />
+        <EditDebugMode />
+        <Divider />
+        <CacheManagement />
       </VStack>
   );
 };

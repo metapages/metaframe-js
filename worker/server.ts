@@ -34,8 +34,36 @@ const serveIndex = async (ctx: Context) => {
   ctx.response.body = indexHtml;
 };
 
+const serveServiceWorker = async (ctx: Context) => {
+  try {
+    const swJs = await Deno.readTextFile("./sw.js");
+    ctx.response.headers.set("Content-Type", "application/javascript");
+    ctx.response.headers.set("Service-Worker-Allowed", "/");
+    ctx.response.body = swJs;
+  } catch (error) {
+    console.error("Error serving service worker:", error);
+    ctx.response.status = 404;
+    ctx.response.body = "Service worker not found";
+  }
+};
+
+const serveCacheTestUtils = async (ctx: Context) => {
+  try {
+    const testUtilsJs = await Deno.readTextFile("./cache-test-utils.js");
+    ctx.response.headers.set("Content-Type", "application/javascript");
+    ctx.response.headers.set("Cache-Control", "no-cache"); // Don't cache test utilities
+    ctx.response.body = testUtilsJs;
+  } catch (error) {
+    console.error("Error serving cache test utilities:", error);
+    ctx.response.status = 404;
+    ctx.response.body = "Cache test utilities not found";
+  }
+};
+
 router.get("/", serveIndex);
 router.get("/index.html", serveIndex);
+router.get("/sw.js", serveServiceWorker);
+router.get("/cache-test-utils.js", serveCacheTestUtils);
 router.get("/metaframe.json", (ctx: Context) => {
   ctx.response.headers.set("Content-Type", "application/json");
   ctx.response.body = DEFAULT_METAFRAME_DEFINITION_STRING;
