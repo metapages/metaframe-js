@@ -192,6 +192,314 @@
     <div id="root" class="root borderFatSolidGreen transparent"></div>
     <div id="editor-root" class="editor-container-hidden borderDashedPurple transparent"></div>
 
+    <!-- Service Worker Registration and Configuration -->
+    <script id="service-worker-setup" type="module">
+      // Service Worker Configuration - will be set after imports are available
+      globalThis.serviceWorkerConfig = null;
+
+      // Service Worker management functions
+      globalThis.serviceWorkerManager = {
+        registration: null,
+
+        async register() {
+          if ('serviceWorker' in navigator) {
+            try {
+              const registration = await navigator
+                .serviceWorker
+                .register('/sw.js');
+              this.registration = registration;
+              if (
+                globalThis.serviceWorkerConfig
+                ?.enableLogging) {
+                console.log('[SW Manager] Service worker registered:', registration);
+              }
+
+              // Handle service worker updates
+              registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                if (
+                  globalThis.serviceWorkerConfig
+                  ?.enableLogging) {
+                  console.log('[SW Manager] New service worker installing...');
+                }
+
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    if (
+                      globalThis.serviceWorkerConfig
+                      ?.enableLogging) {
+                      console.log('[SW Manager] New service worker installed, will activate on page refresh');
+                      console.log('🔄 Website updated! Refresh the page to get the latest version.');
+                    }
+                  }
+                });
+              });
+
+              // Listen for controller changes (when new SW takes control)
+              navigator
+                .serviceWorker
+                .addEventListener('controllerchange', () => {
+                  if (
+                    globalThis.serviceWorkerConfig
+                    ?.enableLogging) {
+                    console.log('[SW Manager] Service worker updated and active');
+                  }
+                  // Send configuration to new service worker
+                  setTimeout(() => {
+                    this.updateConfig(globalThis.serviceWorkerConfig);
+                  }, 100);
+                });
+
+              // Send initial configuration
+              if (navigator.serviceWorker.controller) {
+                await this.updateConfig(globalThis.serviceWorkerConfig);
+              }
+
+              return registration;
+            } catch (error) {
+              if (
+                globalThis.serviceWorkerConfig
+                ?.enableLogging) {
+                console.error('[SW Manager] Service worker registration failed:', error);
+              }
+              throw error;
+            }
+          } else {
+            if (
+              globalThis.serviceWorkerConfig
+              ?.enableLogging) {
+              console.warn('[SW Manager] Service workers not supported');
+            }
+            throw new Error('Service workers not supported');
+          }
+        },
+
+        async updateConfig(config) {
+          if (!navigator.serviceWorker.controller) {
+            if (
+              globalThis.serviceWorkerConfig
+              ?.enableLogging) {
+              console.warn('[SW Manager] No active service worker to configure');
+            }
+            return;
+          }
+
+          return new Promise((resolve, reject) => {
+            const channel = new MessageChannel();
+            channel.port1.onmessage = (event) => {
+              if (event.data.success) {
+                if (
+                  globalThis.serviceWorkerConfig
+                  ?.enableLogging) {
+                  console.log('[SW Manager] Configuration updated');
+                }
+                resolve(event.data);
+              } else {
+                reject(new Error('Failed to update configuration'));
+              }
+            };
+
+            navigator
+              .serviceWorker
+              .controller
+              .postMessage({
+                type: 'UPDATE_CONFIG',
+                payload: config
+              }, [channel.port2]);
+          });
+        },
+
+        async getConfig() {
+          if (!navigator.serviceWorker.controller) 
+            return null;
+          
+          return new Promise((resolve) => {
+            const channel = new MessageChannel();
+            channel.port1.onmessage = (event) => {
+              resolve(event.data.config);
+            };
+
+            navigator
+              .serviceWorker
+              .controller
+              .postMessage({
+                type: 'GET_CONFIG'
+              }, [channel.port2]);
+          });
+        },
+
+        async clearCache() {
+          if (!navigator.serviceWorker.controller) 
+            return;
+          
+          return new Promise((resolve, reject) => {
+            const channel = new MessageChannel();
+            channel.port1.onmessage = (event) => {
+              if (event.data.success) {
+                console.log('[SW Manager] Cache cleared');
+                resolve();
+              } else {
+                reject(new Error('Failed to clear cache'));
+              }
+            };
+
+            navigator
+              .serviceWorker
+              .controller
+              .postMessage({
+                type: 'CLEAR_CACHE'
+              }, [channel.port2]);
+          });
+        },
+
+        async getCacheInfo() {
+          if (!navigator.serviceWorker.controller) 
+            return null;
+          
+          return new Promise((resolve) => {
+            const channel = new MessageChannel();
+            channel.port1.onmessage = (event) => {
+              resolve(event.data.cacheInfo);
+            };
+
+            navigator
+              .serviceWorker
+              .controller
+              .postMessage({
+                type: 'GET_CACHE_INFO'
+              }, [channel.port2]);
+          });
+        },
+
+        async checkForUpdates() {
+          if (!this.registration) 
+            return false;
+          
+          if (
+            globalThis.serviceWorkerConfig
+            ?.enableLogging) {
+            console.log('[SW Manager] Checking for service worker updates...');
+          }
+          await this
+            .registration
+            .update();
+
+          return new Promise((resolve) => {
+            if (this.registration.installing) {
+              if (
+                globalThis.serviceWorkerConfig
+                ?.enableLogging) {
+                console.log('[SW Manager] Update found, installing...');
+              }
+              resolve(true);
+            } else {
+              if (
+                globalThis.serviceWorkerConfig
+                ?.enableLogging) {
+                console.log('[SW Manager] No updates found');
+              }
+              resolve(false);
+            }
+          });
+        },
+
+        async forceUpdate() {
+          if (!this.registration) 
+            return;
+          
+          if (
+            globalThis.serviceWorkerConfig
+            ?.enableLogging) {
+            console.log('[SW Manager] Forcing service worker update...');
+          }
+          await this
+            .registration
+            .unregister();
+          window
+            .location
+            .reload();
+        }
+      };
+
+      // Initialize service worker on page load
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', async () => {
+          try {
+            await globalThis
+              .serviceWorkerManager
+              .register();
+
+            // Show cache info after service worker is ready
+            setTimeout(() => {
+              if (
+                globalThis.serviceWorkerConfig
+                ?.enableLogging) {
+                console.log(`
+🚀 Metaframe JS with Stale-While-Revalidate Caching (Debug Mode)
+
+Available cache utilities (loaded on-demand):
+• cacheUtils.showCacheInfo() - Show cached resources
+• cacheUtils.clearCache() - Clear all cached resources  
+• cacheUtils.showConfig() - Show current configuration
+• cacheUtils.testCaching() - Test cache functionality
+• cacheUtils.testS3Caching() - Demo AWS S3 URL normalization
+• cacheUtils.checkForUpdates() - Check for website updates
+• cacheUtils.forceUpdate() - Force update and refresh
+
+✨ Features:
+- Content-Type based caching (videos, audio, etc.)
+- AWS S3 pre-signed URL normalization  
+- Lightweight: test utilities load only when used
+- Debug logging enabled via options.debug hash param
+`);
+              }
+            }, 1000);
+          } catch (error) {
+            if (
+              globalThis.serviceWorkerConfig
+              ?.enableLogging) {
+              console.error('[SW Manager] Failed to initialize service worker:', error);
+            }
+          }
+        });
+      } else {
+        // Document already loaded
+        globalThis
+          .serviceWorkerManager
+          .register()
+          .catch(error => {
+            if (
+              globalThis.serviceWorkerConfig
+              ?.enableLogging) {
+              console.error('[SW Manager] Failed to initialize service worker:', error);
+            }
+          });
+      }
+
+      // Add cache status logging to existing fetch monitoring
+      const originalFetch = window.fetch;
+      window.fetch = async function (...args) {
+        const response = await originalFetch.apply(this, args);
+        const cacheStatus = response
+          .headers
+          .get('sw-cache-status');
+        const url = typeof args[0] === 'string'
+          ? args[0]
+          : args[0].url;
+
+        if (cacheStatus && globalThis.serviceWorkerConfig.enableLogging) {
+          const statusEmoji = {
+            'fresh': '✅',
+            'stale': '📡',
+            'miss': '🌐'
+          };
+          console.log(`${statusEmoji[cacheStatus] || '❓'} Cache ${cacheStatus}:`, url);
+        }
+
+        return response;
+      };
+    </script>
+
     <!-- This script is only to load the import map (if any) which must be loaded before the main module script below. -->
     <script id="import-map-loader" type="module">
       import {
@@ -219,6 +527,79 @@
       };
       globalThis.log = logStdout;
 
+      // Lightweight cache utilities loader for console usage
+      globalThis.cacheUtils = {
+        _loaded: false,
+        _loadPromise: null,
+        
+        async _ensureLoaded() {
+          if (this._loaded) return;
+          if (this._loadPromise) return this._loadPromise;
+          
+          this._loadPromise = (async () => {
+            try {
+              const module = await import('/cache-test-utils.js');
+              const testUtils = module.default;
+              
+              // Replace methods with loaded ones
+              Object.assign(this, testUtils);
+              this._loaded = true;
+              
+              if (globalThis.serviceWorkerConfig?.enableLogging) {
+                console.log('🧪 Cache test utilities loaded on-demand');
+              }
+            } catch (error) {
+              console.error('❌ Failed to load cache test utilities:', error);
+              throw error;
+            }
+          })();
+          
+          return this._loadPromise;
+        },
+        
+        async showCacheInfo() {
+          await this._ensureLoaded();
+          return this.showCacheInfo();
+        },
+        
+        async clearCache() {
+          await this._ensureLoaded(); 
+          return this.clearCache();
+        },
+        
+        async showConfig() {
+          await this._ensureLoaded();
+          return this.showConfig();
+        },
+        
+        async testCaching() {
+          await this._ensureLoaded();
+          return this.testCaching();
+        },
+        
+        async testS3Caching() {
+          await this._ensureLoaded();
+          return this.testS3Caching();
+        },
+        
+        async checkForUpdates() {
+          await this._ensureLoaded();
+          return this.checkForUpdates();
+        },
+        
+        async forceUpdate() {
+          await this._ensureLoaded();
+          return this.forceUpdate();
+        },
+        
+        async refreshConfig() {
+          await this._ensureLoaded();
+          return this.refreshConfig();
+        }
+      };
+
+      globalThis.log = logStdout;
+
       globalThis.logStderr = (s) => {
         const root = document.getElementById("root");
         const pre = document.createElement("pre");
@@ -230,6 +611,32 @@
 
 
       globalThis.foundImportMap = false;
+
+      // Service Worker Configuration - based on hash params
+      const getServiceWorkerConfig = () => {
+        const options = getHashParamValueJsonFromWindow("options") || {};
+        
+        
+        return {
+          enableLogging: options.debug || false,
+          staleWhileRevalidateEnabled: !options.disableCache,
+          cacheableUrlPatterns: [
+            // Static assets by file extension
+            /^https?:\/\/.*\.(js|css|html|json|png|jpg|jpeg|gif|svg|woff|woff2|ttf|mp4|webm|ogg|mp3|wav|flac)(\?.*)?$/i,
+            // Known CDNs and package registries
+            /^https?:\/\/cdn\.jsdelivr\.net\/.*$/i,
+            /^https?:\/\/esm\.sh\/.*$/i,
+            /^https?:\/\/deno\.land\/.*$/i,
+            /^https?:\/\/unpkg\.com\/.*$/i,
+            // Metapage assets
+            /^https?:\/\/.*\.metapage\.io\/.*\.(png|jpg|jpeg|gif|svg|mp4|webm)$/i,
+          ],
+          maxCacheAge: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
+        };
+      };
+
+      // Update service worker config
+      globalThis.serviceWorkerConfig = getServiceWorkerConfig();
 
       let modules = getHashParamValueJsonFromWindow("modules");
       if (modules) {
@@ -783,8 +1190,16 @@
         globalThis.addEventListener("load", runJsFromUrl);
       }
       
-      // reload on hash changes
-      globalThis.addEventListener("hashchange", runJsFromUrl, false);
+      // reload on hash changes and refresh service worker config
+      globalThis.addEventListener("hashchange", () => {
+        // Refresh service worker config when hash changes
+        const newConfig = getServiceWorkerConfig();
+        globalThis.serviceWorkerConfig = newConfig;
+        if (globalThis.serviceWorkerManager.registration) {
+          globalThis.serviceWorkerManager.updateConfig(newConfig);
+        }
+        runJsFromUrl();
+      }, false);
 
       const metapageDef = {
         metaframes: {
