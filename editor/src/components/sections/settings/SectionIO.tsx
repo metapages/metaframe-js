@@ -32,6 +32,7 @@ import { useHashParamJson } from '@metapages/hash-query/react-hooks';
 import {
   isEmptyMetaframeDefinition,
   MetaframeDefinitionV1,
+  MetaframeDefinitionV2,
 } from '@metapages/metapage';
 import {
   DownloadSimple,
@@ -51,7 +52,7 @@ export const SectionIO: React.FC = () => {
   const { isOpen, onClose, onToggle } = useDisclosure();
   const [isInput, setIsInput] = useState(true);
   const [definition, setDefinition] = useHashParamJson<
-    MetaframeDefinitionV1 | undefined
+    MetaframeDefinitionV2 | undefined
   >("definition");
 
   const deleteInput = useCallback(

@@ -9,6 +9,7 @@ import {
 import { SectionIO } from './settings/SectionIO';
 import { SectionModules } from './settings/SectionModules';
 import { SectionOptions } from './settings/SectionOptions';
+import { SectionHashParams } from './settings/SectionHashParams';
 
 export const PanelSettings: React.FC = () => {
   return (
@@ -25,9 +26,11 @@ export const PanelSettings: React.FC = () => {
         <PanelHeader title={'settings'}/>
         <VStack h={"calc(100% - 1.5rem)"} gap={3}>
           <SectionModules />
-          <Divider />
+          <Divider borderColor="#DEDEDE"/>
           <SectionIO />
-          <Divider />
+          <Divider borderColor="#DEDEDE"/>
+          <SectionHashParams />
+          <Divider borderColor="#DEDEDE"/>
           {/* <Heading size={'md'}>Options</Heading> */}
           {/* <Div  ider /> */}
           <SectionOptions />
