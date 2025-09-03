@@ -24,19 +24,19 @@ export const SectionOptions: React.FC = () => {
         alignItems="stretch"
       >
         <EditButtonSettings />
-        <Divider />
+        <Divider borderColor="#DEDEDE"/>
         <EditColorScheme />
-        <Divider />
+        <Divider borderColor="#DEDEDE"/>
         <EditBgColor />
-        <Divider />
+        <Divider borderColor="#DEDEDE"/>
         <EditEditorWidth />
-        <Divider />
+        <Divider borderColor="#DEDEDE"/>
         <EditDisableDatarefs />
-        <Divider />
+        <Divider borderColor="#DEDEDE"/>
         <EditDisableCache />
-        <Divider />
+        <Divider borderColor="#DEDEDE"/>
         <EditDebugMode />
-        <Divider />
+        <Divider borderColor="#DEDEDE"/>
         <CacheManagement />
       </VStack>
   );

@@ -8,7 +8,7 @@ import staticFiles from 'https://deno.land/x/static_files@1.1.6/mod.ts';
 import {
   MetaframeDefinitionV1,
   MetaframeVersionCurrent,
-} from 'https://esm.sh/@metapages/metapage@1.1.0';
+} from 'https://esm.sh/@metapages/metapage@1.8.18';
 
 const port: number = parseInt(Deno.env.get("PORT") || "3000");
 
