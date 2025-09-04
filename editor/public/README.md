@@ -1,8 +1,9 @@
 # Javascript embedded in the URL: run and edit 
 
-Run code and edit javascript code in the browser. No server required.
+Edit and run javascript code in the browser. Share and connect the self-contained websites with other chunks of code and visualization.
 
 ### Longer description
+
 Run arbitrary user javascript modules embedded in the URL. Designed for [metapages](https://metapage.io) so you can connect inputs + outputs to other metaframe URLs.
 
 ## Javascript high level
