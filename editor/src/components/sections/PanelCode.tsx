@@ -1,23 +1,24 @@
-import React, {
-  useCallback,
-  useRef,
-} from 'react';
+import React, { useCallback, useRef } from "react";
 
-import { useMetaframeUrl } from '/@/hooks/useMetaframeUrl';
-import { useOptions } from '/@/hooks/useOptions';
+import { useMetaframeUrl } from "/@/hooks/useMetaframeUrl";
+import { useOptions } from "/@/hooks/useOptions";
 
 import {
   blobToBase64String,
   useHashParamBase64,
-} from '@metapages/hash-query/react-hooks';
-import { MetaframeInputMap } from '@metapages/metapage';
-import { MetaframeStandaloneComponent } from '@metapages/metapage-react';
+} from "@metapages/hash-query/react-hooks";
+import { MetaframeInputMap } from "@metapages/metapage";
+import { MetaframeStandaloneComponent } from "@metapages/metapage-react";
 
 export const PanelCode: React.FC = () => {
   let [code, setCode] = useHashParamBase64("js");
   const { url } = useMetaframeUrl();
   // deal with bad double encoded data from old version of hash-query
-  if (code && (code.startsWith("%") || (code.indexOf("\n") === -1 && code.indexOf("%") > -1))) {
+  if (
+    code &&
+    (code.startsWith("%") ||
+      (code.indexOf("\n") === -1 && code.indexOf("%") > -1))
+  ) {
     code = decodeURIComponent(code);
   }
   return url ? <LocalEditor code={code} setCode={setCode} /> : <></>;
@@ -39,7 +40,7 @@ const LocalEditor: React.FC<{
       mode: "javascript",
       theme: themeOptions?.theme || "vs-light",
     });
-    return `https://editor.mtfm.io/#?hm=disabled&options=${options}`;
+    return `https://metaframe-editor.deno.dev/#?hm=disabled&options=${options}`;
   }, [themeOptions]);
 
   const onCodeOutputsUpdate = useCallback(
