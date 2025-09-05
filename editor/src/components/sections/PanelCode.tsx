@@ -40,7 +40,7 @@ const LocalEditor: React.FC<{
       mode: "javascript",
       theme: themeOptions?.theme || "vs-light",
     });
-    return `https://metaframe-editor.deno.dev/#?hm=disabled&options=${options}`;
+    return `https://editor.mtfm.io/#?hm=disabled&options=${options}`;
   }, [themeOptions]);
 
   const onCodeOutputsUpdate = useCallback(
