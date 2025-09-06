@@ -2,5 +2,6 @@
 	"version": "1",
 	"metadata": {
 		"title": "Javascript Metaframe"
-	}
+	},
+	"hashParams": ["js", "options", "definition", "modules", "editorWidth", "edit", "bgColor", "hm"]
 }
