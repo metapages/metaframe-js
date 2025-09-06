@@ -6,20 +6,23 @@ import {
 } from 'https://deno.land/x/oak@v10.2.0/mod.ts';
 import staticFiles from 'https://deno.land/x/static_files@1.1.6/mod.ts';
 import {
-  MetaframeDefinitionV1,
+  MetaframeDefinitionV2,
   MetaframeVersionCurrent,
 } from 'https://esm.sh/@metapages/metapage@1.8.18';
 
 const port: number = parseInt(Deno.env.get("PORT") || "3000");
 
-const DEFAULT_METAFRAME_DEFINITION: MetaframeDefinitionV1 = {
+const DEFAULT_METAFRAME_DEFINITION: MetaframeDefinitionV2 = {
   version: MetaframeVersionCurrent,
   metadata: {
     name: "Javascript code runner",
   },
   inputs: {},
   outputs: {},
+  hashParams: ["js", "options", "definition", "modules", "editorWidth", "edit", "bgColor", "hm"],
 };
+
+
 
 const DEFAULT_METAFRAME_DEFINITION_STRING = JSON.stringify(DEFAULT_METAFRAME_DEFINITION, null, 2);
 
