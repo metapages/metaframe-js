@@ -50,7 +50,6 @@ publish: _ensure_deployctl
   cp -r editor/dist deploy/editor
   cp -r worker/server.ts deploy/
   cp -r worker/index.html deploy/
-  cp -r worker/static deploy/
   cd deploy
   deployctl deploy --project=metaframe-js --prod server.ts
 
