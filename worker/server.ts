@@ -83,13 +83,6 @@ app.addEventListener("listen", ({ hostname, port, secure }) => {
 });
 app.use(oakCors({ origin: "*" }));
 app.use(
-  staticFiles("static", {
-    setHeaders: (headers: Headers) => {
-      headers.set("Access-Control-Allow-Origin", "*");
-    },
-  })
-);
-app.use(
   staticFiles("editor", {
     prefix: "/editor",
     setHeaders: (headers: Headers) => {

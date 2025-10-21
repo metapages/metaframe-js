@@ -13,7 +13,6 @@ import {
 import { useHashParamBoolean } from '@metapages/hash-query/react-hooks';
 import {
   Gear,
-  MagicWand,
   QuestionMark,
   X,
 } from '@phosphor-icons/react';
@@ -63,7 +62,6 @@ export const MainHeader: React.FC = () => {
       <Button mx={5} onClick={() => setShownPanel(null)} variant={"ghost"} _hover={{bg: 'gray.300'}} fontWeight={400} color={'gray.600'}>Javascript</Button>
       <HStack borderLeft={"1px"} right={0} px={4} bg={"gray.100"} justifyContent={"space-around"} h={'headerHeight'} w={'16rem'}>
         {icon(Gear, "settings", () => setShownPanel(shownPanel === "settings" ? null : "settings"), true)}
-        {icon(MagicWand, "llms", () => setShownPanel(shownPanel === "llms" ? null : "llms"), true)}
         {icon(QuestionMark, "docs", () => setShownPanel(shownPanel === "docs" ? null : "docs"), true)}
         <ButtonCopyExternalLink/>
         <ButtonGotoExternalLink />
