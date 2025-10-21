@@ -1,0 +1,133 @@
+/**
+ * ============================================================================
+ * JAVASCRIPT-IN-URL CODE GENERATION GUIDE FOR LLMs
+ * ============================================================================
+ * 
+ * OVERVIEW:
+ * Generate ES6 module code that runs in browser. Inputs/outputs embedded in URL.
+ * 
+ * ============================================================================
+ * CRITICAL CONSTRAINTS
+ * ============================================================================
+ * 
+ * 1. MUST USE ES6 MODULE SYNTAX
+ *    ✅ export function onInputs(inputs) {}
+ *    ✅ export const onInputs = (inputs) => {}
+ *    ❌ function onInputs(inputs) {} // missing export!
+ * 
+ * 2. TOP-LEVEL AWAIT SUPPORTED
+ * 3. "use strict" ADDED AUTOMATICALLY - don't include it
+ * 
+ * ============================================================================
+ * PRE-DEFINED GLOBALS (no import needed)
+ * ============================================================================
+ * 
+ * // Output functions
+ * setOutput("outputName", value);
+ * setOutputs({ output1: "value", output2: 42 });
+ * 
+ * // Logging (writes to display)
+ * log("message");
+ * logStdout("message");
+ * logStderr("error");
+ * 
+ * // Display div (already exists)
+ * root.innerHTML = '<h1>Hello</h1>';
+ * const width = root.getBoundingClientRect().width;
+ * 
+ * OUTPUT TYPES: strings, numbers, booleans, objects, arrays, ArrayBuffers, 
+ * Uint8Array, other typed arrays
+ * 
+ * ============================================================================
+ * REQUIRED EXPORTS
+ * ============================================================================
+ * 
+ * // Handle inputs (required)
+ * export function onInputs(inputs) {
+ *   const data = inputs["input.json"];
+ *   render(data);
+ * }
+ * 
+ * // Handle resize (optional but recommended)
+ * export function onResize(width, height) {
+ *   // Update visualization for new dimensions
+ * }
+ * 
+ * // Cleanup (optional, for dev iterations)
+ * export function cleanup() {
+ *   // Remove listeners, clear intervals
+ * }
+ * 
+ * ============================================================================
+ * COMMON PATTERNS
+ * ============================================================================
+ * 
+ * // PATTERN 1: Visualization
+ * export function onInputs(inputs) {
+ *   const data = inputs["data"];
+ *   root.innerHTML = `<div><h1>${data.title}</h1></div>`;
+ * }
+ * 
+ * // PATTERN 2: Process and output
+ * export async function onInputs(inputs) {
+ *   const processed = inputs["raw"].map(x => x * 2);
+ *   setOutput("result.json", processed);
+ * }
+ * 
+ * // PATTERN 3: External libraries (use CDN with /+esm)
+ * import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm';
+ * 
+ * export function onInputs(inputs) {
+ *   d3.select(root).append('svg').attr('width', 500);
+ * }
+ * 
+ * ============================================================================
+ * KEY DETAILS
+ * ============================================================================
+ * 
+ * - NO NEED to wait for DOMContentLoaded - code runs after page loads
+ * - ALWAYS clear root before rendering: root.innerHTML = ''
+ * - setOutput is fire-and-forget (async, no return value)
+ * 
+ * // Prevent scroll propagation to parent
+ * window.addEventListener('wheel', (e) => {
+ *   if (myDiv.contains(e.target)) e.preventDefault();
+ * }, {passive: false});
+ * 
+ * // Save state in URL hash
+ * import { setHashParamValueJsonInWindow, getHashParamValueJsonFromWindow }
+ *   from 'https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.9.8/+esm';
+ * 
+ * setHashParamValueJsonInWindow("state", {zoom: 2});
+ * const state = getHashParamValueJsonFromWindow("state");
+ * 
+ * ============================================================================
+ * COMMON MISTAKES
+ * ============================================================================
+ * 
+ * ❌ function onInputs(inputs) {}  // Not exported
+ * ❌ root.appendChild(el);  // Forgot to clear root first
+ * ❌ Including "use strict"  // Added automatically
+ * 
+ * ✅ export const onInputs = (inputs) => {
+ *   root.innerHTML = '';  // Clear first
+ *   root.innerHTML = '<div>New</div>';
+ * };
+ * 
+ * ============================================================================
+ * BEST PRACTICES
+ * ============================================================================
+ * 
+ * 1. Export handler functions (onInputs, onResize, cleanup)
+ * 2. Clear root.innerHTML before rendering
+ * 3. Create separate render() function for reuse
+ * 4. Check which inputs received - don't assume all present
+ * 5. Use template literals: root.innerHTML = `<div>${data}</div>`
+ * 
+ * ============================================================================
+ */
+
+// Your code here:
+export const onInputs = (inputs) => {
+  // Your implementation
+};
