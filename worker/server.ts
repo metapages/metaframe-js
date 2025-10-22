@@ -1,14 +1,14 @@
-import { oakCors } from 'https://deno.land/x/cors@v1.2.2/mod.ts';
+import { oakCors } from "https://deno.land/x/cors@v1.2.2/mod.ts";
 import {
   Application,
   Context,
   Router,
-} from 'https://deno.land/x/oak@v10.2.0/mod.ts';
-import staticFiles from 'https://deno.land/x/static_files@1.1.6/mod.ts';
+} from "https://deno.land/x/oak@v10.2.0/mod.ts";
+import staticFiles from "https://deno.land/x/static_files@1.1.6/mod.ts";
 import {
   MetaframeDefinitionV2,
   MetaframeVersionCurrent,
-} from 'https://esm.sh/@metapages/metapage@1.8.18';
+} from "https://esm.sh/@metapages/metapage@1.8.18";
 
 const port: number = parseInt(Deno.env.get("PORT") || "3000");
 
@@ -16,16 +16,28 @@ const DEFAULT_METAFRAME_DEFINITION: MetaframeDefinitionV2 = {
   version: MetaframeVersionCurrent,
   metadata: {
     name: "Javascript code runner",
+    tags: ["javascript", "code", "js"],
   },
   inputs: {},
   outputs: {},
-  hashParams: ["js", "options", "definition", "modules", "editorWidth", "edit", "bgColor", "hm"],
+  hashParams: [
+    "js",
+    "options",
+    "definition",
+    "modules",
+    "editorWidth",
+    "edit",
+    "bgColor",
+    "hm",
+  ],
+  allow: "clipboard-write",
 };
 
-
-
-const DEFAULT_METAFRAME_DEFINITION_STRING = JSON.stringify(DEFAULT_METAFRAME_DEFINITION, null, 2);
-
+const DEFAULT_METAFRAME_DEFINITION_STRING = JSON.stringify(
+  DEFAULT_METAFRAME_DEFINITION,
+  null,
+  2
+);
 
 // const certFile = "../.certs/server1.localhost.pem",
 //   keyFile = "../.certs/server1.localhost-key.pem";
@@ -78,10 +90,17 @@ app.addEventListener("listen", ({ hostname, port, secure }) => {
   console.log(
     `🚀 Listening on: ${secure ? "https://" : "http://"}${
       hostname ?? "localhost"
-    }:${port}`,
+    }:${port}`
   );
 });
 app.use(oakCors({ origin: "*" }));
+app.use(
+  staticFiles("static", {
+    setHeaders: (headers: Headers) => {
+      headers.set("Access-Control-Allow-Origin", "*");
+    },
+  })
+);
 app.use(
   staticFiles("editor", {
     prefix: "/editor",

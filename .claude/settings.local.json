@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree -L 2 -d /Users/dion/dev/git/metapages/metaframes/metaframe-js --ignore node_modules)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
