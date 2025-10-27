@@ -1,10 +1,26 @@
-# Javascript embedded in the URL: run and edit 
+# Javascript embedded in the URL: run and edit with AI tools
 
 Edit and run javascript code in the browser. Share and connect the self-contained websites with other chunks of code and visualization.
 
-### Longer description
+Copy and paste into AI such as Claude Code or ChatGPT and create shareable code that will always run.
 
-Run arbitrary user javascript modules embedded in the URL. Designed for [metapages](https://metapage.io) so you can connect inputs + outputs to other metaframe URLs.
+## Edit with AI
+
+1. Copy the AI prompt, paste into e.g. Claude Code or ChatGPT, the ask what you want
+![inputs](/editor/readme-images/js-copy-ai-03.gif "Copy prompt for LLM AI") 
+
+2. Copy the result back to the Javascript window. Now you have something to share or embed
+
+<a href="https://metapage.io/m/800c916ed9204dec93db7119f9985d76" target="_top" rel="noopener noreferrer">View the result!</a>
+
+## Examples
+
+
+  - <a href="https://metapage.io/m/192e16b132874757b9d55a77a63078d7" target="_top" rel="noopener noreferrer">Visualize change network connections</a>
+  - <a href="https://metapage.io/m/69e1418a17ca4ea8a8dd8b9e8a5aa495" target="_top" rel="noopener noreferrer">Use any visualization module</a>
+  - <a href="https://metapage.io/m/c62d0f7a16ce4d5b858ad18af8ec5014" target="_top" rel="noopener noreferrer">Display any kind of table or tabular data</a>
+  - <a href="https://metapage.io/m/5458bbc3948046f9b2aa2e4e08f0c255" target="_top" rel="noopener noreferrer">Animation, shaders, 3D</a>
+
 
 ## Javascript high level
 
@@ -51,9 +67,14 @@ Output values can be strings, JSON, objects, arrays, numbers, ArrayBuffers, type
 
 ### Define Inputs and Outputs
 
-In `Settings` you can define inputs and outputs. This doesn't change how the code runs, but it allows much easier connecting upstream and downstream metaframes when editing [metapages](https://metapage.io).
+In `Settings` you can define inputs and outputs. This doesn't change how the code runs, but it allows much easier connecting upstream and downstream metaframes when editing <a href="https://metapage.io" target="_top" rel="noopener noreferrer">metapages</a>.
+
+
+
 
 In this example, we defined an input: `input.json` and an output `data.csv`:
+
+
 
 ![inputs](/editor/readme-images/io.png "Inputs and outputs defined in Settings")
 
@@ -155,28 +176,33 @@ These will be added to the root div (see below) so if your own code manipulates 
 
  - `"use strict"` is automatically added to the top of the module code.
 
-## Connect upstream/downstream metaframes
 
-[![](https://mermaid.ink/svg/pako:eNqFkU9LxDAQxb9KiJcVuqC9KBG8uN7sRT1JL2MzaYP5RzJhle1-d9NWd1HBnVMm770fw8yOd14iF7yPEAb28Ng6VqozkNIGFbPhzhsfmdLGiLPrK3mhVJUo-jf81a63WtIg6vB-szBSfl2gFgkC9Lh8T2VQ0eUqh5JEsLNBRbB4ztbr21G7kCmNrFk9Dzqx5qAKIb7m-YmqT6OOgWYS2OgzLVLU_VCGkX7r_jBOpOr_Uuhk63jFLUYLWpYV7yah5TSgxZaL8pSoIBtqeev2xZqDBMJ7qclHLhSYhBWHTP7pw3VcUMz4bdpoKMu1B1cA9-L9sccZ0iy3nU-8_wSxOqSj)](https://mermaid-js.github.io/mermaid-live-editor/edit#pako:eNqFkU9LxDAQxb9KiJcVuqC9KBG8uN7sRT1JL2MzaYP5RzJhle1-d9NWd1HBnVMm770fw8yOd14iF7yPEAb28Ng6VqozkNIGFbPhzhsfmdLGiLPrK3mhVJUo-jf81a63WtIg6vB-szBSfl2gFgkC9Lh8T2VQ0eUqh5JEsLNBRbB4ztbr21G7kCmNrFk9Dzqx5qAKIb7m-YmqT6OOgWYS2OgzLVLU_VCGkX7r_jBOpOr_Uuhk63jFLUYLWpYV7yah5TSgxZaL8pSoIBtqeev2xZqDBMJ7qclHLhSYhBWHTP7pw3VcUMz4bdpoKMu1B1cA9-L9sccZ0iy3nU-8_wSxOqSj)
+## Longer description and archtecture
 
-
-## Examples
-
-  - [Rotate stick on canvas from incoming angles](https://app.metapages.org/#?definition=JTdCJTIybWV0YSUyMiUzQSU3QiUyMmxheW91dHMlMjIlM0ElN0IlMjJyZWFjdC1ncmlkLWxheW91dCUyMiUzQSU3QiUyMmRvY3MlMjIlM0ElMjJodHRwcyUzQSUyRiUyRnd3dy5ucG1qcy5jb20lMkZwYWNrYWdlJTJGcmVhY3QtZ3JpZC1sYXlvdXQlMjIlMkMlMjJsYXlvdXQlMjIlM0ElNUIlN0IlMjJoJTIyJTNBMyUyQyUyMmklMjIlM0ElMjJyYW5kb20tZGF0YSUyMiUyQyUyMm1vdmVkJTIyJTNBZmFsc2UlMkMlMjJzdGF0aWMlMjIlM0FmYWxzZSUyQyUyMnclMjIlM0E1JTJDJTIyeCUyMiUzQTAlMkMlMjJ5JTIyJTNBMCU3RCUyQyU3QiUyMmglMjIlM0EzJTJDJTIyaSUyMiUzQSUyMnN0aWNrJTIyJTJDJTIybW92ZWQlMjIlM0FmYWxzZSUyQyUyMnN0YXRpYyUyMiUzQWZhbHNlJTJDJTIydyUyMiUzQTclMkMlMjJ4JTIyJTNBNSUyQyUyMnklMjIlM0EwJTdEJTVEJTJDJTIycHJvcHMlMjIlM0ElN0IlMjJjb2xzJTIyJTNBMTIlMkMlMjJjb250YWluZXJQYWRkaW5nJTIyJTNBJTVCNSUyQzUlNUQlMkMlMjJtYXJnaW4lMjIlM0ElNUIxMCUyQzIwJTVEJTJDJTIycm93SGVpZ2h0JTIyJTNBMTAwJTdEJTdEJTdEJTdEJTJDJTIybWV0YWZyYW1lcyUyMiUzQSU3QiUyMnJhbmRvbS1kYXRhJTIyJTNBJTdCJTIydXJsJTIyJTNBJTIyaHR0cHMlM0ElMkYlMkZyYW5kb20ubXRmbS5pbyUyRiUyMyUzRmRpc3RyaWJ1dGlvbiUzRGV5SmthWE4wY21saWRYUnBiMjRpT2lKemFXNGlMQ0ptY21WeGRXVnVZM2tpT2pFd0xDSnZjSFJwYjI1eklqcDdJbWx1WTNKbGJXVnVkQ0k2TUM0eGZTd2ljMmh2ZDA5MWRIQjFkQ0k2Wm1Gc2MyVjklMjIlN0QlMkMlMjJzdGljayUyMiUzQSU3QiUyMmlucHV0cyUyMiUzQSU1QiU3QiUyMm1ldGFmcmFtZSUyMiUzQSUyMnJhbmRvbS1kYXRhJTIyJTJDJTIyc291cmNlJTIyJTNBJTIydiUyMiUyQyUyMnRhcmdldCUyMiUzQSUyMnklMjIlN0QlNUQlMkMlMjJ1cmwlMjIlM0ElMjJodHRwcyUzQSUyRiUyRmpzLm10Zm0uaW8lMkYlMjMlM0ZlZGl0JTNEMSUyNmpzJTNEWTI5dWMzUWxNakJrYVhOd2IzTmxjbk1sTWpBbE0wUWxNakFsTlVJbE5VUWxNMElsTUVGamIyNXpkQ1V5TUhKdmIzUWxNakFsTTBRbE1qQmtiMk4xYldWdWRDNW5aWFJGYkdWdFpXNTBRbmxKWkNnbE1qSnliMjkwSlRJeUtTVXpRaVV3UVNVd1FTVXlSaVV5UmlVeU1ISmxibVJsY2lVeU1IUm9aU1V5TUdGdVoyeGxKVEJCZG1GeUpUSXdZMkZ1ZG1GekpUSXdKVE5FSlRJd1pHOWpkVzFsYm5RdVkzSmxZWFJsUld4bGJXVnVkQ2dsTWpKallXNTJZWE1sTWpJcEpUTkNKVEJCWTJGdWRtRnpMbmRwWkhSb0pUSXdKVE5FSlRJd01qQXdKVE5DSlRCQlkyRnVkbUZ6TG1obGFXZG9kQ1V5TUNVelJDVXlNREl3TUNVelFpVXdRWEp2YjNRdVlYQndaVzVrUTJocGJHUW9ZMkZ1ZG1GektTVXpRaVV3UVNVd1FXTnZibk4wSlRJd1kzUjRKVEl3SlRORUpUSXdZMkZ1ZG1GekxtZGxkRU52Ym5SbGVIUW9KVEl5TW1RbE1qSXBKVE5DSlRCQlkyOXVjM1FsTWpBbE5VSjNKVEpESlRJd2FDVTFSQ1V5TUNVelJDVXlNQ1UxUWpJd0pUSkRKVEl3WTJGdWRtRnpMbWhsYVdkb2RDVTFSQ1V6UWlVd1FXTnZibk4wSlRJd0pUVkNlQ1V5UXlVeU1Ia2xOVVFsTWpBbE0wUWxNakFsTlVKallXNTJZWE11ZDJsa2RHZ2xNakFsTWtZbE1qQXlKVEpESlRJd1kyRnVkbUZ6TG1obGFXZG9kQ1V5TUNVeVJpVXlNRElsTlVRbE0wSWxNRUVsTUVGamIyNXpkQ1V5TUdSeVlYY2xNakFsTTBRbE1qQW9jbUZrS1NVeU1DVXpSQ1V6UlNVeU1DVTNRaVV3UVNVeU1DVXlNR04wZUM1amJHVmhjbEpsWTNRb01DVXlReVV5TURBbE1rTWxNakJqWVc1MllYTXVkMmxrZEdnbE1rTWxNakJqWVc1MllYTXVhR1ZwWjJoMEtTVXpRaVV3UVNVd1FTVXlNQ1V5TUNVeVJpVXlSaVV5TUdacGNuTjBKVEl3YzJGMlpTVXlNSFJvWlNVeU1IVnVkSEpoYm5Oc1lYUmxaQ1V5Um5WdWNtOTBZWFJsWkNVeU1HTnZiblJsZUhRbE1FRWxNakFsTWpCamRIZ3VjMkYyWlNncEpUTkNKVEJCSlRCQkpUSXdKVEl3WTNSNExtSmxaMmx1VUdGMGFDZ3BKVE5DSlRCQkpUSXdKVEl3SlRKR0pUSkdKVEl3Ylc5MlpTVXlNSFJvWlNVeU1ISnZkR0YwYVc5dUpUSXdjRzlwYm5RbE1qQjBieVV5TUhSb1pTVXlNR05sYm5SbGNpVXlNRzltSlRJd2RHaGxKVEl3Y21WamRDVXdRU1V5TUNVeU1HTjBlQzUwY21GdWMyeGhkR1VvZUNVeVF5VXlNR2dsTWpBbE1rWWxNakF5S1NVelFpVXdRU1V5TUNVeU1DVXlSaVV5UmlVeU1ISnZkR0YwWlNVeU1IUm9aU1V5TUhKbFkzUWxNRUVsTWpBbE1qQmpkSGd1Y205MFlYUmxLSEpoWkNrbE0wSWxNRUVsTUVFbE1qQWxNakFsTWtZbE1rWWxNakJrY21GM0pUSXdkR2hsSlRJd2NtVmpkQ1V5TUc5dUpUSXdkR2hsSlRJd2RISmhibk5tYjNKdFpXUWxNakJqYjI1MFpYaDBKVEJCSlRJd0pUSXdZM1I0TG5KbFkzUW9MWGNsTWpBbE1rWWxNakF5SlRKREpUSXdMV2dsTWpBbE1rWWxNakF5SlRKREpUSXdkeVV5UXlVeU1HZ3BKVE5DSlRCQkpUQkJKVEl3SlRJd1kzUjRMbVpwYkd4VGRIbHNaU1V5TUNVelJDVXlNQ1V5TW1keVpXVnVKVEl5SlROQ0pUQkJKVEl3SlRJd1kzUjRMbVpwYkd3b0tTVXpRaVV3UVNVd1FTVXlNQ1V5TUdOMGVDNXlaWE4wYjNKbEtDa2xNMElsTUVFbE4wUWxNMElsTUVFbE1FRWxNa1lsTWtZbE1qQk1hWE4wWlc0bE1qQjBieVV5TUdGdUpUSXdhVzV3ZFhRbE1FRmthWE53YjNObGNuTXVjSFZ6YUNnbE1FRWxNakFsTWpCdFpYUmhabkpoYldVdWIyNUpibkIxZEhNb0tHbHVjSFYwY3lrbE1qQWxNMFFsTTBVbE1qQWxOMElsTUVFbE1qQWxNakFsTWpBbE1qQnRaWFJoWm5KaGJXVXVjMlYwVDNWMGNIVjBjeWhwYm5CMWRITXBKVE5DSlRCQkpUSXdKVEl3SlRJd0pUSXdZMjl1YzNRbE1qQjVKVEl3SlRORUpUSXdhVzV3ZFhSekpUVkNKVEl5ZVNVeU1pVTFSQ1V6UWlVd1FTVXlNQ1V5TUNVeU1DVXlNR2xtSlRJd0tDRjVLU1V5TUNVM1FpVXdRU1V5TUNVeU1DVXlNQ1V5TUNVeU1DVXlNSEpsZEhWeWJpVXpRaVV3UVNVeU1DVXlNQ1V5TUNVeU1DVTNSQ1V3UVNVeU1DVXlNQ1V5TUNVeU1HUnlZWGNvZVNrbE0wSWxNRUVsTWpBbE1qQWxOMFFwSlRCQktTVXpRaVV3UVdSeVlYY29NQ2tsTTBJbE1FRWxNRUVsTWtZbE1rWWxNakJTWlhSMWNtNGxNakJoSlRJd1kyeGxZVzUxY0NVeU1HWjFibU4wYVc5dUpUQkJkMmx1Wkc5M0xuTmpjbWx3ZEZWdWJHOWhaQ1V5TUNVelJDVXlNQ2dwSlRJd0pUTkVKVE5GSlRJd0pUZENKVEJCSlRJd0pUSXdkMmhwYkdVbE1qQW9aR2x6Y0c5elpYSnpMbXhsYm1kMGFDVXlNQ1V6UlNVeU1EQXBKVEl3SlRkQ0pUQkJKVEl3SlRJd0pUSXdKVEl3WkdsemNHOXpaWEp6TG5CdmNDZ3BLQ2tsTTBJbE1FRWxNakFsTWpBbE4wUWxNRUVsTjBRbE0wSWxNRUUlM0QlMjZtb2R1bGVzJTNESlRWQ0pUVkUlMjZvcHRpb25zJTNEZXlKb2FXUmxiV1Z1ZFdsbWFXWnlZVzFsSWpwMGNuVmxMQ0p0YjJSbElqb2lhbUYyWVhOamNtbHdkQ0lzSW5OaGRtVnNiMkZrYVc1b1lYTm9JanAwY25WbExDSjBhR1Z0WlNJNklteHBaMmgwSW4wJTNEJTIyJTdEJTdEJTJDJTIycGx1Z2lucyUyMiUzQSU1QiUyMmh0dHBzJTNBJTJGJTJGbWVybWFpZC5tdGZtLmlvJTJGJTIzJTNGaG0lM0RkaXNhYmxlZCUyMiUyQyUyMmh0dHBzJTNBJTJGJTJGZWRpdG9yLm10Zm0uaW8lMkYlMjMlM0ZobSUzRGRpc2FibGVkJTI2b3B0aW9ucyUzREpUZENKVEl5Ylc5a1pTVXlNaVV6UVNVeU1tcHpiMjRsTWpJbE1rTWxNakp6WVhabGJHOWhaR2x1YUdGemFDVXlNaVV6UVhSeWRXVWxNa01sTWpKMGFHVnRaU1V5TWlVelFTVXlNbXhwWjJoMEpUSXlKVGRFJTIyJTVEJTJDJTIydmVyc2lvbiUyMiUzQSUyMjAuMyUyMiU3RA==&minimal=false)
+Run arbitrary user javascript modules embedded in the URL. Designed for <a href="https://metapage.io" target="_top" rel="noopener noreferrer">metapages</a> so you can connect inputs + outputs to other metaframe URLs. Similar to <a href="https://codepen.io/" target="_top" rel="noopener noreferrer">Codepen</a>, <a href="https://jsfiddle.net/" target="_top" rel="noopener noreferrer">JSFiddle</a>, but completely self-contained and does not require an active server, these is a simple tiny static website.
 
 
-## Description
 
- - user created javascript
- - user defined css modules
 
-Think of this like [codepen](https://codepen.io) or [others](https://www.sitepoint.com/code-playgrounds/) but stripped down focusing on core essentials, performance, and durability.
 
-This website is also a [metaframe](https://docs.metapage.io/docs/what-is-a-metaframe): connect metaframes together into apps/workflows/dashboards: [metapages](https://docs.metapage.io/docs)
 
-[Github Repo](https://github.com/metapages/metaframe-js)
 
-**Architecture:**
+### Connect upstream/downstream metaframes
+
+[![](https://mermaid.ink/svg/pako:eNplkU1vwjAMhv9K5V2YVFAbaGkzaRfYbb1sO029ZMSlEU1SpYmAAf99aTuYxHzy1_vYsk-w0RyBwtawtg5e30oVeNs0rOvWWAWyXelGm6ASTUMfsiWPqirsrNE7vAune8FtTUl7eBoZnfsaoRIta9kWx3RvXBjcWKHVbWBvDVY2nrjW85DJQVYZJvExmE6fz0K1znbnoJh81KILiluVUvq75R-q6CXBWTs7iozY1p7N9V79o48qVLxUEPo7CA7UGochSDSS9SGc-qYSbI0SS6De5czsSijVxWtapj61lleZ0W5bA61Y0_nItZxZXAvmjyHvsi9cWG1uSeasfj-qzRWEQ7kYHzT8ycP9omhW2ikLNI6yYTrQExyAkngxi-bxMs5JGkcpSUkIR9-1zGckS9JknsYkybx3CeF7WDiaJXmUEZJlizTN8ijOLz-bT6ib)](https://mermaid.live/edit#pako:eNplkcFuwjAMhl8l8i5MKqgtlEIm7QK7rZdtp6mXrHHbiCap0kTAgHdf2g4mMZ_i3_k_W_YJCs0RKFSGtTV5fcsV8VE0rOu2WBLZbnSjDSlF09CHVcrDsgw6a_QO79LpXnBb07g9PI2Mzn2NUImWtazCUe6DC4OFFVrdGvbRYGmjiWs9D5kcbKVhEh_JdPp8Fqp1tjuTbPJRi45ktyql9HfKP1TWW8hZOzuajKhqz-Z6r_7RRxcqnisI_B4EB2qNwwAkGsn6FE79pxxsjRJzoP7JmdnlkKuL97RMfWotrzajXVUDLVnT-cy1nFncCuaXIe_UFy6sNjeROavfj6q4gnAoZ-OBhjt5uB8UzUY7ZYGukqE50BMcgEbrdBYt58tFGKVxmsTRIoAj0CScrX2kcy9G8SKdXwL4HsYNZ6s0ufwA3DqlmA)
+
+
+### Connecting with other chunks of code and visualization
+
+
+
+
+
+This website is also a <a href="https://docs.metapage.io/docs/what-is-a-metaframe" target="_top" rel="noopener noreferrer">metaframe</a>: connect metaframes together into apps/workflows/dashboards: [metapages](https://docs.metapage.io/docs)
+
+<a href="https://github.com/metapages/metaframe-js" target="_top" rel="noopener noreferrer">Github Repo</a>
+
+### Architecture
 
 
  - no state is stored on the server (all embedded in the URL)
