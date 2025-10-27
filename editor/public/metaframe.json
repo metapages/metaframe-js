@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "metadata": {
+    "name": "Javascript code runner EDITOR"
+  },
+  "inputs": {},
+  "outputs": {},
+  "hashParams": [
+    "js",
+    "options",
+    "definition",
+    "modules",
+    "editorWidth",
+    "edit",
+    "bgColor",
+    "hm"
+  ],
+  "allow": "clipboard-write"
+}
