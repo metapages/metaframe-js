@@ -189,14 +189,16 @@ Run arbitrary user javascript modules embedded in the URL. Designed for <a href=
 
 ### Connect upstream/downstream metaframes
 
-[![](https://mermaid.ink/svg/pako:eNplkU1vwjAMhv9K5V2YVFAbaGkzaRfYbb1sO029ZMSlEU1SpYmAAf99aTuYxHzy1_vYsk-w0RyBwtawtg5e30oVeNs0rOvWWAWyXelGm6ASTUMfsiWPqirsrNE7vAune8FtTUl7eBoZnfsaoRIta9kWx3RvXBjcWKHVbWBvDVY2nrjW85DJQVYZJvExmE6fz0K1znbnoJh81KILiluVUvq75R-q6CXBWTs7iozY1p7N9V79o48qVLxUEPo7CA7UGochSDSS9SGc-qYSbI0SS6De5czsSijVxWtapj61lleZ0W5bA61Y0_nItZxZXAvmjyHvsi9cWG1uSeasfj-qzRWEQ7kYHzT8ycP9omhW2ikLNI6yYTrQExyAkngxi-bxMs5JGkcpSUkIR9-1zGckS9JknsYkybx3CeF7WDiaJXmUEZJlizTN8ijOLz-bT6ib)](https://mermaid.live/edit#pako:eNplkcFuwjAMhl8l8i5MKqgtlEIm7QK7rZdtp6mXrHHbiCap0kTAgHdf2g4mMZ_i3_k_W_YJCs0RKFSGtTV5fcsV8VE0rOu2WBLZbnSjDSlF09CHVcrDsgw6a_QO79LpXnBb07g9PI2Mzn2NUImWtazCUe6DC4OFFVrdGvbRYGmjiWs9D5kcbKVhEh_JdPp8Fqp1tjuTbPJRi45ktyql9HfKP1TWW8hZOzuajKhqz-Z6r_7RRxcqnisI_B4EB2qNwwAkGsn6FE79pxxsjRJzoP7JmdnlkKuL97RMfWotrzajXVUDLVnT-cy1nFncCuaXIe_UFy6sNjeROavfj6q4gnAoZ-OBhjt5uB8UzUY7ZYGukqE50BMcgEbrdBYt58tFGKVxmsTRIoAj0CScrX2kcy9G8SKdXwL4HsYNZ6s0ufwA3DqlmA)
-
+```mermaid
+graph LR
+    subgraph metapage
+        direction LR
+        left1(upstream metaframe) -->|inputs| M[This Metaframe]
+        M --> |outputs| right1(downstream metaframe)
+    end
+```
 
 ### Connecting with other chunks of code and visualization
-
-
-
-
 
 This website is also a <a href="https://docs.metapage.io/docs/what-is-a-metaframe" target="_top" rel="noopener noreferrer">metaframe</a>: connect metaframes together into apps/workflows/dashboards: [metapages](https://docs.metapage.io/docs)
 
