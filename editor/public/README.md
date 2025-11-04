@@ -1,5 +1,8 @@
 # Javascript embedded in the URL: run and edit with AI tools
 
+<a href="https://github.com/metapages/metaframe-js" target="_top" rel="noopener noreferrer">Github</a>
+
+
 Edit and run javascript code in the browser. Share and connect the self-contained websites with other chunks of code and visualization.
 
 Copy and paste into AI such as Claude Code or ChatGPT and create shareable code that will always run.
@@ -201,8 +204,6 @@ graph LR
 ### Connecting with other chunks of code and visualization
 
 This website is also a <a href="https://docs.metapage.io/docs/what-is-a-metaframe" target="_top" rel="noopener noreferrer">metaframe</a>: connect metaframes together into apps/workflows/dashboards: [metapages](https://docs.metapage.io/docs)
-
-<a href="https://github.com/metapages/metaframe-js" target="_top" rel="noopener noreferrer">Github Repo</a>
 
 ### Architecture
 
