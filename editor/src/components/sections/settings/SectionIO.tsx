@@ -31,7 +31,6 @@ import {
 import { useHashParamJson } from '@metapages/hash-query/react-hooks';
 import {
   isEmptyMetaframeDefinition,
-  MetaframeDefinitionV1,
   MetaframeDefinitionV2,
 } from '@metapages/metapage';
 import {
@@ -128,6 +127,9 @@ export const SectionIO: React.FC = () => {
         <HStack alignItems="flex-start" width="100%" justifyContent="space-between">
         <VStack alignItems={'flex-start'}>
           <Text fontWeight={600}>Define Inputs and Outputs</Text>
+          <Text>
+          <a href="https://docs.metapage.io/docs/connect-inputs-outputs" target="_top" rel="noopener noreferrer">For connections in a metapage</a>
+          </Text>
         </VStack>
         
       </HStack>

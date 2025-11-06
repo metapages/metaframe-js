@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(tree -L 2 -d /Users/dion/dev/git/metapages/metaframes/metaframe-js --ignore node_modules)"
+      "Bash(tree -L 2 -d /Users/dion/dev/git/metapages/metaframes/metaframe-js --ignore node_modules)",
+      "Bash(npm run build:*)",
+      "Bash(./node_modules/typescript/bin/tsc:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run:*)"
     ],
     "deny": [],
     "ask": []
