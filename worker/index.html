@@ -686,18 +686,39 @@ Available cache utilities (loaded on-demand):
             return ref.value;
           case "url":
             const {buffer:arrayBufferFromUrl, type} = await urlToUint8Array(ref.value);
-            return new Blob([new Uint8Array(arrayBufferFromUrl)], {
-              type,
-            });
+
+            // Check content-type and return appropriate format
+            if (type === "application/json") {
+              // Parse and return JSON object
+              const text = new TextDecoder().decode(arrayBufferFromUrl);
+              return JSON.parse(text);
+            } else if (type.startsWith("text/")) {
+              // Return as string for text content
+              return new TextDecoder().decode(arrayBufferFromUrl);
+            } else {
+              // Return Blob for binary content
+              return new Blob([new Uint8Array(arrayBufferFromUrl)], {
+                type,
+              });
+            }
           case "key":
             // hard code this for now
-            const arrayBufferFromKey = await fetchBlobFromHash(
+            const {buffer: arrayBufferFromKey, type: keyType} = await fetchBlobFromHashWithType(
               ref.value,
               "https://container.mtfm.io"
             );
-            return new Blob([new Uint8Array(arrayBufferFromKey)], {
-              type: "application/octet-stream",
-            });
+
+            // Check content-type and return appropriate format
+            if (keyType === "application/json") {
+              const text = new TextDecoder().decode(arrayBufferFromKey);
+              return JSON.parse(text);
+            } else if (keyType.startsWith("text/")) {
+              return new TextDecoder().decode(arrayBufferFromKey);
+            } else {
+              return new Blob([new Uint8Array(arrayBufferFromKey)], {
+                type: keyType || "application/octet-stream",
+              });
+            }
           default: // undefined assume DataRefType.Base64
             throw `Not yet implemented: DataRef.type "${ref.type}" unknown`;
         }
@@ -744,8 +765,15 @@ Available cache utilities (loaded on-demand):
         //: Promise<ArrayBuffer>
         const resp = await fetch(`${address}/download/${hash}`);
         const json = await resp.json(); //: { url: string; ref: DataRef }
-        const arrayBuffer = await fetchBlobFromUrl(json.url);
-        return arrayBuffer;
+        const {buffer} = await urlToUint8Array(json.url);
+        return buffer;
+      };
+
+      const fetchBlobFromHashWithType = async (hash, address) => {
+        //: Promise<{buffer: Uint8Array, type: string}>
+        const resp = await fetch(`${address}/download/${hash}`);
+        const json = await resp.json(); //: { url: string; ref: DataRef }
+        return await urlToUint8Array(json.url);
       };
 
       const DataRefTypesSet = new Set(["base64", "utf8", "json", "url", "key"]);
@@ -1128,6 +1156,12 @@ Available cache utilities (loaded on-demand):
 
             const disposeInputsListener = metaframe.onInputs(handleInputs);
             handleInputs(metaframe.getInputs());
+
+            // Handle inputs from hash parameter
+            const hashInputs = getHashParamValueJsonFromWindow("inputs");
+            if (hashInputs && module.onInputs) {
+              await handleInputs(hashInputs);
+            }
 
             const cleanupHandler = () => {
               try {

@@ -10,6 +10,7 @@ import { SectionIO } from './settings/SectionIO';
 import { SectionModules } from './settings/SectionModules';
 import { SectionOptions } from './settings/SectionOptions';
 import { SectionHashParams } from './settings/SectionHashParams';
+import { SectionInputs } from './settings/SectionInputs';
 
 export const PanelSettings: React.FC = () => {
   return (
@@ -28,6 +29,8 @@ export const PanelSettings: React.FC = () => {
           <SectionModules />
           <Divider borderColor="#DEDEDE"/>
           <SectionIO />
+          <Divider borderColor="#DEDEDE"/>
+          <SectionInputs />
           <Divider borderColor="#DEDEDE"/>
           <SectionHashParams />
           <Divider borderColor="#DEDEDE"/>

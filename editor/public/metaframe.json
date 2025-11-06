@@ -6,14 +6,15 @@
   "inputs": {},
   "outputs": {},
   "hashParams": [
-    "js",
-    "options",
-    "definition",
-    "modules",
-    "editorWidth",
-    "edit",
     "bgColor",
-    "hm"
+    "definition",
+    "edit",
+    "editorWidth",
+    "hm",
+    "inputs",
+    "js",
+    "modules",
+    "options"
   ],
   "allow": "clipboard-write"
 }
