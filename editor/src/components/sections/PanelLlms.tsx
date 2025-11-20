@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { PanelHeader } from "/@/components/common/PanelHeader";
 
@@ -13,9 +13,18 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { Copy } from "@phosphor-icons/react";
+import { getHashParamValueBase64DecodedFromUrl } from "@metapages/hash-query";
+import { useHashParamBase64 } from "@metapages/hash-query/react-hooks";
+
+const llmsCode = `// Your code here:
+export const onInputs = (inputs) => {
+  // Your implementation
+};`;
 
 export const PanelLlms: React.FC = () => {
-  const [content, setContent] = useState<string>("");
+  const [aiBaseContent, setAiBaseContent] = useState<string>("");
+  const [code] = useHashParamBase64("js");
+  const [fullAiText, setFullAiText] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const toast = useToast();
@@ -30,7 +39,7 @@ export const PanelLlms: React.FC = () => {
           throw new Error("Failed to fetch llms.txt");
         }
         const text = await response.text();
-        setContent(text);
+        setAiBaseContent(text.replace(llmsCode, ""));
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load content");
       } finally {
@@ -40,10 +49,20 @@ export const PanelLlms: React.FC = () => {
 
     fetchLlmsContent();
   }, []);
+  useEffect(() => {
+    if (!aiBaseContent) {
+      return;
+    }
+    setFullAiText(aiBaseContent + code);
+  }, [code, aiBaseContent]);
 
-  const handleCopyToClipboard = async () => {
+  const handleCopyToClipboard = useCallback(async () => {
     try {
-      await navigator.clipboard.writeText(content);
+      if (!aiBaseContent) return;
+      let text = aiBaseContent;
+      text = text.replace(llmsCode, "");
+      text += getHashParamValueBase64DecodedFromUrl(window.location.href, "js");
+      await navigator.clipboard.writeText(text);
       toast({
         title: "Copied AI guide to clipboard",
         status: "success",
@@ -58,7 +77,7 @@ export const PanelLlms: React.FC = () => {
         isClosable: true,
       });
     }
-  };
+  }, [aiBaseContent, toast]);
 
   return (
     <Box
@@ -76,7 +95,7 @@ export const PanelLlms: React.FC = () => {
           leftIcon={<Copy size={16} />}
           size="sm"
           onClick={handleCopyToClipboard}
-          isDisabled={isLoading || !!error || !content}
+          isDisabled={isLoading || !!error || !fullAiText}
           variant="ghost"
           _hover={{ bg: "gray.200" }}
           borderRadius="md"
@@ -113,7 +132,7 @@ export const PanelLlms: React.FC = () => {
           </Box>
         )}
 
-        {content && !isLoading && !error && (
+        {fullAiText && !isLoading && !error && (
           <Code
             display="block"
             whiteSpace="pre-wrap"
@@ -124,7 +143,7 @@ export const PanelLlms: React.FC = () => {
             lineHeight="1.6"
             overflowX="auto"
           >
-            {content}
+            {fullAiText}
           </Code>
         )}
       </Box>

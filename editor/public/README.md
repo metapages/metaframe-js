@@ -10,7 +10,7 @@ Copy and paste into AI such as Claude Code or ChatGPT and create shareable code 
 ## Edit with AI
 
 1. Copy the AI prompt, paste into e.g. Claude Code or ChatGPT, the ask what you want
-![inputs](/editor/readme-images/js-copy-ai-03.gif "Copy prompt for LLM AI") 
+![inputs](/editor/readme-images/js-copy-ai.gif "Copy prompt for LLM AI") 
 
 2. Copy the result back to the Javascript window. Now you have something to share or embed
 

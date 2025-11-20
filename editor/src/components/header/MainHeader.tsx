@@ -15,6 +15,7 @@ import { Gear, MagicWand, QuestionMark, X } from "@phosphor-icons/react";
 
 import { ButtonCopyExternalLink } from "./components/ButtonCopyExternalLink";
 import { ButtonGotoExternalLink } from "./components/ButtonGotoExternalLink";
+import { useAiText } from "/@/hooks/useAiText";
 
 export const capitalize = (str: string): string => {
   if (!str.length) return str;
@@ -24,6 +25,7 @@ export const capitalize = (str: string): string => {
 export const MainHeader: React.FC = () => {
   const [_edit, setEdit] = useHashParamBoolean("edit");
   const [isLargerThan400] = useMediaQuery("(min-width: 400px)");
+  const { copyToClipboard } = useAiText();
 
   // only show the edit button if the command points to a script in the inputs
   const setShownPanel = useStore((state) => state.setShownPanel);
@@ -109,7 +111,8 @@ export const MainHeader: React.FC = () => {
         {icon(
           MagicWand,
           "AI",
-          () => setShownPanel(shownPanel === "ai" ? null : "ai"),
+          () => copyToClipboard(),
+          // () => setShownPanel(shownPanel === "ai" ? null : "ai"),
           true
         )}
         {icon(
