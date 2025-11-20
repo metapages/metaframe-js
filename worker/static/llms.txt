@@ -96,7 +96,7 @@
  * 
  * // Save state in URL hash
  * import { setHashParamValueJsonInWindow, getHashParamValueJsonFromWindow }
- *   from 'https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.9.8/+esm';
+ *   from 'https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.9.12/+esm';
  * 
  * setHashParamValueJsonInWindow("state", {zoom: 2});
  * const state = getHashParamValueJsonFromWindow("state");

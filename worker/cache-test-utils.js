@@ -70,7 +70,7 @@ ${JSON.stringify(config, null, 2)}`);
     globalThis.logStdout("🧪 Testing cache functionality...");
     
     // Test with a CDN resource
-    const testUrl = 'https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.9.8/package.json';
+    const testUrl = 'https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.9.12/package.json';
     
     try {
       const response1 = await fetch(testUrl);
