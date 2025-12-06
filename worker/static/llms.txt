@@ -151,6 +151,9 @@
  *     - import howler from 'https://cdn.jsdelivr.net/npm/howler@2.2.4/+esm'
  *   - tone
  *     - import * as Tone from 'https://cdn.jsdelivr.net/npm/tone@15.1.22/+esm';
+ * 5. Creative and custom visualizations
+ *   - p5.js
+ *     - import 'https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js';
  * ============================================================================
  * Embedded inputs in the URL:
  * <insert current inputs here, if any>
