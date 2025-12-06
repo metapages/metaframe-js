@@ -98,9 +98,14 @@
  * import { setHashParamValueJsonInWindow, getHashParamValueJsonFromWindow }
  *   from 'https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.9.12/+esm';
  * 
+ * // user set state 
  * setHashParamValueJsonInWindow("state", {zoom: 2});
  * const state = getHashParamValueJsonFromWindow("state");
  * 
+ * // persisted inputs in the URL (they get processed by the onInputs callback)
+ * // this is a primitive but effective way to maintain state persistence
+ * // entirely encoded in the URL, thus portable
+ * setHashParamValueJsonInWindow("inputs", {zoom: 2});
  * ============================================================================
  * COMMON MISTAKES
  * ============================================================================
