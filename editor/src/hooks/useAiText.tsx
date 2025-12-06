@@ -89,7 +89,7 @@ export const useAiText = (): {
           inputsString += `  - ${key}: ${typeof(value) === "string" ? value : JSON.stringify(value).substring(0, 4000)}...\n`;
         });
         
-        text = text.replace("<insert current inputs here, if any>", `\n\nAll metaframe inputs (not always at the same time): \n${inputsString.length < 8000 ? inputsString : inputsString.substring(0, 8000) + "..."}`);
+        text = text.replace("<insert current inputs here, if any>", `\n *\n * All metaframe inputs (not always at the same time): \n * ${inputsString.length < 8000 ? inputsString : inputsString.substring(0, 8000) + "..."}`);
       }
 
       await navigator.clipboard.writeText(text);
