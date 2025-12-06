@@ -1,8 +1,12 @@
-import { useCallback, useEffect, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 
-import { useToast } from "@chakra-ui/react";
-import { getHashParamValueBase64DecodedFromUrl } from "@metapages/hash-query";
-import { useHashParamBase64 } from "@metapages/hash-query/react-hooks";
+import { useToast } from '@chakra-ui/react';
+import { useHashParamBase64 } from '@metapages/hash-query/react-hooks';
+import { useMetaframe } from '@metapages/metapage-react/hooks';
 
 const llmsCode = `// Your code here:
 export const onInputs = (inputs) => {
@@ -19,6 +23,7 @@ export const useAiText = (): {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const toast = useToast();
+  const metaframeBlob = useMetaframe();
 
   useEffect(() => {
     const fetchLlmsContent = async () => {
@@ -55,7 +60,15 @@ export const useAiText = (): {
   const handleCopyToClipboard = useCallback(async () => {
     try {
       if (!fullAiText) return;
-      await navigator.clipboard.writeText(fullAiText);
+      let text = fullAiText;
+      // Add the metaframe inputs, if any, to help the LLM understand the context
+      const metaframeInputs = metaframeBlob.metaframe?.getInputs();
+      if (metaframeInputs && Object.keys(metaframeInputs).length > 0) {
+        const inputsString = JSON.stringify(metaframeInputs);
+        text = text.replace("<insert current inputs here, if any>", `\n\nMetaframe inputs: \n${inputsString.length < 4000 ? inputsString : inputsString.substring(0, 4000) + "..."}`);
+      }
+
+      await navigator.clipboard.writeText(text);
       toast({
         title: "AI Prompt copied to clipboard",
         description:
@@ -72,7 +85,7 @@ export const useAiText = (): {
         isClosable: true,
       });
     }
-  }, [fullAiText, toast]);
+  }, [fullAiText, toast, metaframeBlob]);
 
   return { aiText: fullAiText, copyToClipboard: handleCopyToClipboard };
 };

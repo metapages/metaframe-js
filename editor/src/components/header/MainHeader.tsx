@@ -1,6 +1,7 @@
-import React from "react";
+import React from 'react';
 
-import { useStore } from "/@/store";
+import { useAiText } from '/@/hooks/useAiText';
+import { useStore } from '/@/store';
 
 import {
   Box,
@@ -9,13 +10,17 @@ import {
   Icon,
   Tooltip,
   useMediaQuery,
-} from "@chakra-ui/react";
-import { useHashParamBoolean } from "@metapages/hash-query/react-hooks";
-import { Gear, MagicWand, QuestionMark, X } from "@phosphor-icons/react";
+} from '@chakra-ui/react';
+import { useHashParamBoolean } from '@metapages/hash-query/react-hooks';
+import {
+  Gear,
+  MagicWand,
+  QuestionMark,
+  X,
+} from '@phosphor-icons/react';
 
-import { ButtonCopyExternalLink } from "./components/ButtonCopyExternalLink";
-import { ButtonGotoExternalLink } from "./components/ButtonGotoExternalLink";
-import { useAiText } from "/@/hooks/useAiText";
+import { ButtonCopyExternalLink } from './components/ButtonCopyExternalLink';
+import { ButtonGotoExternalLink } from './components/ButtonGotoExternalLink';
 
 export const capitalize = (str: string): string => {
   if (!str.length) return str;
@@ -103,16 +108,16 @@ export const MainHeader: React.FC = () => {
         w={"16rem"}
       >
         {icon(
-          Gear,
-          "settings",
-          () => setShownPanel(shownPanel === "settings" ? null : "settings"),
-          true
-        )}
-        {icon(
           MagicWand,
           "AI",
           () => copyToClipboard(),
           // () => setShownPanel(shownPanel === "ai" ? null : "ai"),
+          true
+        )}
+        {icon(
+          Gear,
+          "settings",
+          () => setShownPanel(shownPanel === "settings" ? null : "settings"),
           true
         )}
         {icon(

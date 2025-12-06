@@ -12,6 +12,9 @@ import { EditColorScheme } from './EditColorScheme';
 import { EditDebugMode } from './EditDebugMode';
 import { EditDisableCache } from './EditDisableCache';
 import { EditDisableDatarefs } from './EditDisableDatarefs';
+import {
+  EditDisableSmartInputUnpacking,
+} from './EditDisableSmartInputUnpacking';
 import { EditEditorWidth } from './EditEditorWidth';
 
 export const SectionOptions: React.FC = () => {
@@ -32,6 +35,8 @@ export const SectionOptions: React.FC = () => {
         <EditEditorWidth />
         <Divider borderColor="#DEDEDE"/>
         <EditDisableDatarefs />
+        <Divider borderColor="#DEDEDE"/>
+        <EditDisableSmartInputUnpacking />
         <Divider borderColor="#DEDEDE"/>
         <EditDisableCache />
         <Divider borderColor="#DEDEDE"/>
