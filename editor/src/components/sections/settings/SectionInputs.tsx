@@ -12,8 +12,8 @@ import { AddInputButtonAndModal } from './AddInputButtonAndModal';
 import { InputRow } from './InputRow';
 
 export type DataRef = {
-  type: string;
-  value: string;
+  type?: string;
+  value: string | any;
 };
 
 export type InputsHashParam = {
@@ -65,9 +65,9 @@ export const SectionInputs: React.FC = () => {
         justifyContent="space-between"
       >
         <VStack alignItems={"flex-start"}>
-          <Text fontWeight={600}>Initial Inputs</Text>
+          <Text fontWeight={600}>Embed Initial Inputs</Text>
           <Text>
-            Define initial input values (as URLs) to pass to the onInputs function
+            Define initial input values (embedded in the URL) to pass to the onInputs function
           </Text>
         </VStack>
       </HStack>

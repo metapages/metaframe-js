@@ -1,23 +1,30 @@
-import React from "react";
-import { HStack, Icon, Flex, Text, VStack, Link, Badge } from "@chakra-ui/react";
-import { DownloadSimple } from "@phosphor-icons/react";
-import { ButtonDeleteWithConfirm } from "./ButtonDeleteWithConfirm";
+import React from 'react';
 
-type DataRef = {
-  type: string;
-  value: string;
-};
+import {
+  Badge,
+  Flex,
+  HStack,
+  Icon,
+  Link,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
+import { DownloadSimple } from '@phosphor-icons/react';
+
+import { ButtonDeleteWithConfirm } from './ButtonDeleteWithConfirm';
+import { DataRef } from './SectionInputs';
 
 export const InputRow: React.FC<{
   name: string;
   dataref: DataRef;
   onDelete: () => void;
 }> = ({ name, dataref, onDelete }) => {
+  console.log(`InputRow ${name} dataref`, dataref);
   const value = dataref.value;
-  const type = dataref.type || "url";
+  const type = dataref.type || "json";
 
   // Check if value is a valid URL for display
-  const isValidUrl = value.startsWith('http://') || value.startsWith('https://');
+  const isValidUrl = typeof(value) === "string" && (value.startsWith('http://') || value.startsWith('https://'));
 
   return (
     <>
@@ -51,7 +58,7 @@ export const InputRow: React.FC<{
               overflow="hidden"
               textOverflow="ellipsis"
             >
-              {value.length > 100 ? `${value.substring(0, 100)}...` : value}
+              {typeof(value) === "string" && value.length > 100 ? `${value.substring(0, 100)}...` : `${JSON.stringify(value).substring(0, 100)}...`}
             </Text>
           )}
         </VStack>

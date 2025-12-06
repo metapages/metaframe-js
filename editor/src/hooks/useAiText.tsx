@@ -5,8 +5,13 @@ import {
 } from 'react';
 
 import { useToast } from '@chakra-ui/react';
-import { useHashParamBase64 } from '@metapages/hash-query/react-hooks';
+import {
+  getHashParamValueJsonFromWindow,
+  useHashParamBase64,
+} from '@metapages/hash-query/react-hooks';
 import { useMetaframe } from '@metapages/metapage-react/hooks';
+
+import { DataRef } from '../components/sections/settings/SectionInputs';
 
 const llmsCode = `// Your code here:
 export const onInputs = (inputs) => {
@@ -62,10 +67,29 @@ export const useAiText = (): {
       if (!fullAiText) return;
       let text = fullAiText;
       // Add the metaframe inputs, if any, to help the LLM understand the context
+      let inputsFromUrl: Record<string, DataRef> | undefined;
+      try {
+        inputsFromUrl = getHashParamValueJsonFromWindow("inputs");
+      } catch (err) {
+        console.error("Error getting inputs from url", err);
+        return;
+      }
+      if (!inputsFromUrl) {
+        inputsFromUrl = {};
+      }
       const metaframeInputs = metaframeBlob.metaframe?.getInputs();
-      if (metaframeInputs && Object.keys(metaframeInputs).length > 0) {
-        const inputsString = JSON.stringify(metaframeInputs);
-        text = text.replace("<insert current inputs here, if any>", `\n\nMetaframe inputs: \n${inputsString.length < 4000 ? inputsString : inputsString.substring(0, 4000) + "..."}`);
+      if (metaframeInputs) {
+        for (const [key, value] of Object.entries(metaframeInputs)) {
+          inputsFromUrl[key] = value;
+        }
+      }
+      if (Object.keys(inputsFromUrl).length > 0) {
+        let inputsString = "";
+        Object.entries(inputsFromUrl).forEach(([key, value]) => {
+          inputsString += `  - ${key}: ${typeof(value) === "string" ? value : JSON.stringify(value).substring(0, 4000)}...\n`;
+        });
+        
+        text = text.replace("<insert current inputs here, if any>", `\n\nAll metaframe inputs (not always at the same time): \n${inputsString.length < 8000 ? inputsString : inputsString.substring(0, 8000) + "..."}`);
       }
 
       await navigator.clipboard.writeText(text);
@@ -78,6 +102,7 @@ export const useAiText = (): {
         isClosable: true,
       });
     } catch (err) {
+      console.error("Error copying to clipboard", err);
       toast({
         title: "Failed to copy to clipboard",
         status: "error",
