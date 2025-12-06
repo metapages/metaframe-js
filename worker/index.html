@@ -787,6 +787,77 @@ Available cache utilities (loaded on-demand):
         );
       };
 
+      /**
+       * Smart input unpacking: converts JSON blobs to objects.
+       * Recursively walks through an object and converts Blob leaves to JSON
+       * if the blob type is application/json or the key name ends with .json
+       */
+      const smartUnpackInputs = async (inputs, parentKey = "") => {
+        if (!inputs || typeof inputs !== "object") {
+          return inputs;
+        }
+
+        // Handle Blob directly
+        if (inputs instanceof Blob) {
+          const isJsonByType = inputs.type === "application/json" || inputs.type.startsWith("application/json");
+          const isJsonByName = parentKey.toLowerCase().endsWith(".json");
+          
+          if (isJsonByType || isJsonByName) {
+            try {
+              const text = await inputs.text();
+              return JSON.parse(text);
+            } catch (err) {
+              console.warn(`Failed to parse JSON from blob (key: ${parentKey}):`, err);
+              return inputs;
+            }
+          }
+          return inputs;
+        }
+
+        // Handle arrays
+        if (Array.isArray(inputs)) {
+          const result = [];
+          for (let i = 0; i < inputs.length; i++) {
+            result[i] = await smartUnpackInputs(inputs[i], `${parentKey}[${i}]`);
+          }
+          return result;
+        }
+
+        // Handle plain objects
+        const result = {};
+        for (const key of Object.keys(inputs)) {
+          const value = inputs[key];
+          const fullKey = parentKey ? `${parentKey}.${key}` : key;
+          
+          if (value instanceof Blob) {
+            const isJsonByType = value.type === "application/json" || value.type.startsWith("application/json");
+            const isJsonByName = key.toLowerCase().endsWith(".json");
+            
+            if (isJsonByType || isJsonByName) {
+              try {
+                const text = await value.text();
+                result[key] = JSON.parse(text);
+              } catch (err) {
+                console.warn(`Failed to parse JSON from blob (key: ${fullKey}):`, err);
+                result[key] = value;
+              }
+            } else {
+              result[key] = value;
+            }
+          } else if (value && typeof value === "object" && !(value instanceof Blob)) {
+            result[key] = await smartUnpackInputs(value, fullKey);
+          } else {
+            result[key] = value;
+          }
+        }
+        return result;
+      };
+
+      const getInputsSmartUnpacked = async () => {
+        const inputs = metaframe.getInputs();
+        return await smartUnpackInputs(inputs);
+      }
+      
       const refreshUpdateSvgButton = () => {
         // only show the edit button if we are NOT in an iframe
         // or explicitly edit=true is in the hash params
@@ -1130,6 +1201,7 @@ Available cache utilities (loaded on-demand):
             const options = getHashParamValueJsonFromWindow("options");
 
             const disableDatarefs = options?.disableDatarefs;
+            const disableSmartInputUnpacking = options?.disableSmartInputUnpacking;
             
             const handleInputs = async (inputs) => {
               if (module.onInputs) {
@@ -1147,15 +1219,45 @@ Available cache utilities (loaded on-demand):
                       }
                     }
                   }
+                  
+                  // Smart input unpacking: convert JSON blobs to objects
+                  // This inspects leaves of the input JSON, and if there are blobs
+                  // with type json or input name ending with .json, converts them to objects
+                  if (!disableSmartInputUnpacking) {
+                    inputs = await smartUnpackInputs(inputs);
+                  }
+                  
                   module.onInputs(inputs);
                 } catch (err) {
                   console.error("Error running onInputs", err);
                 }
               }
+              try {
+                if (globalThis.metapageEditor && !globalThis.metapageEditor.isDisposed()) {
+                  // If they haven't been unpacked, definitely unpack them for the editor
+                  if (disableSmartInputUnpacking) {
+                    inputs = await getInputsSmartUnpacked();
+                  }
+                  globalThis.metapageEditor.setInputs({editor:inputs});
+                }
+              } catch (err) {
+                console.error("Error setting metapage editor inputs", err);
+              }
             };
 
             const disposeInputsListener = metaframe.onInputs(handleInputs);
+            
             handleInputs(metaframe.getInputs());
+
+            
+            if (globalThis.metapageEditor && !globalThis.metapageEditor.isDisposed()) {
+              try {
+                const unpackedInputs = await getInputsSmartUnpacked();
+                globalThis.metapageEditor.setInputs({editor:unpackedInputs});
+              } catch (err) {
+                console.error("Error setting metapage editor inputs on load", err);
+              }
+            }
 
             // Handle inputs from hash parameter
             const hashInputs = getHashParamValueJsonFromWindow("inputs");
@@ -1290,6 +1392,13 @@ Available cache utilities (loaded on-demand):
         globalThis.metapageEditor = mp;
         const editorMetaframe = mp.getMetaframe("editor");
         const iframe = await editorMetaframe.iframe;
+
+        try {
+          const inputsUnpacked = await getInputsSmartUnpacked();
+          globalThis.metapageEditor.setInputs({editor:inputsUnpacked});
+        } catch (err) {
+          console.error("Error setting metapage editor inputs on creation", err);
+        }
 
         var iframeDivContainer = document.createElement("div");
         iframeDivContainer.id = "iframe-container";

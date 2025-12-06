@@ -125,6 +125,10 @@
  * 5. Use template literals: root.innerHTML = `<div>${data}</div>`
  * 
  * ============================================================================
+ * Inputs:
+ * <insert current inputs here, if any>
+ * ============================================================================
+ 
  */
 
 // Your code here:

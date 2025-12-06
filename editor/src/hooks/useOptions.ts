@@ -1,11 +1,13 @@
-import { useHashParamJson } from "@metapages/hash-query/react-hooks";
-import { useCallback } from "react";
+import { useCallback } from 'react';
+
+import { useHashParamJson } from '@metapages/hash-query/react-hooks';
 
 export type Theme = "light" | "vs-dark" | "system";
 
 export type Options = {
   theme?: Theme | undefined;
   disableDatarefs?: boolean | undefined;
+  disableSmartInputUnpacking?: boolean | undefined;
   disableCache?: boolean | undefined;
   debug?: boolean | undefined;
 };
