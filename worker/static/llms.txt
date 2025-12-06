@@ -136,7 +136,7 @@
  * Use these imports to correctly import the needed modules.
  * The imports go at the top of the generated Javascript
  * 1. 3D or 2D plots:
- *   - Plotly: 
+ *   - Plotly (preferred): 
  *     - import "https://cdn.plot.ly/plotly-3.3.0.min.js"
  *   - d3.js:
  *     - import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
