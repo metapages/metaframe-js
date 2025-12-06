@@ -125,7 +125,29 @@
  * 5. Use template literals: root.innerHTML = `<div>${data}</div>`
  * 
  * ============================================================================
- * Inputs:
+ * Common modules and imports:
+ * ============================================================================
+ * Visualization or visualize (more than vanilla canvas or dom):
+ * Use these imports to correctly import the needed modules.
+ * The imports go at the top of the generated Javascript
+ * 1. 3D or 2D plots:
+ *   - Plotly: 
+ *     - import "https://cdn.plot.ly/plotly-3.3.0.min.js"
+ *   - d3.js:
+ *     - import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+ * 2. 2D only plots:
+ *   - Echarts:
+ *     - import * as echarts from 'https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.esm.min.js';
+ * 3. 2D animations and easing:
+ *   - gsap
+ *     - import gsap from 'https://cdn.jsdelivr.net/npm/gsap@3.13.0/+esm';
+ * 4. Sound
+ *   - howler.js
+ *     - import howler from 'https://cdn.jsdelivr.net/npm/howler@2.2.4/+esm'
+ *   - tone
+ *     - import * as Tone from 'https://cdn.jsdelivr.net/npm/tone@15.1.22/+esm';
+ * ============================================================================
+ * Embedded inputs in the URL:
  * <insert current inputs here, if any>
  * ============================================================================
  

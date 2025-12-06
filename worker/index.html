@@ -719,8 +719,9 @@ Available cache utilities (loaded on-demand):
                 type: keyType || "application/octet-stream",
               });
             }
-          default: // undefined assume DataRefType.Base64
-            throw `Not yet implemented: DataRef.type "${ref.type}" unknown`;
+          default: // undefined assume JSON native type
+            // console.log( `Unknown or undefined DataRef.type "${ref.type || ""}"`);
+            return ref.value;
         }
       };
 
@@ -788,7 +789,7 @@ Available cache utilities (loaded on-demand):
       };
 
       /**
-       * Smart input unpacking: converts JSON blobs to objects.
+       * Smart input unpacking: converts Blobs with content-type: application/json to JSON objects.
        * Recursively walks through an object and converts Blob leaves to JSON
        * if the blob type is application/json or the key name ends with .json
        */
