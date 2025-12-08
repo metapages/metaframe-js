@@ -26,7 +26,7 @@
  * setOutput("outputName", value);
  * setOutputs({ output1: "value", output2: 42 });
  * 
- * // Logging (writes to display)
+ * // Visual Logging (writes to display so if this is a graphical app, use console.log(...) instead of log(...) )
  * log("message");
  * logStdout("message");
  * logStderr("error");
