@@ -86,8 +86,9 @@
  * ============================================================================
  * 
  * - NO NEED to wait for DOMContentLoaded - code runs after page loads
- * - ALWAYS clear root before rendering: root.innerHTML = ''
+ * - ALWAYS clear root before creating the dom: root.innerHTML = ''
  * - setOutput is fire-and-forget (async, no return value)
+ * - if creating a layer overlay e.g a canvas or dom, make sure 
  * 
  * // Prevent scroll propagation to parent
  * window.addEventListener('wheel', (e) => {
@@ -154,6 +155,9 @@
  * 5. Creative and custom visualizations
  *   - p5.js
  *     - import 'https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js';
+ * 6. 2D Physics engine
+ *   - matter.js
+ *     - import Matter from "https://cdn.jsdelivr.net/npm/matter-js@0.20.0/+esm";
  * ============================================================================
  * Embedded inputs in the URL:
  * <insert current inputs here, if any>
