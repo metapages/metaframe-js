@@ -137,6 +137,25 @@ function maybeScroll(event) {
 window.addEventListener('wheel', maybeScroll, {passive: false})
 ```
 
+### Save state in the URL
+
+State is stored in the URL, you can get and set values using the `@metapages/hash-query` module:
+
+```javascript
+import {
+  getHashParamsFromWindow,
+  getHashParamFromWindow,
+  getHashParamValueJsonFromWindow,
+  setHashParamValueJsonInWindow,
+  setHashParamValueBase64EncodedInWindow,
+  getHashParamValueBase64DecodedFromWindow,
+} from 'https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.9.12/+esm'
+
+```
+For all methods see https://www.npmjs.com/package/@metapages/hash-query
+
+
+
 ### Unload/cleanup
 
 When iterating with the code editor, the script is re-run. In some cases, this can cause problems as multiple listeners maybe responding to the same event.
