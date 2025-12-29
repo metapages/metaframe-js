@@ -139,7 +139,7 @@ window.addEventListener('wheel', maybeScroll, {passive: false})
 
 ### Save state in the URL
 
-State is stored in the URL, you can get and set values using the `@metapages/hash-query` module:
+State is stored in the URL, you can get and set values using the [@metapages/hash-query](https://www.npmjs.com/package/@metapages/hash-query) module:
 
 ```javascript
 import {
@@ -149,10 +149,19 @@ import {
   setHashParamValueJsonInWindow,
   setHashParamValueBase64EncodedInWindow,
   getHashParamValueBase64DecodedFromWindow,
-} from 'https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.9.12/+esm'
+} from 'https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.9.12/+esm';
 
+// Get JSON stored in URL
+const myJsonBlob = getHashParamValueJsonFromWindow("someKey") || {};
+// update the JSON blob
+myJsonBlob["someKey"] = "foobar";
+// set it back in the URL
+setHashParamValueJsonInWindow("someKey", myJsonBlob)
+// delete it if needed
+deleteHashParamFromWindow("someKey")
 ```
-For all methods see https://www.npmjs.com/package/@metapages/hash-query
+
+Note: this is to store relatively small values. Huge multi-megabyte JSON blobs are not yet supported, but we have a plan wtoill support large blobs.
 
 
 
