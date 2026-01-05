@@ -84,6 +84,10 @@ router.get("/metaframe.json", (ctx: Context) => {
   ctx.response.headers.set("Content-Type", "application/json");
   ctx.response.body = DEFAULT_METAFRAME_DEFINITION_STRING;
 });
+router.get("/editor/metaframe.json", (ctx: Context) => {
+  ctx.response.headers.set("Content-Type", "application/json");
+  ctx.response.body = DEFAULT_METAFRAME_DEFINITION_STRING;
+});
 // After creating the router, we can add it to the app.
 
 const app = new Application();

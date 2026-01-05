@@ -63,9 +63,11 @@
  * ============================================================================
  * 
  * // PATTERN 1: Visualization
+ * root.innerHTML = `<div><h1 id="title">Title</h1></div>`;
  * export function onInputs(inputs) {
  *   const data = inputs["data"];
- *   root.innerHTML = `<div><h1>${data.title}</h1></div>`;
+ *   document.getElementById("title").innerHTML = data.title;
+ *   
  * }
  * 
  * // PATTERN 2: Process and output
@@ -77,9 +79,7 @@
  * // PATTERN 3: External libraries (use CDN with /+esm)
  * import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm';
  * 
- * export function onInputs(inputs) {
- *   d3.select(root).append('svg').attr('width', 500);
- * }
+ * d3.select(root).append('svg').attr('width', 500);
  * 
  * ============================================================================
  * KEY DETAILS
@@ -116,8 +116,8 @@
  * ❌ Including "use strict"  // Added automatically
  * 
  * ✅ export const onInputs = (inputs) => {
- *   root.innerHTML = '';  // Clear first
- *   root.innerHTML = '<div>New</div>';
+ *   // update the dom elements or logic or state
+ *   // !important: do not recreate the dom in onInputs, instead create the dom in the main script then get and update elements
  * };
  * 
  * ============================================================================
@@ -169,8 +169,3 @@
  * <insert current inputs here, if any>
  * ============================================================================
  */
-
-// Your code here:
-export const onInputs = (inputs) => {
-  // Your implementation
-};
