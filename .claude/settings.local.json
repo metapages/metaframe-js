@@ -5,7 +5,8 @@
       "Bash(npm run build:*)",
       "Bash(./node_modules/typescript/bin/tsc:*)",
       "Bash(npm run dev:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []
