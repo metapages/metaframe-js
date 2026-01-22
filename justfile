@@ -16,6 +16,11 @@ grey                               := "\\e[90m"
 
 @_help:
     just --list --unsorted
+    echo -e ""
+    echo -e "    Github  URL 🔗 {{green}}https://github.com/metapages/metaframe-js{{normal}}"
+    echo -e "    Publish URL 🔗 {{green}}https://js.mtfm.io/{{normal}}"
+    echo -e "    Develop URL 🔗 {{green}}https://{{APP_FQDN}}:{{APP_PORT}}/{{normal}}"
+    echo -e ""
 
 # open
 # Run the server in development mode
@@ -65,6 +70,9 @@ clean:
     rm -rf .traefik/certs
     rm -rf deploy
     docker compose down -v
+
+show-metapage-lib:
+  @rg "@metapages/metapage@"
 
 @_ensure_deployctl:
     if ! command -v deployctl &> /dev/null; then echo '‼️ deployctl is being installed ‼️'; deno install -gArf jsr:@deno/deployctl; fi

@@ -45,6 +45,18 @@ export default defineConfig(({ command, mode }) => ({
     hmr: INSIDE_CONTAINER ? {
       clientPort: APP_PORT,
     } : undefined,
+    proxy: {
+      "/metaframe.json": {
+        target: INSIDE_CONTAINER
+          ? "http://worker:3000"
+          : `http://localhost:${APP_PORT}`,
+      },
+      "/editor/metaframe.json": {
+        target: INSIDE_CONTAINER
+          ? "http://worker:3000"
+          : `http://localhost:${APP_PORT}`,
+      },
+    },
     https:
       CERT_KEY_FILE &&
       fs.existsSync(CERT_KEY_FILE) &&
