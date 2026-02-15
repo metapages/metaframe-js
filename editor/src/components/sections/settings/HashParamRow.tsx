@@ -13,18 +13,28 @@ export const HashParamRow: React.FC<{
   return (
     <>
       <HStack gap={3} flex={1} alignItems="flex-start">
-        <Icon cursor={'arrow'} as={Hash} boxSize={7} mt={1}></Icon>
+        <Icon cursor={"arrow"} as={Hash} boxSize={7} mt={1}></Icon>
         <VStack alignItems="flex-start" gap={0} flex={1}>
-          <Text wordBreak={'break-all'} whiteSpace={'normal'} fontWeight={500}>
+          <Text wordBreak={"break-all"} whiteSpace={"normal"} fontWeight={500}>
             {name}
           </Text>
           {metadata && (
             <>
-              <Text fontSize="sm" color="gray.600" wordBreak={'break-all'} whiteSpace={'normal'}>
+              <Text
+                fontSize="sm"
+                color="gray.600"
+                wordBreak={"break-all"}
+                whiteSpace={"normal"}
+              >
                 {metadata.label} ({metadata.type})
               </Text>
               {metadata.description && (
-                <Text fontSize="xs" color="gray.500" wordBreak={'break-all'} whiteSpace={'normal'}>
+                <Text
+                  fontSize="xs"
+                  color="gray.500"
+                  wordBreak={"break-all"}
+                  whiteSpace={"normal"}
+                >
                   {metadata.description}
                 </Text>
               )}
@@ -42,8 +52,8 @@ export const HashParamRow: React.FC<{
         >
           Edit
         </Button>
-        <ButtonDeleteWithConfirm 
-          callback={onDelete} 
+        <ButtonDeleteWithConfirm
+          callback={onDelete}
           modalHeader={`Are you sure you want to delete the hash parameter "${name}"?`}
         />
       </Flex>

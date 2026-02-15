@@ -11,7 +11,7 @@ export const PanelDocs: React.FC = () => {
     window.location.pathname.endsWith("/")
       ? window.location.pathname.substring(
           0,
-          window.location.pathname.length - 1
+          window.location.pathname.length - 1,
         )
       : window.location.pathname
   }/README.md`;

@@ -1,15 +1,10 @@
-import { useCallback } from 'react';
+import { useCallback } from "react";
 
-import {
-  Center,
-  HStack,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
-import { useHashParamJson } from '@metapages/hash-query/react-hooks';
+import { Center, HStack, Text, VStack } from "@chakra-ui/react";
+import { useHashParamJson } from "@metapages/hash-query/react-hooks";
 
-import { AddInputButtonAndModal } from './AddInputButtonAndModal';
-import { InputRow } from './InputRow';
+import { AddInputButtonAndModal } from "./AddInputButtonAndModal";
+import { InputRow } from "./InputRow";
 
 export type DataRef = {
   type?: string;
@@ -22,7 +17,7 @@ export type InputsHashParam = {
 
 export const SectionInputs: React.FC = () => {
   const [inputs, setInputs] = useHashParamJson<InputsHashParam | undefined>(
-    "inputs"
+    "inputs",
   );
 
   const addNewInput = useCallback(
@@ -30,11 +25,11 @@ export const SectionInputs: React.FC = () => {
       // Create a dataref object with type "url"
       const newInputs: InputsHashParam = {
         ...inputs,
-        [name]: { type: "url", value: url }
+        [name]: { type: "url", value: url },
       };
       setInputs(newInputs);
     },
-    [inputs, setInputs]
+    [inputs, setInputs],
   );
 
   const deleteInput = useCallback(
@@ -51,7 +46,7 @@ export const SectionInputs: React.FC = () => {
         }
       }
     },
-    [inputs, setInputs]
+    [inputs, setInputs],
   );
 
   const inputEntries = inputs ? Object.entries(inputs) : [];
@@ -67,10 +62,16 @@ export const SectionInputs: React.FC = () => {
         <VStack alignItems={"flex-start"}>
           <Text fontWeight={600}>Embed Initial Inputs</Text>
           <Text>
-            Define initial input values (embedded in the URL) to pass to the onInputs function
+            Define initial input values (embedded in the URL) to pass to the
+            onInputs function or access directly via fetching the URL
           </Text>
         </VStack>
       </HStack>
+
+      <Center width="100%">
+        <AddInputButtonAndModal add={addNewInput} text={"Add Input"} />
+      </Center>
+
       <VStack gap={4} alignItems="flex-start" width="100%">
         <VStack gap={0} alignItems="flex-start" width="100%">
           {inputEntries.map(([name, dataref], i) => (
@@ -94,12 +95,6 @@ export const SectionInputs: React.FC = () => {
             </VStack>
           ))}
         </VStack>
-        <Center width="100%">
-          <AddInputButtonAndModal
-            add={addNewInput}
-            text={"Add Input"}
-          />
-        </Center>
       </VStack>
     </VStack>
   );

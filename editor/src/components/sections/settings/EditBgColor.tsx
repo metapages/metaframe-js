@@ -1,20 +1,15 @@
-import { useCallback } from 'react';
+import { useCallback } from "react";
 
-import { useFormik } from 'formik';
-import * as yup from 'yup';
+import { useFormik } from "formik";
+import * as yup from "yup";
 
-import {
-  Input,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
-import { useHashParam } from '@metapages/hash-query/react-hooks';
+import { Input, Text, VStack } from "@chakra-ui/react";
+import { useHashParam } from "@metapages/hash-query/react-hooks";
 
 const validationSchema = yup.object({
   color: yup.string(),
 });
 interface FormType extends yup.InferType<typeof validationSchema> {}
-
 
 export const EditBgColor: React.FC = () => {
   const [bgColor, setbgColor] = useHashParam("bgColor", undefined);
@@ -30,15 +25,14 @@ export const EditBgColor: React.FC = () => {
 
   const formik = useFormik({
     initialValues: {
-      color: bgColor || '',
+      color: bgColor || "",
     },
     onSubmit,
     validationSchema,
   });
 
-
   return (
-    <VStack align="flex-start" w="100%" minW={'100%'} p={6}>
+    <VStack align="flex-start" w="100%" minW={"100%"} p={6}>
       <Text fontWeight={700}>Default Background Color</Text>
       <form onSubmit={formik.handleSubmit}>
         <Input

@@ -2,7 +2,6 @@
 
 <a href="https://github.com/metapages/metaframe-js" target="_top" rel="noopener noreferrer">Github</a>
 
-
 Edit and run javascript code in the browser. Share and connect the self-contained websites with other chunks of code and visualization.
 
 Copy and paste into AI such as Claude Code or ChatGPT and create shareable code that will always run.
@@ -10,7 +9,7 @@ Copy and paste into AI such as Claude Code or ChatGPT and create shareable code 
 ## Edit with AI
 
 1. Copy the AI prompt, paste into e.g. Claude Code or ChatGPT, the ask what you want
-![inputs](/editor/readme-images/js-copy-ai.gif "Copy prompt for LLM AI") 
+   ![inputs](/editor/readme-images/js-copy-ai.gif "Copy prompt for LLM AI")
 
 2. Copy the result back to the Javascript window. Now you have something to share or embed
 
@@ -18,21 +17,19 @@ Copy and paste into AI such as Claude Code or ChatGPT and create shareable code 
 
 ## Examples
 
-
-  - <a href="https://metapage.io/m/192e16b132874757b9d55a77a63078d7" target="_top" rel="noopener noreferrer">Visualize change network connections</a>
-  - <a href="https://metapage.io/m/69e1418a17ca4ea8a8dd8b9e8a5aa495" target="_top" rel="noopener noreferrer">Use any visualization module</a>
-  - <a href="https://metapage.io/m/c62d0f7a16ce4d5b858ad18af8ec5014" target="_top" rel="noopener noreferrer">Display any kind of table or tabular data</a>
-  - <a href="https://metapage.io/m/5458bbc3948046f9b2aa2e4e08f0c255" target="_top" rel="noopener noreferrer">Animation, shaders, 3D</a>
-
+- <a href="https://metapage.io/m/192e16b132874757b9d55a77a63078d7" target="_top" rel="noopener noreferrer">Visualize change network connections</a>
+- <a href="https://metapage.io/m/69e1418a17ca4ea8a8dd8b9e8a5aa495" target="_top" rel="noopener noreferrer">Use any visualization module</a>
+- <a href="https://metapage.io/m/c62d0f7a16ce4d5b858ad18af8ec5014" target="_top" rel="noopener noreferrer">Display any kind of table or tabular data</a>
+- <a href="https://metapage.io/m/5458bbc3948046f9b2aa2e4e08f0c255" target="_top" rel="noopener noreferrer">Animation, shaders, 3D</a>
 
 ## Javascript high level
 
- - code is an es6 module 
- - top-level `await`
- - export a function `onInputs` to listen to inputs
- - send outputs with `setOutput`/`setOutputs` (predefined functions available in your module)
- - export a function `onResize` to listen to window/div resizes
- - use es6 module imports, or add any css / npm modules to the page, they are embedded in the URL
+- code is an es6 module
+- top-level `await`
+- export a function `onInputs` to listen to inputs
+- send outputs with `setOutput`/`setOutputs` (predefined functions available in your module)
+- export a function `onResize` to listen to window/div resizes
+- use es6 module imports, or add any css / npm modules to the page, they are embedded in the URL
 
 ## Useful code snippets
 
@@ -50,7 +47,7 @@ export function onInputs(inputs) {
 export const onInputs = (inputs) => {
   // do something here
   // inputs is a plain object (key and values)
-}
+};
 ```
 
 To send outputs, there are two functions in the scope `setOutput` and `setOutputs`:
@@ -61,7 +58,7 @@ setOutput("outputname", 42);
 
 // send an output object of keys+values
 setOutputs({
-  outputname:true,
+  outputname: true,
   someOtherOutputName: "bar",
 });
 ```
@@ -72,12 +69,7 @@ Output values can be strings, JSON, objects, arrays, numbers, ArrayBuffers, type
 
 In `Settings` you can define inputs and outputs. This doesn't change how the code runs, but it allows much easier connecting upstream and downstream metaframes when editing <a href="https://metapage.io" target="_top" rel="noopener noreferrer">metapages</a>.
 
-
-
-
 In this example, we defined an input: `input.json` and an output `data.csv`:
-
-
 
 ![inputs](/editor/readme-images/io.png "Inputs and outputs defined in Settings")
 
@@ -88,14 +80,15 @@ You will see these inputs and outputs automatically in the metapage editor.
 The root display div is exposed in the script scope: the name is `root` and the id is also `root`:
 
 ```javascript
-console.log(root.id)
+console.log(root.id);
 // logs "root"
 // Add any custom dome elements into "root".
 ```
 
 You can also just get it with:
+
 ```javascript
-document.getElementById("root")
+document.getElementById("root");
 ```
 
 ### Height / width / window resize
@@ -107,7 +100,6 @@ const width = root.getBoundingClientRect().width;
 const height = root.getBoundingClientRect().height;
 ```
 
-
 For automatically resizing: export a function (arrow function also good 👍) called `onResize`. This will be called when either the window resizes event and/or the local `div` element resizes:
 
 ```javascript
@@ -118,7 +110,7 @@ export function onResize(width, height) {
 //  OR arrow function
 export const onResize = (width, height) => {
   // Your own code here, handling the resize of the root div
-}
+};
 ```
 
 ### Prevent scroll events from propagating to the parent window
@@ -132,9 +124,9 @@ To prevent this, on the dom element you intercept wheel scroll events, add this 
 function maybeScroll(event) {
   if (myContainer.contains(event.target)) {
     event.preventDefault();
-  } 
+  }
 }
-window.addEventListener('wheel', maybeScroll, {passive: false})
+window.addEventListener("wheel", maybeScroll, { passive: false });
 ```
 
 ### Save state in the URL
@@ -149,21 +141,19 @@ import {
   setHashParamValueJsonInWindow,
   setHashParamValueBase64EncodedInWindow,
   getHashParamValueBase64DecodedFromWindow,
-} from 'https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.9.12/+esm';
+} from "https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.9.12/+esm";
 
 // Get JSON stored in URL
 const myJsonBlob = getHashParamValueJsonFromWindow("someKey") || {};
 // update the JSON blob
 myJsonBlob["someKey"] = "foobar";
 // set it back in the URL
-setHashParamValueJsonInWindow("someKey", myJsonBlob)
+setHashParamValueJsonInWindow("someKey", myJsonBlob);
 // delete it if needed
-deleteHashParamFromWindow("someKey")
+deleteHashParamFromWindow("someKey");
 ```
 
 Note: this is to store relatively small values. Huge multi-megabyte JSON blobs are not yet supported, but we have a plan wtoill support large blobs.
-
-
 
 ### Unload/cleanup
 
@@ -176,13 +166,13 @@ To have your script cleaned up because of new script (when editing), declare a f
 ```javascript
 // regular js function
 export function cleanup() {
-	console.log("internal scriptUnload call")
-	// do your cleanup here
+  console.log("internal scriptUnload call");
+  // do your cleanup here
 }
 // OR arrow function
 export const cleanup = () => {
   // do your cleanup here
-}
+};
 ```
 
 ### Wait until page `load`
@@ -194,29 +184,20 @@ You don't need to wait for the `load` event: your script will not run until `loa
 Some globally available functions for logging:
 
 ```javascript
-
-  log("something here");
-  logStdout("something here");
-  logStderr("an error");
-
+log("something here");
+logStdout("something here");
+logStderr("an error");
 ```
 
 These will be added to the root div (see below) so if your own code manipulates the root div, it could be overwritten. This is mostly useful for headless code.
 
 ### Misc
 
- - `"use strict"` is automatically added to the top of the module code.
-
+- `"use strict"` is automatically added to the top of the module code.
 
 ## Longer description and archtecture
 
 Run arbitrary user javascript modules embedded in the URL. Designed for <a href="https://metapage.io" target="_top" rel="noopener noreferrer">metapages</a> so you can connect inputs + outputs to other metaframe URLs. Similar to <a href="https://codepen.io/" target="_top" rel="noopener noreferrer">Codepen</a>, <a href="https://jsfiddle.net/" target="_top" rel="noopener noreferrer">JSFiddle</a>, but completely self-contained and does not require an active server, these is a simple tiny static website.
-
-
-
-
-
-
 
 ### Connect upstream/downstream metaframes
 
@@ -235,16 +216,15 @@ This website is also a <a href="https://docs.metapage.io/docs/what-is-a-metafram
 
 ### Architecture
 
-
- - no state is stored on the server (all embedded in the URL)
-   - this imposes some limits but current URL lengths are large or not specifically limited
- - The server simply serves a little `index.html`
- - The client then runs the embedded javascript (the javascript code is **not** sent to the server)
+- no state is stored on the server (all embedded in the URL)
+  - this imposes some limits but current URL lengths are large or not specifically limited
+- The server simply serves a little `index.html`
+- The client then runs the embedded javascript (the javascript code is **not** sent to the server)
 
 The server runs on https://deno.com/deploy which is
 
- - simple
- - fast
- - very performant
- - deploys immediately with a simply push to the repository
- - 🌟🌟🌟🌟🌟
+- simple
+- fast
+- very performant
+- deploys immediately with a simply push to the repository
+- 🌟🌟🌟🌟🌟

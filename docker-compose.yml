@@ -2,12 +2,52 @@ version: "2.4"
 
 services:
 
+  minio:
+    image: minio/minio
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: curl --fail http://localhost:9000/minio/health/live || exit 1
+      interval: 5s
+      timeout: 1s
+    logging:
+      driver: ${LOGGING_SERVER:-local}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.minio-s3.tls=true
+      - traefik.http.routers.minio-s3.rule=Host(`s3.localhost`)
+      - traefik.http.services.minio-s3.loadbalancer.server.port=9000
+
+  minio-init:
+    image: minio/mc
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 minioadmin minioadmin;
+      mc mb --ignore-existing local/uploads;
+      mc anonymous set download local/uploads;
+      mc ilm rule add local/uploads --expire-days 7;
+      exit 0;
+      "
+
   worker:
     build:
       context: ./worker
     # image: denoland/deno:alpine-1.38.3
     command: deno run -A --watch ./server.ts
     working_dir: /app/worker
+    depends_on:
+      minio-init:
+        condition: service_completed_successfully
     healthcheck:
       test: curl --fail http://localhost:3000 || exit 1
       interval: 5s
@@ -18,6 +58,13 @@ services:
       - "PORT=3000"
       - "APP_FQDN=${APP_FQDN:-server1.localhost}"
       - "PATH=$PATH:/DENO_INSTALL_ROOT/bin"
+      - "S3_ENDPOINT=${S3_ENDPOINT:-http://minio:9000}"
+      - "S3_PRESIGN_ENDPOINT=${S3_PRESIGN_ENDPOINT:-https://s3.localhost:${APP_PORT:-443}}"
+      - "S3_ACCESS_KEY_ID=${S3_ACCESS_KEY_ID:-minioadmin}"
+      - "S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY:-minioadmin}"
+      - "S3_BUCKET_NAME=${S3_BUCKET_NAME:-uploads}"
+      - "S3_PUBLIC_URL=${S3_PUBLIC_URL:-https://s3.localhost:${APP_PORT:-443}/uploads}"
+      - "S3_UPLOAD_MAX_SIZE_MB=${S3_UPLOAD_MAX_SIZE_MB:-500}"
     expose:
       - 3000
     volumes:
@@ -91,6 +138,8 @@ volumes:
   deno:
     driver: local
   node_modules:
+    driver: local
+  minio_data:
     driver: local
 
 

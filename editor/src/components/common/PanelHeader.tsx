@@ -11,8 +11,11 @@ interface PanelHeaderProps {
   children?: React.ReactNode;
 }
 
-export const PanelHeader: React.FC<PanelHeaderProps> = ({ title, children }) => {
-  const setShownPanel = useStore(state => state.setShownPanel);
+export const PanelHeader: React.FC<PanelHeaderProps> = ({
+  title,
+  children,
+}) => {
+  const setShownPanel = useStore((state) => state.setShownPanel);
   const titleText = title.toUpperCase();
   return (
     <PanelHeaderContainer>
@@ -21,7 +24,11 @@ export const PanelHeader: React.FC<PanelHeaderProps> = ({ title, children }) => 
         <HStack spacing={4} justify="center" flex="1" h="100%" align="center">
           {children}
         </HStack>
-        <Icon boxSize={"1rem"} as={X} onClick={() => setShownPanel(null)}></Icon>
+        <Icon
+          boxSize={"1rem"}
+          as={X}
+          onClick={() => setShownPanel(null)}
+        ></Icon>
       </HStack>
     </PanelHeaderContainer>
   );

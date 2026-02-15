@@ -1,19 +1,56 @@
-import { oakCors } from 'https://deno.land/x/cors@v1.2.2/mod.ts';
+import { oakCors } from "https://deno.land/x/cors@v1.2.2/mod.ts";
 import {
   Application,
   Context,
   Router,
-} from 'https://deno.land/x/oak@v10.2.0/mod.ts';
-import staticFiles from 'https://deno.land/x/static_files@1.1.6/mod.ts';
-import {
-  MetaframeDefinitionV2,
-  MetaframeVersionCurrent,
-} from 'https://esm.sh/@metapages/metapage@1.9.2';
+} from "https://deno.land/x/oak@v10.2.0/mod.ts";
+import staticFiles from "https://deno.land/x/static_files@1.1.6/mod.ts";
+import { MetaframeDefinition } from "https://esm.sh/@metapages/metapage@1.10.0";
+import { PutObjectCommand, S3Client } from "npm:@aws-sdk/client-s3";
+import { getSignedUrl } from "npm:@aws-sdk/s3-request-presigner";
 
 const port: number = parseInt(Deno.env.get("PORT") || "3000");
 
-const DEFAULT_METAFRAME_DEFINITION: MetaframeDefinitionV2 = {
-  version: MetaframeVersionCurrent,
+// S3-compatible storage config (works with Cloudflare R2 and MinIO)
+const S3_ENDPOINT =
+  "https://87fd2334b246ea24741346c2a2140fa8.r2.cloudflarestorage.com"; // Deno.env.get("S3_ENDPOINT");
+const S3_ACCESS_KEY_ID = Deno.env.get("S3_ACCESS_KEY_ID");
+const S3_SECRET_ACCESS_KEY = Deno.env.get("S3_SECRET_ACCESS_KEY");
+const S3_BUCKET_NAME = Deno.env.get("S3_BUCKET_NAME") || "uploads";
+const S3_PUBLIC_URL = Deno.env.get("S3_PUBLIC_URL");
+const S3_UPLOAD_MAX_SIZE_MB = parseInt(
+  Deno.env.get("S3_UPLOAD_MAX_SIZE_MB") || "500",
+);
+
+const getPublicUrl = (id: string) => {
+  return `${S3_PUBLIC_URL}/${id}`;
+};
+
+const s3Credentials = S3_ACCESS_KEY_ID && S3_SECRET_ACCESS_KEY
+  ? { accessKeyId: S3_ACCESS_KEY_ID, secretAccessKey: S3_SECRET_ACCESS_KEY }
+  : undefined;
+
+// Client for generating presigned URLs (uses browser-reachable endpoint)
+// Falls back to the main S3 client if S3_PRESIGN_ENDPOINT is not set (e.g. production R2)
+let s3PresignClient: S3Client | null = null;
+if (s3Credentials) {
+  const presignEndpoint = S3_ENDPOINT;
+  if (presignEndpoint) {
+    s3PresignClient = new S3Client({
+      endpoint: presignEndpoint,
+      forcePathStyle: true,
+      region: "auto",
+      credentials: s3Credentials,
+    });
+    if (S3_ENDPOINT) {
+      console.log(
+        `S3 presign client configured: endpoint=${S3_ENDPOINT}`,
+      );
+    }
+  }
+}
+
+const DEFAULT_METAFRAME_DEFINITION: MetaframeDefinition = {
   metadata: {
     name: "Javascript code runner",
     tags: ["javascript", "code", "js"],
@@ -21,52 +58,63 @@ const DEFAULT_METAFRAME_DEFINITION: MetaframeDefinitionV2 = {
   inputs: {},
   outputs: {},
   hashParams: {
-    "bgColor": {
+    bgColor: {
       type: "string",
       description: "The background color of the metaframe",
       label: "Background Color",
     },
-    "definition" : {
+    definition: {
       type: "json",
       description: "The definition of the metaframe",
       label: "Definition",
     },
-    "edit": {
+    edit: {
       type: "boolean",
       description: "Whether the metaframe is in edit mode",
       label: "Edit",
     },
-    "editorWidth" : {
+    editorWidth: {
       type: "string",
-      description: "The width of the editor, in valid CSS. If no units are provided, 'ch' is assumed.",
+      description:
+        "The width of the editor, in valid CSS. If no units are provided, 'ch' is assumed.",
       label: "Editor Width",
     },
-    "hm": {
+    hm: {
       type: "string",
-      description: "The visibility of the menu button. 'disabled' to hide, 'invisible' to hide until hover, 'visible' to show always.",
+      description:
+        "The visibility of the menu button. 'disabled' to hide, 'invisible' to hide until hover, 'visible' to show always.",
       label: "Menu Button Visibility",
       allowedValues: ["disabled", "invisible", "visible"],
     },
-    "inputs": {
+    inputs: {
       type: "json",
-      description: "The inputs of the metaframe. This is a JSON object with the input name as the key and the value as a dataref object. Datarefs are objects with a 'type' property and a 'value' property. The 'type' property is a string that can be one of 'base64', 'utf8', 'json', 'url', or 'key'. The 'value' property is a string or object depending on the type.",
+      description:
+        "The inputs of the metaframe. This is a JSON object with the input name as the key and the value as a dataref object. Datarefs are objects with a 'type' property and a 'value' property. The 'type' property is a string that can be one of 'base64', 'utf8', 'json', 'url', or 'key'. The 'value' property is a string or object depending on the type.",
       label: "Inputs",
     },
-    "js": {
+    js: {
       type: "stringBase64",
-      description: "The JavaScript code to run in the metaframe. This is a base64 encoded string of the JavaScript code. Encoding is btoa(encodeURIComponent(value)), decoding is the reverse.",
+      description:
+        "The JavaScript code to run in the metaframe. This is a base64 encoded string of the JavaScript code. Encoding is btoa(encodeURIComponent(value)), decoding is the reverse.",
       label: "JavaScript Code",
     },
-    "modules": {
+    modules: {
       type: "json",
-      description: "The modules of the metaframe. This is a JSON array of strings, each string being a module or css URL. This is deprecated, use es6 imports in the javascript directly.",
+      description:
+        "The modules of the metaframe. This is a JSON array of strings, each string being a module or css URL. This is deprecated, use es6 imports in the javascript directly.",
       label: "Modules or CSS URLs",
     },
-    "options": {
+    options: {
       type: "json",
-      description: "The options of the metaframe. This is a JSON object with the option name as the key and the value as a string or boolean. The options are used to configure the metaframe. The options are: 'debug', 'disableCache', 'disableDatarefs', 'disableSmartInputUnpacking'.",
+      description:
+        "The options of the metaframe. This is a JSON object with the option name as the key and the value as a string or boolean. The options are used to configure the metaframe. The options are: 'debug', 'disableCache', 'disableDatarefs', 'disableSmartInputUnpacking'.",
       label: "Options",
-      allowedValues: ["debug", "disableCache", "disableDatarefs", "disableSmartInputUnpacking"],
+      allowedValues: [
+        "debug",
+        "disableCache",
+        "disableDatarefs",
+        "disableSmartInputUnpacking",
+      ],
     },
   },
   allow: "clipboard-write",
@@ -75,7 +123,7 @@ const DEFAULT_METAFRAME_DEFINITION: MetaframeDefinitionV2 = {
 const DEFAULT_METAFRAME_DEFINITION_STRING = JSON.stringify(
   DEFAULT_METAFRAME_DEFINITION,
   null,
-  2
+  2,
 );
 
 // const certFile = "../.certs/server1.localhost.pem",
@@ -126,6 +174,88 @@ router.get("/editor/metaframe.json", (ctx: Context) => {
   ctx.response.headers.set("Content-Type", "application/json");
   ctx.response.body = DEFAULT_METAFRAME_DEFINITION_STRING;
 });
+// Upload presign endpoint — returns a presigned URL for direct browser-to-S3 upload
+router.post("/api/upload/presign", async (ctx: Context) => {
+  if (!s3PresignClient) {
+    ctx.response.status = 503;
+    ctx.response.body = { error: "File upload not configured" };
+    return;
+  }
+
+  try {
+    const body = await (ctx.request as any).body({ type: "json" }).value;
+    const { contentType, fileSize, sha256 } = body;
+
+    if (!contentType) {
+      ctx.response.status = 400;
+      ctx.response.body = { error: "Missing required field: contentType" };
+      return;
+    }
+
+    if (fileSize && fileSize > S3_UPLOAD_MAX_SIZE_MB * 1024 * 1024) {
+      ctx.response.status = 400;
+      ctx.response.body = {
+        error: `File too large. Max size: ${S3_UPLOAD_MAX_SIZE_MB}MB`,
+      };
+      return;
+    }
+
+    // Use SHA256 content hash if provided, otherwise fall back to UUID
+    const id = sha256 || crypto.randomUUID();
+    // Store file with just the id as the key (no filename)
+    const key = `f/${id}`;
+
+    const command = new PutObjectCommand({
+      Bucket: S3_BUCKET_NAME,
+      Key: key,
+      ContentType: contentType,
+    });
+
+    // Generate presigned URL using the browser-reachable endpoint
+    const presignedUrl = await getSignedUrl(s3PresignClient, command, {
+      expiresIn: 3600,
+    });
+    // Canonical path for accessing the file via the worker's download endpoint
+    const canonicalPath = `/f/${id}`;
+
+    ctx.response.headers.set("Content-Type", "application/json");
+    ctx.response.body = JSON.stringify({
+      presignedUrl,
+      canonicalPath,
+      key,
+      id,
+    });
+  } catch (error) {
+    console.error("Presign error:", error);
+    ctx.response.status = 500;
+    ctx.response.body = { error: "Failed to generate presigned URL" };
+  }
+});
+
+// File download endpoint — redirects to the public S3 URL
+router.get("/f/:id", async (ctx: any) => {
+  if (!S3_PUBLIC_URL) {
+    ctx.response.status = 503;
+    ctx.response.body = {
+      error: "File access not configured (missing S3_PUBLIC_URL)",
+    };
+    return;
+  }
+
+  try {
+    const { id } = ctx.params;
+    // Construct the public S3 URL: bucket is already in the S3_PUBLIC_URL path
+    const publicUrl = getPublicUrl(id);
+
+    ctx.response.headers.set("Cache-Control", "public, max-age=3600");
+    ctx.response.redirect(publicUrl);
+  } catch (error) {
+    console.error("File download error:", error);
+    ctx.response.status = 500;
+    ctx.response.body = { error: "Failed to redirect to file" };
+  }
+});
+
 // After creating the router, we can add it to the app.
 
 const app = new Application();
@@ -133,7 +263,7 @@ app.addEventListener("listen", ({ hostname, port, secure }) => {
   console.log(
     `🚀 Listening on: ${secure ? "https://" : "http://"}${
       hostname ?? "localhost"
-    }:${port}`
+    }:${port}`,
   );
 });
 app.use(oakCors({ origin: "*" }));
@@ -142,7 +272,7 @@ app.use(
     setHeaders: (headers: Headers) => {
       headers.set("Access-Control-Allow-Origin", "*");
     },
-  })
+  }),
 );
 app.use(
   staticFiles("editor", {
@@ -150,7 +280,7 @@ app.use(
     setHeaders: (headers: Headers) => {
       headers.set("Access-Control-Allow-Origin", "*");
     },
-  })
+  }),
 );
 app.use(router.routes());
 app.use(router.allowedMethods());
