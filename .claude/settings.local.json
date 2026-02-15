@@ -6,7 +6,10 @@
       "Bash(./node_modules/typescript/bin/tsc:*)",
       "Bash(npm run dev:*)",
       "Bash(npm run:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(just check:*)",
+      "Bash(deno check:*)",
+      "Bash(./editor/node_modules/typescript/bin/tsc:*)"
     ],
     "deny": [],
     "ask": []

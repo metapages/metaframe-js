@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { useMetaframeUrl } from "/@/hooks/useMetaframeUrl";
 import { useOptions } from "/@/hooks/useOptions";
@@ -29,9 +29,20 @@ const LocalEditor: React.FC<{
   setCode: (code: string) => void;
 }> = ({ code, setCode }) => {
   const [themeOptions] = useOptions();
-  // only use the code prop initially, but then ignore so we don't get clobbering
-  const codeInternal = useRef<string>(code);
-  const inputs = useRef<{ text: string }>({ text: codeInternal.current });
+  // Track what the editor last sent us, so we can distinguish editor-initiated
+  // changes from external changes (e.g. file upload injecting code comments)
+  const lastEditorOutput = useRef<string>(code);
+  const [editorInputs, setEditorInputs] = useState<{ text: string }>({
+    text: code,
+  });
+
+  // Sync external code changes (e.g. file upload) to the editor, but skip
+  // changes that originated from the editor itself to avoid clobbering
+  useEffect(() => {
+    if (code !== lastEditorOutput.current) {
+      setEditorInputs({ text: code });
+    }
+  }, [code]);
 
   const urlWithOptions = useCallback(() => {
     const options = blobToBase64String({
@@ -45,29 +56,22 @@ const LocalEditor: React.FC<{
 
   const onCodeOutputsUpdate = useCallback(
     (outputs: MetaframeInputMap) => {
+      lastEditorOutput.current = outputs.text;
       setCode(outputs.text);
     },
-    [setCode]
+    [setCode],
   );
 
   return (
-    //  <Box id={"BORK"} overflow={'hidden'} h={`calc(100vh - 3rem)`} minH={`calc(100vh - 3rem)`} width={"100%"} bg={'white'}>
     <MetaframeStandaloneComponent
       url={urlWithOptions()}
-      inputs={inputs.current}
+      inputs={editorInputs}
       onOutputs={onCodeOutputsUpdate}
       style={{
         backgroundColor: "white",
-        // border: '1px solid red',
         height: `calc(100vh - 3rem)`,
         width: "100%",
-        // left: 0,
-        // position: 'absolute',
-        // top: 0,
       }}
     />
-    // {/* <Box id={"BORK2"} h={`100%`}  minHeight={`100%`} width={"100%"} bg={'green'}></Box> */}
-    // </Box>
   );
 };
-// overflow={'hidden'}

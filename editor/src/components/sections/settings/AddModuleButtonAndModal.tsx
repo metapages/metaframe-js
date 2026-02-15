@@ -1,7 +1,7 @@
-import React, { useCallback } from 'react';
+import React, { useCallback } from "react";
 
-import { useFormik } from 'formik';
-import * as yup from 'yup';
+import { useFormik } from "formik";
+import * as yup from "yup";
 
 import {
   Button,
@@ -15,8 +15,8 @@ import {
   ModalOverlay,
   Text,
   useDisclosure,
-} from '@chakra-ui/react';
-import { Plus } from '@phosphor-icons/react';
+} from "@chakra-ui/react";
+import { Plus } from "@phosphor-icons/react";
 
 const validationSchema = yup.object({
   modulePath: yup.string(),
@@ -36,7 +36,7 @@ export const AddModuleButtonAndModal: React.FC<{
       }
       onClose();
     },
-    [onClose, add]
+    [onClose, add],
   );
 
   const formik = useFormik({

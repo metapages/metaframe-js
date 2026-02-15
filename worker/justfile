@@ -12,6 +12,10 @@ dev:
     
 check: test
 
+# Format TypeScript
+@fmt:
+    deno fmt .
+
 # Quick type check
 @test:
     deno check server.ts

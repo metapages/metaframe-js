@@ -12,8 +12,10 @@ export const ModuleRow: React.FC<{
     <Tr>
       <Td>
         <HStack gap={3}>
-          <Icon cursor={'arrow'} as={Code} boxSize={7}></Icon>
-          <Text wordBreak={'break-all'} whiteSpace={'normal'}>{name}</Text>
+          <Icon cursor={"arrow"} as={Code} boxSize={7}></Icon>
+          <Text wordBreak={"break-all"} whiteSpace={"normal"}>
+            {name}
+          </Text>
         </HStack>
       </Td>
       <Td>

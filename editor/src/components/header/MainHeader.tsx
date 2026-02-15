@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 
-import { useAiText } from '/@/hooks/useAiText';
-import { useStore } from '/@/store';
+import { useAiText } from "/@/hooks/useAiText";
+import { useStore } from "/@/store";
 
 import {
   Box,
@@ -10,17 +10,18 @@ import {
   Icon,
   Tooltip,
   useMediaQuery,
-} from '@chakra-ui/react';
-import { useHashParamBoolean } from '@metapages/hash-query/react-hooks';
+} from "@chakra-ui/react";
+import { useHashParamBoolean } from "@metapages/hash-query/react-hooks";
 import {
   Gear,
   MagicWand,
   QuestionMark,
+  UploadSimple,
   X,
-} from '@phosphor-icons/react';
+} from "@phosphor-icons/react";
 
-import { ButtonCopyExternalLink } from './components/ButtonCopyExternalLink';
-import { ButtonGotoExternalLink } from './components/ButtonGotoExternalLink';
+import { ButtonCopyExternalLink } from "./components/ButtonCopyExternalLink";
+import { ButtonGotoExternalLink } from "./components/ButtonGotoExternalLink";
 
 export const capitalize = (str: string): string => {
   if (!str.length) return str;
@@ -35,12 +36,13 @@ export const MainHeader: React.FC = () => {
   // only show the edit button if the command points to a script in the inputs
   const setShownPanel = useStore((state) => state.setShownPanel);
   const shownPanel = useStore((state) => state.shownPanel);
+  const triggerFileUpload = useStore((state) => state.triggerFileUpload);
 
   const icon = (
     svg: React.ElementType,
     tooltipText: string,
     callback: () => void,
-    hover?: boolean
+    hover?: boolean,
   ) => {
     return (
       <Box position="relative" display="inline-block">
@@ -72,7 +74,7 @@ export const MainHeader: React.FC = () => {
           Gear,
           "settings",
           () => setShownPanel(shownPanel === "settings" ? null : "settings"),
-          true
+          true,
         )}
         {icon(X, "close", () => setEdit(false))}
       </HStack>
@@ -105,26 +107,27 @@ export const MainHeader: React.FC = () => {
         bg={"gray.100"}
         justifyContent={"space-around"}
         h={"headerHeight"}
-        w={"16rem"}
+        w={"18rem"}
       >
         {icon(
           MagicWand,
           "AI",
           () => copyToClipboard(),
           // () => setShownPanel(shownPanel === "ai" ? null : "ai"),
-          true
+          true,
         )}
+        {icon(UploadSimple, "upload", () => triggerFileUpload(), true)}
         {icon(
           Gear,
           "settings",
           () => setShownPanel(shownPanel === "settings" ? null : "settings"),
-          true
+          true,
         )}
         {icon(
           QuestionMark,
           "docs",
           () => setShownPanel(shownPanel === "docs" ? null : "docs"),
-          true
+          true,
         )}
         <ButtonCopyExternalLink />
         <ButtonGotoExternalLink />

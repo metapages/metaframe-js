@@ -1,6 +1,6 @@
-import { useCallback } from 'react';
+import { useCallback } from "react";
 
-import { useHashParamJson } from '@metapages/hash-query/react-hooks';
+import { useHashParamJson } from "@metapages/hash-query/react-hooks";
 
 export type Theme = "light" | "vs-dark" | "system";
 
@@ -26,7 +26,7 @@ export const useOptions = (): [Options, SetOption, (o: Options) => void] => {
       }
       setOptions(newOptions);
     },
-    [options, setOptions]
+    [options, setOptions],
   );
   return [options, setOption, setOptions];
 };

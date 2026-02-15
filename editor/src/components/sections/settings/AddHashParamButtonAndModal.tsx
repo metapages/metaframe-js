@@ -1,7 +1,7 @@
-import React, { useCallback } from 'react';
+import React, { useCallback } from "react";
 
-import { useFormik } from 'formik';
-import * as yup from 'yup';
+import { useFormik } from "formik";
+import * as yup from "yup";
 
 import {
   Button,
@@ -20,15 +20,15 @@ import {
   Textarea,
   useDisclosure,
   VStack,
-} from '@chakra-ui/react';
-import { Plus, PencilSimple } from '@phosphor-icons/react';
-import { HashParamDefinition, HashParamType } from '@metapages/metapage';
+} from "@chakra-ui/react";
+import { Plus, PencilSimple } from "@phosphor-icons/react";
+import { HashParamDefinition, HashParamType } from "@metapages/metapage";
 
 export type HashParamMetadata = HashParamDefinition;
 
 const validationSchema = yup.object({
-  name: yup.string().required('Hash parameter name is required'),
-  type: yup.string().required('Type is required'),
+  name: yup.string().required("Hash parameter name is required"),
+  type: yup.string().required("Type is required"),
   description: yup.string().optional(),
   label: yup.string().optional(),
   allowedValues: yup.string().optional(),
@@ -49,14 +49,23 @@ export const AddHashParamButtonAndModal: React.FC<{
     (values: FormType) => {
       if (values.name && values.type) {
         const allowedValues = values.allowedValues
-          ? values.allowedValues.split(',').map(v => v.trim()).filter(v => v.length > 0)
+          ? values.allowedValues
+              .split(",")
+              .map((v) => v.trim())
+              .filter((v) => v.length > 0)
           : undefined;
-        
+
         const metadata: HashParamDefinition = {
           type: values.type as HashParamType,
-          ...(values.description && values.description.trim() ? { description: values.description } : {}),
-          ...(values.label && values.label.trim() ? { label: values.label } : {}),
-          ...(allowedValues && allowedValues.length > 0 ? { allowedValues } : {}),
+          ...(values.description && values.description.trim()
+            ? { description: values.description }
+            : {}),
+          ...(values.label && values.label.trim()
+            ? { label: values.label }
+            : {}),
+          ...(allowedValues && allowedValues.length > 0
+            ? { allowedValues }
+            : {}),
         };
 
         if (isEditing && editingHashParam && edit) {
@@ -70,7 +79,7 @@ export const AddHashParamButtonAndModal: React.FC<{
         onCloseEdit();
       }
     },
-    [onClose, add, edit, isEditing, editingHashParam, onCloseEdit]
+    [onClose, add, edit, isEditing, editingHashParam, onCloseEdit],
   );
 
   const formik = useFormik({
@@ -79,7 +88,7 @@ export const AddHashParamButtonAndModal: React.FC<{
       type: editingHashParam?.metadata.type || "",
       description: editingHashParam?.metadata.description || "",
       label: editingHashParam?.metadata.label || "",
-      allowedValues: editingHashParam?.metadata.allowedValues?.join(', ') || "",
+      allowedValues: editingHashParam?.metadata.allowedValues?.join(", ") || "",
     },
     onSubmit,
     validationSchema,
@@ -158,7 +167,9 @@ export const AddHashParamButtonAndModal: React.FC<{
                 </FormControl>
 
                 <FormControl>
-                  <FormLabel htmlFor="description">Description (optional)</FormLabel>
+                  <FormLabel htmlFor="description">
+                    Description (optional)
+                  </FormLabel>
                   <Textarea
                     id="description"
                     name="description"
@@ -170,7 +181,9 @@ export const AddHashParamButtonAndModal: React.FC<{
                 </FormControl>
 
                 <FormControl>
-                  <FormLabel htmlFor="allowedValues">Allowed Values (optional)</FormLabel>
+                  <FormLabel htmlFor="allowedValues">
+                    Allowed Values (optional)
+                  </FormLabel>
                   <Input
                     id="allowedValues"
                     name="allowedValues"
@@ -180,7 +193,8 @@ export const AddHashParamButtonAndModal: React.FC<{
                     value={formik.values.allowedValues}
                   />
                   <Text fontSize="xs" color="gray.500" mt={1}>
-                    Enter comma-separated values if this parameter has a restricted set of allowed values
+                    Enter comma-separated values if this parameter has a
+                    restricted set of allowed values
                   </Text>
                 </FormControl>
               </VStack>

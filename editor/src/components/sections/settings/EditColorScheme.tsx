@@ -36,7 +36,7 @@ export const EditColorScheme: React.FC = () => {
     (values: FormType) => {
       setOption("theme", values.theme === "system" ? undefined : values.theme);
     },
-    [setOption]
+    [setOption],
   );
 
   const formik = useFormik({
@@ -77,7 +77,7 @@ export const EditColorScheme: React.FC = () => {
       {Object.keys(validationSchema.fields as any)
         .filter(
           (fieldName) =>
-            (validationSchema.fields as any)[fieldName].type === "boolean"
+            (validationSchema.fields as any)[fieldName].type === "boolean",
         )
         .map((fieldName) => (
           <FormControl pb="1rem" key={fieldName}>

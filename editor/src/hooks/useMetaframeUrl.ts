@@ -1,7 +1,4 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useEffect, useState } from "react";
 
 import {
   deleteHashParamFromUrl,
@@ -9,10 +6,10 @@ import {
   setHashParamValueJsonInUrl,
   useHashParamBase64,
   useHashParamJson,
-} from '@metapages/hash-query/react-hooks';
-import { MetaframeDefinitionV1 } from '@metapages/metapage';
+} from "@metapages/hash-query/react-hooks";
+import { MetaframeDefinitionV1 } from "@metapages/metapage";
 
-import { DataRef } from '../components/sections/settings/SectionInputs';
+import { DataRef } from "../components/sections/settings/SectionInputs";
 
 export const useMetaframeUrl = () => {
   const [url, setUrl] = useState<string>();
@@ -43,14 +40,18 @@ export const useMetaframeUrl = () => {
     // 1!
     if (code) {
       let checkedCode = code;
-      if (code && (code.startsWith("%") || (code.indexOf("\n") === -1 && code.indexOf("%") > -1))) {
+      if (
+        code &&
+        (code.startsWith("%") ||
+          (code.indexOf("\n") === -1 && code.indexOf("%") > -1))
+      ) {
         checkedCode = decodeURIComponent(code);
       }
       url = setHashParamValueBase64EncodedInUrl(url, "js", checkedCode);
     }
     // Remove the c and v hash params since they are set in the searchParams
-      url = deleteHashParamFromUrl(url, "c");
-      url = deleteHashParamFromUrl(url, "v");
+    url = deleteHashParamFromUrl(url, "c");
+    url = deleteHashParamFromUrl(url, "v");
     setUrl(url.href);
   }, [code, metaframeDef, modules, inputs, setUrl]);
 

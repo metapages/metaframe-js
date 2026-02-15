@@ -1,10 +1,7 @@
-import React, {
-  useCallback,
-  useState,
-} from 'react';
+import React, { useCallback, useState } from "react";
 
-import { useFormik } from 'formik';
-import * as yup from 'yup';
+import { useFormik } from "formik";
+import * as yup from "yup";
 
 import {
   Button,
@@ -27,19 +24,15 @@ import {
   Tr,
   useDisclosure,
   VStack,
-} from '@chakra-ui/react';
-import { useHashParamJson } from '@metapages/hash-query/react-hooks';
+} from "@chakra-ui/react";
+import { useHashParamJson } from "@metapages/hash-query/react-hooks";
 import {
   isEmptyMetaframeDefinition,
   MetaframeDefinitionV2,
-} from '@metapages/metapage';
-import {
-  DownloadSimple,
-  Plus,
-  UploadSimple,
-} from '@phosphor-icons/react';
+} from "@metapages/metapage";
+import { DownloadSimple, Plus, UploadSimple } from "@phosphor-icons/react";
 
-import { ButtonDeleteWithConfirm } from './ButtonDeleteWithConfirm';
+import { ButtonDeleteWithConfirm } from "./ButtonDeleteWithConfirm";
 
 const validationSchema = yup.object({
   name: yup.string(),
@@ -70,7 +63,7 @@ export const SectionIO: React.FC = () => {
         setDefinition(newIoValues);
       }
     },
-    [definition, setDefinition]
+    [definition, setDefinition],
   );
 
   const onSubmit = useCallback(
@@ -94,7 +87,7 @@ export const SectionIO: React.FC = () => {
       }
       onClose();
     },
-    [onClose, isInput, definition, setDefinition]
+    [onClose, isInput, definition, setDefinition],
   );
 
   const formik = useFormik({
@@ -124,15 +117,25 @@ export const SectionIO: React.FC = () => {
         justifyContent="flex-start"
         alignItems="stretch"
       >
-        <HStack alignItems="flex-start" width="100%" justifyContent="space-between">
-        <VStack alignItems={'flex-start'}>
-          <Text fontWeight={600}>Define Inputs and Outputs</Text>
-          <Text>
-          <a href="https://docs.metapage.io/docs/connect-inputs-outputs" target="_top" rel="noopener noreferrer">For connections in a metapage</a>
-          </Text>
-        </VStack>
-        
-      </HStack>
+        <HStack
+          alignItems="flex-start"
+          width="100%"
+          justifyContent="space-between"
+        >
+          <VStack alignItems={"flex-start"}>
+            <Text fontWeight={600}>
+              Set Known Inputs and Outputs in definition (advanced){" "}
+              <a
+                href="https://docs.metapage.io/docs/connect-inputs-outputs"
+                target="_top"
+                rel="noopener noreferrer"
+              >
+                [docs]
+              </a>
+            </Text>
+          </VStack>
+        </HStack>
+
         <HStack w="100%" justifyContent="space-between" alignItems="flex-start">
           <VStack justifyContent="flex-start" w="50%">
             <Button
@@ -156,7 +159,7 @@ export const SectionIO: React.FC = () => {
                       type={definition.inputs[name].type}
                       onDelete={() => deleteInput(true, name)}
                     />
-                  )
+                  ),
                 )}
               </Tbody>
             </Table>

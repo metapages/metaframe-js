@@ -1,14 +1,10 @@
-import { useCallback } from 'react';
+import { useCallback } from "react";
 
-import { useFormik } from 'formik';
-import * as yup from 'yup';
+import { useFormik } from "formik";
+import * as yup from "yup";
 
-import {
-  Input,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
-import { useHashParam } from '@metapages/hash-query/react-hooks';
+import { Input, Text, VStack } from "@chakra-ui/react";
+import { useHashParam } from "@metapages/hash-query/react-hooks";
 
 const validationSchema = yup.object({
   editorWidth: yup.string(),
@@ -24,7 +20,7 @@ export const EditEditorWidth: React.FC = () => {
         setEditorWidth(values.editorWidth);
       }
     },
-    [setEditorWidth]
+    [setEditorWidth],
   );
 
   const formik = useFormik({
@@ -37,7 +33,9 @@ export const EditEditorWidth: React.FC = () => {
 
   return (
     <VStack align="flex-start" w="100%" minW={"100%"} p={6}>
-      <Text fontWeight={700}>Editor Width (e.g. 80ch, 50%. Default unit is 'ch')</Text>
+      <Text fontWeight={700}>
+        Editor Width (e.g. 80ch, 50%. Default unit is 'ch')
+      </Text>
       <form onSubmit={formik.handleSubmit}>
         <Input
           id="editorWidth"

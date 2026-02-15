@@ -27,7 +27,7 @@
     "@fontsource-variable/jetbrains-mono": "^5.1.1",
     "@metapages/hash-query": "^0.9.12",
     "@metapages/metaframe-chakra-theme": "^0.0.16",
-    "@metapages/metapage": "^1.9.2",
+    "@metapages/metapage": "^1.10.0",
     "@metapages/metapage-react": "^0.2.6",
     "@phosphor-icons/react": "^2.1.7",
     "@react-typed-hooks/use-key-press": "^1.0.5",
@@ -41,6 +41,7 @@
     "zustand": "^5.0.0-rc.2"
   },
   "devDependencies": {
+    "prettier": "^3.2.5",
     "@types/node": "^18.19.2",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",

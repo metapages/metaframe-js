@@ -35,12 +35,15 @@ check:
   just editor/check
   just worker/check
 
+# Format TypeScript (editor: Prettier, worker: deno fmt)
+fmt:
+  just editor/fmt
+  just worker/fmt
+
 # DEV: generate TLS certs for HTTPS over localhost https://blog.filippo.io/mkcert-valid-https-certificates-for-localhost/
-@_mkcert:
-  if [ ! -f .traefik/certs/local-key.pem ]; then \
-      mkdir -p .traefik/certs ; \
-      mkcert -cert-file .traefik/certs/local-cert.pem -key-file .traefik/certs/local-key.pem {{APP_FQDN}} localhost ; \
-  fi
+@_mkcert: _delete-certs
+  mkdir -p .traefik/certs
+  mkcert -cert-file .traefik/certs/local-cert.pem -key-file .traefik/certs/local-key.pem {{APP_FQDN}} s3.localhost localhost
 
 open:
   deno run --allow-all https://deno.land/x/metapages@v0.0.17/exec/open_url.ts 'https://metapages.github.io/load-page-when-available/?url=https://{{APP_FQDN}}:{{APP_PORT}}'
@@ -65,11 +68,13 @@ publish: _ensure_deployctl
   just worker/test
 
 # Delete all cached and generated files, and docker volumes
-clean:
+clean: _delete-certs
     just editor/clean
-    rm -rf .traefik/certs
     rm -rf deploy
     docker compose down -v
+
+@_delete-certs:
+  rm -rf .traefik/certs
 
 show-metapage-lib:
   @rg "@metapages/metapage@"

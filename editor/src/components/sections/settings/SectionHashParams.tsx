@@ -3,12 +3,16 @@ import { useCallback, useState } from "react";
 import { Center, HStack, Text, VStack } from "@chakra-ui/react";
 import { useHashParamJson } from "@metapages/hash-query/react-hooks";
 import {
+  HashParamDefinition,
   isEmptyMetaframeDefinition,
   MetaframeDefinitionV2,
-  HashParamDefinition,
 } from "@metapages/metapage";
+
+import {
+  AddHashParamButtonAndModal,
+  HashParamMetadata,
+} from "./AddHashParamButtonAndModal";
 import { HashParamRow } from "./HashParamRow";
-import { AddHashParamButtonAndModal, HashParamMetadata } from "./AddHashParamButtonAndModal";
 
 export const SectionHashParams: React.FC = () => {
   const [definition, setDefinition] = useHashParamJson<
@@ -41,7 +45,7 @@ export const SectionHashParams: React.FC = () => {
       newDefinition.version = "1";
       setDefinition(newDefinition);
     },
-    [definition, setDefinition]
+    [definition, setDefinition],
   );
 
   const editHashParam = useCallback(
@@ -60,7 +64,7 @@ export const SectionHashParams: React.FC = () => {
             };
           });
         }
-        
+
         // If the name changed, delete the old entry
         if (oldName !== name) {
           delete newDefinition.hashParams[oldName];
@@ -75,7 +79,7 @@ export const SectionHashParams: React.FC = () => {
         }
       }
     },
-    [definition, setDefinition]
+    [definition, setDefinition],
   );
 
   const deleteHashParam = useCallback(
@@ -100,7 +104,7 @@ export const SectionHashParams: React.FC = () => {
         }
       }
     },
-    [definition, setDefinition]
+    [definition, setDefinition],
   );
 
   // Convert hashParams to object format for rendering
@@ -124,7 +128,6 @@ export const SectionHashParams: React.FC = () => {
   })();
 
   const hashParamEntries = Object.entries(hashParamsObject);
-  const hashParamNames = hashParamEntries.map(([name]) => name);
 
   return (
     <VStack width="100%" pt={5} gap={4}>
@@ -135,9 +138,19 @@ export const SectionHashParams: React.FC = () => {
         justifyContent="space-between"
       >
         <VStack alignItems={"flex-start"}>
-          <Text fontWeight={600}>Allowed Hash Parameters</Text>
+          <Text fontWeight={600}>
+            Allowed Hash Parameters (advanced){" "}
+            <a
+              href="https://github.com/metapages/metapage/blob/d46ca0803addefb26786a90519c19001847c5812/app/libs/src/metapage/v2/metaframe.ts#L23"
+              target="_top"
+              rel="noopener noreferrer"
+            >
+              [docs]
+            </a>
+          </Text>
           <Text>
-            Define which hash parameters are allowed in the metaframe URL
+            Whitelist which hash parameters are allowed in the metaframe URL.
+            Metapages might remove non-whitelisted hash parameters from the URL.
           </Text>
         </VStack>
       </HStack>

@@ -1,17 +1,13 @@
-import {
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useState } from "react";
 
-import { useToast } from '@chakra-ui/react';
+import { useToast } from "@chakra-ui/react";
 import {
   getHashParamValueJsonFromWindow,
   useHashParamBase64,
-} from '@metapages/hash-query/react-hooks';
-import { useMetaframe } from '@metapages/metapage-react/hooks';
+} from "@metapages/hash-query/react-hooks";
+import { useMetaframe } from "@metapages/metapage-react/hooks";
 
-import { DataRef } from '../components/sections/settings/SectionInputs';
+import { DataRef } from "../components/sections/settings/SectionInputs";
 
 const llmsCode = `// Your code here:
 export const onInputs = (inputs) => {
@@ -86,17 +82,20 @@ export const useAiText = (): {
       if (Object.keys(inputsFromUrl).length > 0) {
         let inputsString = "";
         Object.entries(inputsFromUrl).forEach(([key, value]) => {
-          inputsString += `  - ${key}: ${typeof(value) === "string" ? value : JSON.stringify(value).substring(0, 4000)}...\n`;
+          inputsString += `  - ${key}: ${typeof value === "string" ? value : JSON.stringify(value).substring(0, 4000)}...\n`;
         });
-        
-        text = text.replace("<insert current inputs here, if any>", `\n *\n * All metaframe inputs (not always at the same time): \n * ${inputsString.length < 8000 ? inputsString : inputsString.substring(0, 8000) + "..."}`);
+
+        text = text.replace(
+          "<insert current inputs here, if any>",
+          `\n *\n All metaframe inputs (not always at the same time):\n${inputsString.length < 8000 ? inputsString : inputsString.substring(0, 8000) + "..."}`,
+        );
       }
 
       await navigator.clipboard.writeText(text);
       toast({
         title: "AI Prompt copied to clipboard",
         description:
-          "Now paste into e.g. Claude Code or ChatGPT, or any other AI tool that supports code.",
+          "Now paste into e.g. Claude Code or ChatGPT, or any other coding AI tool",
         status: "success",
         duration: 5000,
         isClosable: true,
