@@ -46,6 +46,7 @@ if (s3Credentials) {
       credentials: s3Credentials,
       // Disable flexible checksums to avoid Deno CRC32 compatibility issues
       requestChecksumCalculation: "WHEN_REQUIRED",
+      responseChecksumValidation: "WHEN_REQUIRED",
     });
     if (S3_ENDPOINT) {
       console.log(
