@@ -13,15 +13,15 @@ import {
 } from "@chakra-ui/react";
 import { useHashParamBoolean } from "@metapages/hash-query/react-hooks";
 import {
-  Gear,
-  MagicWand,
-  QuestionMark,
-  UploadSimple,
-  X,
+  GearIcon,
+  MagicWandIcon,
+  QuestionMarkIcon,
+  UploadSimpleIcon,
+  XIcon,
 } from "@phosphor-icons/react";
 
 import { ButtonCopyExternalLink } from "./components/ButtonCopyExternalLink";
-import { ButtonGotoExternalLink } from "./components/ButtonGotoExternalLink";
+import { ButtonShortenUrl } from "./components/ButtonShortenUrl";
 
 export const capitalize = (str: string): string => {
   if (!str.length) return str;
@@ -71,12 +71,12 @@ export const MainHeader: React.FC = () => {
         borderBottom={"1px"}
       >
         {icon(
-          Gear,
+          GearIcon,
           "settings",
           () => setShownPanel(shownPanel === "settings" ? null : "settings"),
           true,
         )}
-        {icon(X, "close", () => setEdit(false))}
+        {icon(XIcon, "close", () => setEdit(false))}
       </HStack>
     );
   }
@@ -107,31 +107,32 @@ export const MainHeader: React.FC = () => {
         bg={"gray.100"}
         justifyContent={"space-around"}
         h={"headerHeight"}
-        w={"18rem"}
+        w={"auto"}
       >
         {icon(
-          MagicWand,
+          MagicWandIcon,
           "AI",
           () => copyToClipboard(),
           // () => setShownPanel(shownPanel === "ai" ? null : "ai"),
           true,
         )}
-        {icon(UploadSimple, "upload", () => triggerFileUpload(), true)}
+        {icon(UploadSimpleIcon, "upload", () => triggerFileUpload(), true)}
         {icon(
-          Gear,
+          GearIcon,
           "settings",
           () => setShownPanel(shownPanel === "settings" ? null : "settings"),
           true,
         )}
+        <ButtonCopyExternalLink />
+        <ButtonShortenUrl />
+        {/* <ButtonGotoExternalLink /> */}
         {icon(
-          QuestionMark,
+          QuestionMarkIcon,
           "docs",
           () => setShownPanel(shownPanel === "docs" ? null : "docs"),
           true,
         )}
-        <ButtonCopyExternalLink />
-        <ButtonGotoExternalLink />
-        {icon(X, "close", () => setEdit(false))}
+        {icon(XIcon, "close", () => setEdit(false))}
       </HStack>
     </HStack>
   );

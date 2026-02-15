@@ -1,7 +1,7 @@
 import { useMetaframeUrl } from "/@/hooks/useMetaframeUrl";
 
 import { Icon, Link, Tooltip } from "@chakra-ui/react";
-import { ArrowSquareOut } from "@phosphor-icons/react";
+import { ArrowSquareOutIcon } from "@phosphor-icons/react";
 
 export const ButtonGotoExternalLink: React.FC = () => {
   const { url } = useMetaframeUrl();
@@ -15,7 +15,7 @@ export const ButtonGotoExternalLink: React.FC = () => {
           bg={"none"}
           p={"3px"}
           borderRadius={5}
-          as={ArrowSquareOut}
+          as={ArrowSquareOutIcon}
           boxSize="7"
         />
       </Tooltip>
