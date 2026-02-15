@@ -10,7 +10,7 @@ import {
   setHashParamValueJsonInHashString,
 } from "@metapages/hash-query/react-hooks";
 import { useMetaframe } from "@metapages/metapage-react/hooks";
-import { Link } from "@phosphor-icons/react";
+import { CopyIcon } from "@phosphor-icons/react";
 
 async function encodeBase64(blob: Blob) {
   // blob: Blob
@@ -99,14 +99,14 @@ export const ButtonCopyExternalLink: React.FC = () => {
 
   return (
     <Box position="relative" display="inline-block">
-      <Tooltip label={"Copy Link"}>
+      <Tooltip label={"Copy URL"}>
         <Icon
           aria-label="copy url"
           _hover={{ bg: "gray.300" }}
           bg={"none"}
           p={"3px"}
           borderRadius={5}
-          as={Link}
+          as={CopyIcon}
           boxSize="7"
           onClick={() => {
             onCopy();
