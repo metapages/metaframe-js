@@ -16,8 +16,7 @@ import { getSignedUrl } from "npm:@aws-sdk/s3-request-presigner";
 const port: number = parseInt(Deno.env.get("PORT") || "3000");
 
 // S3-compatible storage config (works with Cloudflare R2 and MinIO)
-const S3_ENDPOINT =
-  "https://87fd2334b246ea24741346c2a2140fa8.r2.cloudflarestorage.com"; // Deno.env.get("S3_ENDPOINT");
+const S3_ENDPOINT = Deno.env.get("S3_ENDPOINT");
 const S3_ACCESS_KEY_ID = Deno.env.get("S3_ACCESS_KEY_ID");
 const S3_SECRET_ACCESS_KEY = Deno.env.get("S3_SECRET_ACCESS_KEY");
 const S3_BUCKET_NAME = Deno.env.get("S3_BUCKET_NAME") || "uploads";
@@ -45,6 +44,8 @@ if (s3Credentials) {
       forcePathStyle: true,
       region: "auto",
       credentials: s3Credentials,
+      // Disable flexible checksums to avoid Deno CRC32 compatibility issues
+      requestChecksumCalculation: "WHEN_REQUIRED",
     });
     if (S3_ENDPOINT) {
       console.log(
@@ -246,15 +247,23 @@ router.post("/api/shorten", async (ctx: any) => {
 
   try {
     const body = await (ctx.request as any).body({ type: "json" }).value;
-    const { hashParams, sha256 } = body;
+    const { hashParams } = body;
 
-    if (!hashParams || !sha256) {
+    if (!hashParams) {
       ctx.response.status = 400;
       ctx.response.body = {
-        error: "Missing required fields: hashParams, sha256",
+        error: "Missing required field: hashParams",
       };
       return;
     }
+
+    // Calculate SHA256 hash on the server
+    const encoder = new TextEncoder();
+    const data = encoder.encode(hashParams);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const sha256 = Array.from(new Uint8Array(hashBuffer))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
 
     // Store in S3 with key j/{sha256}
     const key = `j/${sha256}`;

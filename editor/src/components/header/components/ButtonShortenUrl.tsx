@@ -29,27 +29,22 @@ export const ButtonShortenUrl: React.FC = () => {
         undefined,
       );
 
-      // Compute SHA256 (pattern from useFileUpload.ts lines 13-18)
-      const encoder = new TextEncoder();
-      const data = encoder.encode(cleanedHash);
-      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-      const sha256 = Array.from(new Uint8Array(hashBuffer))
-        .map((b) => b.toString(16).padStart(2, "0"))
-        .join("");
-
-      // Store in S3 via API
+      // Store in S3 via API (SHA256 calculated on server)
       const response = await fetch("/api/shorten", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           hashParams: cleanedHash,
-          sha256,
         }),
       });
 
       if (!response.ok) {
         throw new Error("Failed to shorten URL");
       }
+
+      // Get the SHA256 from the server response
+      const data = await response.json();
+      const sha256 = data.id;
 
       // Construct shortened URL and copy to clipboard
       const origin = window.location.origin;
