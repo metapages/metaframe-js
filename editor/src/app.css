@@ -1,3 +1,7 @@
+:root {
+  color-scheme: light;
+}
+
 .iframe-container {
   overflow: hidden;
   position: relative;
