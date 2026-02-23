@@ -103,8 +103,8 @@ export const InputRow: React.FC<{
               textOverflow="ellipsis"
             >
               {typeof value === "string" && value.length > 100
-                ? `${value.substring(0, 100)}...`
-                : `${JSON.stringify(value).substring(0, 100)}...`}
+                ? `${value?.substring(0, 100) || ""}...`
+                : `${JSON.stringify(value)?.substring(0, 100) || ""}...`}
             </Text>
           )}
         </VStack>
