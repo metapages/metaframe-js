@@ -322,7 +322,7 @@ router.get("/j/:sha256", async (ctx: any) => {
     const hashParams = await response.Body.transformToString();
 
     // Construct origin from request headers
-    const protocol = ctx.request.headers.get("x-forwarded-proto") || "http";
+    const protocol = ctx.request.headers.get("x-forwarded-proto") || "https";
     const host = ctx.request.headers.get("host");
     const origin = `${protocol}://${host}`;
 
