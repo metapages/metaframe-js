@@ -5,7 +5,7 @@ import {
   Router,
 } from "https://deno.land/x/oak@v10.2.0/mod.ts";
 import staticFiles from "https://deno.land/x/static_files@1.1.6/mod.ts";
-import { MetaframeDefinition } from "https://esm.sh/@metapages/metapage@1.10.2";
+import { MetaframeDefinition } from "https://esm.sh/@metapages/metapage@1.10.3";
 import {
   GetObjectCommand,
   PutObjectCommand,
