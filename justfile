@@ -57,6 +57,8 @@ publish: _ensure_deployctl
   mkdir -p deploy
   cp -r editor/dist deploy/editor
   cp -r worker/server.ts deploy/
+  cp -r worker/deno.json deploy/
+  cp -r worker/deno.lock deploy/
   cp -r worker/index.html deploy/
   cp -r worker/sw.js deploy/
   cp -r worker/cache-test-utils.js deploy/
@@ -65,9 +67,40 @@ publish: _ensure_deployctl
   deployctl deploy --project=metaframe-js --prod server.ts
 
 # Checks and tests
-@test:
+test:
   just editor/test
   just worker/test
+  just _integration-test
+
+# Run integration tests: starts the dev stack, runs vitest unit + playwright integration tests, tears down
+_integration-test: _mkcert
+  #!/usr/bin/env bash
+  set -uo pipefail
+
+  npm --prefix test install
+  npx --prefix test playwright install chromium
+
+  # Run unit tests (no server needed)
+  npm --prefix test run test:unit
+
+  # Start dev stack in background; use port 0 for Traefik web UI to avoid conflicts with host ports
+  TRAEFIK_WEB_UI_PORT=0 docker compose up --build -d
+
+  # On exit (success or failure), shut down the dev stack and preserve exit code
+  cleanup() {
+    local code=$?
+    docker compose down
+    exit $code
+  }
+  trap cleanup EXIT
+
+  # Wait for server to be ready
+  echo "Waiting for dev server at https://{{APP_FQDN}}:{{APP_PORT}}..."
+  timeout 90 bash -c 'until curl -skf "https://{{APP_FQDN}}:{{APP_PORT}}" >/dev/null 2>&1; do sleep 2; done'
+  echo "Dev server ready."
+
+  # Run playwright integration tests
+  (cd test && npx playwright test)
 
 # Delete all cached and generated files, and docker volumes
 clean: _delete-certs

@@ -19,6 +19,7 @@ import {
   Radio,
   RadioGroup,
   Text,
+  Textarea,
   useDisclosure,
   useToast,
   VStack,
@@ -26,16 +27,22 @@ import {
 import { useHashParamBase64 } from "@metapages/hash-query/react-hooks";
 import { Plus, UploadSimple } from "@phosphor-icons/react";
 
+export type DataRef = {
+  type?: string;
+  value: string | any;
+};
+
 export const AddInputButtonAndModal: React.FC<{
-  add: (name: string, url: string) => void;
+  add: (name: string, dataref: DataRef) => void;
   text?: string;
 }> = ({ add, text }) => {
   const { isOpen, onClose, onToggle } = useDisclosure();
   const toast = useToast();
   const [code, setCode] = useHashParamBase64("js");
 
-  const [mode, setMode] = useState<"url" | "file">("url");
+  const [mode, setMode] = useState<"inline" | "url" | "file">("inline");
   const [name, setName] = useState("");
+  const [inlineValue, setInlineValue] = useState("");
   const [url, setUrl] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -43,8 +50,9 @@ export const AddInputButtonAndModal: React.FC<{
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const resetForm = useCallback(() => {
-    setMode("url");
+    setMode("inline");
     setName("");
+    setInlineValue("");
     setUrl("");
     setSelectedFile(null);
     setIsUploading(false);
@@ -62,9 +70,27 @@ export const AddInputButtonAndModal: React.FC<{
 
       if (!name) return;
 
+      if (mode === "inline") {
+        if (!inlineValue) return;
+        const trimmed = inlineValue.trim();
+        let dataref: DataRef;
+        if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+          try {
+            dataref = { type: "json", value: JSON.parse(trimmed) };
+          } catch {
+            dataref = { type: "inline", value: inlineValue };
+          }
+        } else {
+          dataref = { type: "inline", value: inlineValue };
+        }
+        add(name, dataref);
+        closeAndClear();
+        return;
+      }
+
       if (mode === "url") {
         if (!url) return;
-        add(name, url);
+        add(name, { type: "url", value: url });
         closeAndClear();
         return;
       }
@@ -120,7 +146,7 @@ export const AddInputButtonAndModal: React.FC<{
 
         setUploadProgress(100);
         const canonicalUrl = `${window.location.origin}${canonicalPath}`;
-        add(name, canonicalUrl);
+        add(name, { type: "url", value: canonicalUrl });
 
         // Inject code comments so the user/LLM knows how to access the file
         const contentType = selectedFile.type || "application/octet-stream";
@@ -150,11 +176,24 @@ export const AddInputButtonAndModal: React.FC<{
         setUploadProgress(0);
       }
     },
-    [name, url, mode, selectedFile, add, closeAndClear, toast, code, setCode],
+    [
+      name,
+      inlineValue,
+      url,
+      mode,
+      selectedFile,
+      add,
+      closeAndClear,
+      toast,
+      code,
+      setCode,
+    ],
   );
 
   const canSubmit =
-    name && (mode === "url" ? url : selectedFile) && !isUploading;
+    name &&
+    (mode === "inline" ? inlineValue : mode === "url" ? url : selectedFile) &&
+    !isUploading;
 
   return (
     <>
@@ -191,16 +230,30 @@ export const AddInputButtonAndModal: React.FC<{
                   <FormLabel>Source</FormLabel>
                   <RadioGroup
                     value={mode}
-                    onChange={(v) => setMode(v as "url" | "file")}
+                    onChange={(v) => setMode(v as "inline" | "url" | "file")}
                   >
                     <HStack spacing={4}>
+                      <Radio value="inline">Inline Value</Radio>
                       <Radio value="url">URL</Radio>
                       <Radio value="file">File Upload</Radio>
                     </HStack>
                   </RadioGroup>
                 </FormControl>
 
-                {mode === "url" ? (
+                {mode === "inline" ? (
+                  <FormControl>
+                    <FormLabel htmlFor="inlineValue">Value</FormLabel>
+                    <Textarea
+                      id="inlineValue"
+                      placeholder={
+                        'e.g. hello  or  {"key": "value"}  or  [1,2,3]'
+                      }
+                      value={inlineValue}
+                      onChange={(e) => setInlineValue(e.target.value)}
+                      rows={3}
+                    />
+                  </FormControl>
+                ) : mode === "url" ? (
                   <FormControl>
                     <FormLabel htmlFor="url">URL</FormLabel>
                     <Input

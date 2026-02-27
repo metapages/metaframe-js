@@ -290,7 +290,79 @@ router.post("/api/shorten", async (ctx: any) => {
   }
 });
 
-// Shortened URL redirect — fetches hash params from S3 and redirects
+// URL shortening from JSON body — encodes each field to hash-param format
+router.post("/api/shorten/json", async (ctx: any) => {
+  if (!s3PresignClient) {
+    ctx.response.status = 503;
+    ctx.response.body = { error: "URL shortening not configured" };
+    return;
+  }
+
+  try {
+    const body = await (ctx.request as any).body({ type: "json" }).value;
+
+    // Supported keys, sorted alphabetically for SHA256 consistency
+    const supportedKeys = ["definition", "inputs", "js", "modules", "options"];
+    const paramParts: string[] = [];
+
+    for (const key of supportedKeys) {
+      if (body[key] === undefined) continue;
+      if (key === "js") {
+        // js is base64-encoded: btoa(encodeURIComponent(value))
+        paramParts.push(`js=${btoa(encodeURIComponent(body[key]))}`);
+      } else {
+        // other fields are JSON-encoded: encodeURIComponent(JSON.stringify(value))
+        paramParts.push(
+          `${key}=${encodeURIComponent(JSON.stringify(body[key]))}`,
+        );
+      }
+    }
+
+    if (paramParts.length === 0) {
+      ctx.response.status = 400;
+      ctx.response.body = { error: "No recognised fields provided" };
+      return;
+    }
+
+    const hashParams = `?${paramParts.join("&")}`;
+
+    // Calculate SHA256
+    const encoder = new TextEncoder();
+    const data = encoder.encode(hashParams);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const sha256 = Array.from(new Uint8Array(hashBuffer))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+
+    // Store in S3
+    const key = `j/${sha256}`;
+    const command = new PutObjectCommand({
+      Bucket: S3_BUCKET_NAME,
+      Key: key,
+      Body: hashParams,
+      ContentType: "text/plain; charset=utf-8",
+    });
+    await s3PresignClient.send(command);
+
+    const protocol = ctx.request.headers.get("x-forwarded-proto") || "https";
+    const host = ctx.request.headers.get("host");
+    const origin = `${protocol}://${host}`;
+
+    ctx.response.headers.set("Content-Type", "application/json");
+    ctx.response.body = JSON.stringify({
+      id: sha256,
+      shortUrl: `${origin}/j/${sha256}`,
+      fullUrl: `${origin}/#${hashParams}`,
+      hashParams,
+    });
+  } catch (error) {
+    console.error("Shorten JSON error:", error);
+    ctx.response.status = 500;
+    ctx.response.body = { error: "Failed to shorten URL" };
+  }
+});
+
+// Shortened URL — fetches hash params from S3 and serves index.html with injected init script
 router.get("/j/:sha256", async (ctx: any) => {
   if (!s3PresignClient) {
     ctx.response.status = 503;
@@ -317,27 +389,75 @@ router.get("/j/:sha256", async (ctx: any) => {
     });
 
     const response = await s3PresignClient.send(command);
-
-    // Read body stream as string
     const hashParams = await response.Body.transformToString();
 
-    // Construct origin from request headers
-    const protocol = ctx.request.headers.get("x-forwarded-proto") || "https";
-    const host = ctx.request.headers.get("host");
-    const origin = `${protocol}://${host}`;
+    // Serve index.html with injected script that sets window.__SHORT_URL_ID
+    // and calls history.replaceState so the hash is correct before module scripts run
+    const indexHtml = await Deno.readTextFile("./index.html");
+    const injectedScript =
+      `<script id="short-url-init">window.__SHORT_URL_ID = ${
+        JSON.stringify(sha256)
+      };history.replaceState(null, '', window.location.pathname + '#' + ${
+        JSON.stringify(hashParams)
+      });</script>`;
+    const modifiedHtml = indexHtml.replace(
+      "</head>",
+      injectedScript + "\n</head>",
+    );
 
-    // Redirect to origin with hash params
-    const redirectUrl = `${origin}/#${hashParams}`;
+    ctx.response.headers.set("Content-Type", "text/html; charset=utf-8");
+    ctx.response.headers.set("Cache-Control", "no-cache");
+    ctx.response.body = modifiedHtml;
+  } catch (error: any) {
+    console.error("Shortened URL error:", error);
 
+    // Handle S3 NoSuchKey error (404)
+    if (error.name === "NoSuchKey" || error.Code === "NoSuchKey") {
+      ctx.response.status = 404;
+      ctx.response.body = { error: "Shortened URL not found" };
+      return;
+    }
+
+    ctx.response.status = 500;
+    ctx.response.body = { error: "Failed to retrieve shortened URL" };
+  }
+});
+
+// Short URL JSON API — returns id and hashParams for a given sha256
+router.get("/api/j/:sha256", async (ctx: any) => {
+  if (!s3PresignClient) {
+    ctx.response.status = 503;
+    ctx.response.body = { error: "URL shortening not configured" };
+    return;
+  }
+
+  try {
+    const { sha256 } = ctx.params;
+
+    if (!sha256 || !/^[a-f0-9]{64}$/.test(sha256)) {
+      ctx.response.status = 400;
+      ctx.response.body = { error: "Invalid shortened URL ID" };
+      return;
+    }
+
+    const key = `j/${sha256}`;
+    const command = new GetObjectCommand({
+      Bucket: S3_BUCKET_NAME,
+      Key: key,
+    });
+
+    const response = await s3PresignClient.send(command);
+    const hashParams = await response.Body.transformToString();
+
+    ctx.response.headers.set("Content-Type", "application/json");
     ctx.response.headers.set(
       "Cache-Control",
       "public, max-age=31536000, immutable",
     );
-    ctx.response.redirect(redirectUrl);
+    ctx.response.body = JSON.stringify({ id: sha256, hashParams });
   } catch (error: any) {
-    console.error("Shortened URL redirect error:", error);
+    console.error("Short URL API error:", error);
 
-    // Handle S3 NoSuchKey error (404)
     if (error.name === "NoSuchKey" || error.Code === "NoSuchKey") {
       ctx.response.status = 404;
       ctx.response.body = { error: "Shortened URL not found" };

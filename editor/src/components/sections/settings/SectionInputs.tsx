@@ -3,13 +3,10 @@ import { useCallback } from "react";
 import { Center, HStack, Text, VStack } from "@chakra-ui/react";
 import { useHashParamJson } from "@metapages/hash-query/react-hooks";
 
-import { AddInputButtonAndModal } from "./AddInputButtonAndModal";
+import { AddInputButtonAndModal, DataRef } from "./AddInputButtonAndModal";
 import { InputRow } from "./InputRow";
 
-export type DataRef = {
-  type?: string;
-  value: string | any;
-};
+export type { DataRef };
 
 export type InputsHashParam = {
   [key: string]: DataRef;
@@ -21,11 +18,10 @@ export const SectionInputs: React.FC = () => {
   );
 
   const addNewInput = useCallback(
-    (name: string, url: string) => {
-      // Create a dataref object with type "url"
+    (name: string, dataref: DataRef) => {
       const newInputs: InputsHashParam = {
         ...inputs,
-        [name]: { type: "url", value: url },
+        [name]: dataref,
       };
       setInputs(newInputs);
     },
