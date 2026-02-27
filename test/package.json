@@ -1,0 +1,20 @@
+{
+  "name": "metaframe-js-root",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "@aws-sdk/s3-request-presigner": "^3.997.0"
+  },
+  "scripts": {
+    "test:unit": "vitest run"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@testing-library/react": "^14.0.0",
+    "@types/react": "^18.2.0",
+    "jsdom": "^24.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "vitest": "^1.6.0"
+  }
+}

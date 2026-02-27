@@ -9,7 +9,18 @@
       "Bash(grep:*)",
       "Bash(just check:*)",
       "Bash(deno check:*)",
-      "Bash(./editor/node_modules/typescript/bin/tsc:*)"
+      "Bash(./editor/node_modules/typescript/bin/tsc:*)",
+      "Bash(tail:*)",
+      "Bash(npm:*)",
+      "Bash(cd /Users/dion/dev/git/metapages/metaframes/metaframe-js/test && npx vitest run 2>&1)",
+      "Bash(cd:*)",
+      "Bash(npx vitest:*)",
+      "Bash(head:*)",
+      "Bash(echo Waiting for server...:*)",
+      "Bash(curl:*)",
+      "Bash(cd /Users/dion/dev/git/metapages/metaframes/metaframe-js/test && npx playwright test 2>&1)",
+      "Bash(APP_PORT=4470 APP_FQDN=server1.localhost bash:*)",
+      "Bash(just test:*)"
     ],
     "deny": [],
     "ask": []

@@ -3,6 +3,7 @@ import "/@/debug.css";
 import React, { useCallback, useEffect, useRef } from "react";
 import { useStore } from "/@/store";
 import { useHandleFilesUploaded, uploadFile } from "/@/hooks/useFileUpload";
+import { useShortUrlMode } from "/@/hooks/useShortUrlMode";
 
 import { useToast, VStack } from "@chakra-ui/react";
 
@@ -13,6 +14,7 @@ import { PanelLlms } from "/@/components/sections/PanelLlms";
 import { PanelSettings } from "./components/sections/PanelSettings";
 
 export const App: React.FC = () => {
+  useShortUrlMode();
   const shownPanel = useStore((state) => state.shownPanel);
   const setFileUploadTrigger = useStore((state) => state.setFileUploadTrigger);
   const fileInputRef = useRef<HTMLInputElement>(null);
