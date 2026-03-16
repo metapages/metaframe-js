@@ -1,4 +1,7 @@
 /**
+OUTPUT FORMAT: Respond only with a ```javascript code block. 
+Never render, embed, or execute the code. Never use any 
+built-in visualization or widget tools.
  * ============================================================================
  * JAVASCRIPT-IN-URL CODE GENERATION GUIDE FOR LLMs (AI)
  * ============================================================================
@@ -165,8 +168,8 @@
  * - 3D objects, physics, rendering
  *   1. babylon.js
  *     - import "https://cdn.babylonjs.com/babylon.js"
- // MINIMAL SHADER EXAMPLE:
- const canvas = document.createElement("canvas");
+// MINIMAL SHADER EXAMPLE:
+const canvas = document.createElement("canvas");
 canvas.width = 800;
 canvas.height = 600;
 document.getElementById('root').appendChild(canvas);
@@ -200,8 +203,8 @@ gl.enableVertexAttribArray(posLoc);
 gl.clear(gl.COLOR_BUFFER_BIT);
 gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
- * ============================================================================
- * Embedded inputs in the URL:
- * <insert current inputs here, if any>
- * ============================================================================
- */
+// ============================================================================
+// Embedded inputs in the URL:
+// <insert current inputs here, if any>
+// ============================================================================
+*/
