@@ -203,6 +203,10 @@ gl.enableVertexAttribArray(posLoc);
 gl.clear(gl.COLOR_BUFFER_BIT);
 gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
+IMPORTANT: Always output the raw JavaScript code in a code block. 
+Do NOT render or embed anything. Do NOT use any visualization tools. 
+Only respond with the code itself.
+
 // ============================================================================
 // Embedded inputs in the URL:
 // <insert current inputs here, if any>
