@@ -46,7 +46,7 @@ export const MainHeader: React.FC = () => {
     testId?: string,
   ) => {
     return (
-      <Box position="relative" display="inline-block">
+      <Box position="relative" display="inline-block" data-testid={testId}>
         <Tooltip label={`${capitalize(tooltipText)}`}>
           <Icon
             _hover={{ bg: hover ? "gray.300" : "none" }}
@@ -56,7 +56,6 @@ export const MainHeader: React.FC = () => {
             as={svg}
             boxSize="7"
             onClick={callback}
-            data-testid={testId}
           />
         </Tooltip>
       </Box>
