@@ -397,6 +397,8 @@ router.get("/j/:sha256", async (ctx: any) => {
     const injectedScript =
       `<script id="short-url-init">window.__SHORT_URL_ID = ${
         JSON.stringify(sha256)
+      };window.__SHORT_URL_HASH_PARAMS = ${
+        JSON.stringify(hashParams)
       };history.replaceState(null, '', window.location.pathname + '#' + ${
         JSON.stringify(hashParams)
       });</script>`;

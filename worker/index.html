@@ -1511,6 +1511,14 @@ Available cache utilities (loaded on-demand):
       };
 
       const onMenuClick = async () => {
+        // In short URL mode, navigate to the full hash URL with edit mode.
+        // This exits the short URL path entirely so the editor works normally.
+        if (window.__SHORT_URL_ID && window.__SHORT_URL_HASH_PARAMS) {
+          window.location.href = window.location.origin + "/#" +
+            window.__SHORT_URL_HASH_PARAMS + "&edit=true";
+          return;
+        }
+
         // if there is an existing editor, remove it, then exit
         if (document.getElementById("iframe-container")) {
           removeEditor();
@@ -1601,6 +1609,20 @@ Available cache utilities (loaded on-demand):
         window.addEventListener("load", () => {
           onMenuClick();
         });
+      }
+
+      // In short URL mode, clean the hash params from the URL after all
+      // initialization is complete. history.replaceState does NOT fire
+      // hashchange, so existing listeners are unaffected.
+      if (window.__SHORT_URL_ID && window.__SHORT_URL_HASH_PARAMS) {
+        const cleanShortUrl = () => {
+          history.replaceState(null, "", window.location.pathname);
+        };
+        if (document.readyState === "complete") {
+          cleanShortUrl();
+        } else {
+          window.addEventListener("load", cleanShortUrl);
+        }
       }
     </script>
   </body>

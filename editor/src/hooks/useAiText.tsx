@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useToast } from "@chakra-ui/react";
 import {
@@ -14,6 +14,42 @@ export const onInputs = (inputs) => {
   // Your implementation
 };`;
 
+function formatInputForPrompt(value: unknown): string {
+  // DataRef: duck-typed as object with .value property
+  if (value && typeof value === "object" && "value" in value) {
+    const ref = value as DataRef;
+    const type = ref.type ?? "utf8";
+    switch (type) {
+      case "utf8":
+      case "inline":
+        return typeof ref.value === "string"
+          ? ref.value.substring(0, 4000)
+          : JSON.stringify(ref.value).substring(0, 4000);
+      case "json":
+        return JSON.stringify(ref.value).substring(0, 4000);
+      case "base64":
+        return `[base64 data, ${String(ref.value).length} chars encoded]`;
+      case "url":
+        return `[URL: ${ref.value}]`;
+      default:
+        return JSON.stringify(ref.value).substring(0, 4000);
+    }
+  }
+  if (value instanceof Blob) {
+    return `[Blob: type=${value.type}, size=${value.size} bytes]`;
+  }
+  if (ArrayBuffer.isView(value)) {
+    return `[${value.constructor.name}: ${value.byteLength} bytes]`;
+  }
+  if (value instanceof ArrayBuffer) {
+    return `[ArrayBuffer: ${value.byteLength} bytes]`;
+  }
+  if (typeof value === "string") {
+    return value.substring(0, 4000);
+  }
+  return JSON.stringify(value).substring(0, 4000);
+}
+
 export const useAiText = (): {
   aiText: string;
   copyToClipboard: () => Promise<void>;
@@ -25,6 +61,30 @@ export const useAiText = (): {
   const [error, setError] = useState<string | null>(null);
   const toast = useToast();
   const metaframeBlob = useMetaframe();
+  const accumulatedInputsRef = useRef<Record<string, any>>({});
+
+  // Accumulate metaframe inputs over time
+  useEffect(() => {
+    if (!metaframeBlob.metaframe) return;
+    // Seed with current inputs
+    const currentInputs = metaframeBlob.metaframe.getInputs();
+    if (currentInputs) {
+      accumulatedInputsRef.current = {
+        ...accumulatedInputsRef.current,
+        ...currentInputs,
+      };
+    }
+    // Subscribe to future inputs
+    return metaframeBlob.metaframe.onInputs(() => {
+      const inputs = metaframeBlob.metaframe.getInputs();
+      if (inputs) {
+        accumulatedInputsRef.current = {
+          ...accumulatedInputsRef.current,
+          ...inputs,
+        };
+      }
+    });
+  }, [metaframeBlob.metaframe]);
 
   useEffect(() => {
     const fetchLlmsContent = async () => {
@@ -62,27 +122,27 @@ export const useAiText = (): {
     try {
       if (!fullAiText) return;
       let text = fullAiText;
-      // Add the metaframe inputs, if any, to help the LLM understand the context
-      let inputsFromUrl: Record<string, DataRef> | undefined;
+      // Merge URL hash inputs + accumulated metaframe inputs
+      let allInputs: Record<string, any> = {};
       try {
-        inputsFromUrl = getHashParamValueJsonFromWindow("inputs");
+        const inputsFromUrl =
+          getHashParamValueJsonFromWindow<Record<string, DataRef>>("inputs");
+        if (inputsFromUrl) {
+          allInputs = { ...inputsFromUrl };
+        }
       } catch (err) {
         console.error("Error getting inputs from url", err);
-        return;
       }
-      if (!inputsFromUrl) {
-        inputsFromUrl = {};
+      // Overlay accumulated metaframe inputs (they take precedence)
+      const accumulated = accumulatedInputsRef.current;
+      for (const [key, value] of Object.entries(accumulated)) {
+        allInputs[key] = value;
       }
-      const metaframeInputs = metaframeBlob.metaframe?.getInputs();
-      if (metaframeInputs) {
-        for (const [key, value] of Object.entries(metaframeInputs)) {
-          inputsFromUrl[key] = value;
-        }
-      }
-      if (Object.keys(inputsFromUrl).length > 0) {
+
+      if (Object.keys(allInputs).length > 0) {
         let inputsString = "";
-        Object.entries(inputsFromUrl).forEach(([key, value]) => {
-          inputsString += `  - ${key}: ${typeof value === "string" ? value : JSON.stringify(value).substring(0, 4000)}...\n`;
+        Object.entries(allInputs).forEach(([key, value]) => {
+          inputsString += `  - ${key}: ${formatInputForPrompt(value)}\n`;
         });
 
         text = text.replace(
@@ -109,7 +169,7 @@ export const useAiText = (): {
         isClosable: true,
       });
     }
-  }, [fullAiText, toast, metaframeBlob]);
+  }, [fullAiText, toast]);
 
   return { aiText: fullAiText, copyToClipboard: handleCopyToClipboard };
 };

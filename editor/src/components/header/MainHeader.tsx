@@ -43,6 +43,7 @@ export const MainHeader: React.FC = () => {
     tooltipText: string,
     callback: () => void,
     hover?: boolean,
+    testId?: string,
   ) => {
     return (
       <Box position="relative" display="inline-block">
@@ -55,6 +56,7 @@ export const MainHeader: React.FC = () => {
             as={svg}
             boxSize="7"
             onClick={callback}
+            data-testid={testId}
           />
         </Tooltip>
       </Box>
@@ -115,6 +117,7 @@ export const MainHeader: React.FC = () => {
           () => copyToClipboard(),
           // () => setShownPanel(shownPanel === "ai" ? null : "ai"),
           true,
+          "ai-copy-button",
         )}
         {icon(UploadSimpleIcon, "upload", () => triggerFileUpload(), true)}
         {icon(
