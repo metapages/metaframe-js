@@ -43,9 +43,10 @@ export const MainHeader: React.FC = () => {
     tooltipText: string,
     callback: () => void,
     hover?: boolean,
+    testId?: string,
   ) => {
     return (
-      <Box position="relative" display="inline-block">
+      <Box position="relative" display="inline-block" data-testid={testId}>
         <Tooltip label={`${capitalize(tooltipText)}`}>
           <Icon
             _hover={{ bg: hover ? "gray.300" : "none" }}
@@ -115,6 +116,7 @@ export const MainHeader: React.FC = () => {
           () => copyToClipboard(),
           // () => setShownPanel(shownPanel === "ai" ? null : "ai"),
           true,
+          "ai-copy-button",
         )}
         {icon(UploadSimpleIcon, "upload", () => triggerFileUpload(), true)}
         {icon(
