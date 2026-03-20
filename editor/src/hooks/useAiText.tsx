@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { useToast } from "@chakra-ui/react";
 import {
@@ -61,30 +61,6 @@ export const useAiText = (): {
   const [error, setError] = useState<string | null>(null);
   const toast = useToast();
   const metaframeBlob = useMetaframe();
-  const accumulatedInputsRef = useRef<Record<string, any>>({});
-
-  // Accumulate metaframe inputs over time
-  useEffect(() => {
-    if (!metaframeBlob.metaframe) return;
-    // Seed with current inputs
-    const currentInputs = metaframeBlob.metaframe.getInputs();
-    if (currentInputs) {
-      accumulatedInputsRef.current = {
-        ...accumulatedInputsRef.current,
-        ...currentInputs,
-      };
-    }
-    // Subscribe to future inputs
-    return metaframeBlob.metaframe.onInputs(() => {
-      const inputs = metaframeBlob.metaframe.getInputs();
-      if (inputs) {
-        accumulatedInputsRef.current = {
-          ...accumulatedInputsRef.current,
-          ...inputs,
-        };
-      }
-    });
-  }, [metaframeBlob.metaframe]);
 
   useEffect(() => {
     const fetchLlmsContent = async () => {
@@ -133,10 +109,13 @@ export const useAiText = (): {
       } catch (err) {
         console.error("Error getting inputs from url", err);
       }
-      // Overlay accumulated metaframe inputs (they take precedence)
-      const accumulated = accumulatedInputsRef.current;
-      for (const [key, value] of Object.entries(accumulated)) {
-        allInputs[key] = value;
+      // Overlay live metaframe inputs (they take precedence)
+      // getInputs() returns the metaframe's accumulated state, updated in real-time
+      const mfInputs = metaframeBlob.metaframe?.getInputs();
+      if (mfInputs) {
+        for (const [key, value] of Object.entries(mfInputs)) {
+          allInputs[key] = value;
+        }
       }
 
       if (Object.keys(allInputs).length > 0) {
@@ -169,7 +148,7 @@ export const useAiText = (): {
         isClosable: true,
       });
     }
-  }, [fullAiText, toast]);
+  }, [fullAiText, toast, metaframeBlob.metaframe]);
 
   return { aiText: fullAiText, copyToClipboard: handleCopyToClipboard };
 };
