@@ -389,6 +389,7 @@ router.get("/j/:sha256", async (ctx: any) => {
     });
 
     const response = await s3PresignClient.send(command);
+    if (!response.Body) throw new Error("S3 response body is empty");
     const hashParams = await response.Body.transformToString();
 
     // Serve index.html with injected script that sets window.__SHORT_URL_ID
@@ -449,6 +450,7 @@ router.get("/api/j/:sha256", async (ctx: any) => {
     });
 
     const response = await s3PresignClient.send(command);
+    if (!response.Body) throw new Error("S3 response body is empty");
     const hashParams = await response.Body.transformToString();
 
     ctx.response.headers.set("Content-Type", "application/json");

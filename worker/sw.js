@@ -193,6 +193,15 @@ async function fetchAndCache(request) {
 
 self.addEventListener("install", (event) => {
   log("🚀 Service Worker installing, version:", SW_VERSION);
+  // Uncomment the guard below if precaching causes issues during local development
+  // const isLocal = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+  // if (!isLocal) {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(["/index.html"]);
+    }),
+  );
+  // }
   self.skipWaiting();
 });
 
@@ -223,6 +232,31 @@ self.addEventListener("fetch", (event) => {
 
   // Don't cache requests to the service worker itself
   if (event.request.url.includes("/sw.js")) return;
+
+  // Handle navigation requests (HTML pages) with network-first strategy
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      (async () => {
+        try {
+          const response = await fetch(event.request);
+          if (response.ok) {
+            const cache = await caches.open(CACHE_NAME);
+            const responseToCache = await addCacheHeaders(response.clone());
+            await cache.put(event.request, responseToCache);
+          }
+          return response;
+        } catch (error) {
+          // Offline — serve cached version
+          const cache = await caches.open(CACHE_NAME);
+          const cached = await cache.match(event.request) ||
+            await cache.match("/index.html");
+          if (cached) return cached;
+          throw error;
+        }
+      })(),
+    );
+    return;
+  }
 
   if (!shouldCache(event.request.url)) {
     if (config.enableLogging) {
