@@ -756,8 +756,9 @@ Available cache utilities (loaded on-demand):
           case "json":
             return ref.value;
           case "url":
-            const { buffer: arrayBufferFromUrl, type } =
-              await urlToUint8Array(ref.value);
+            const { buffer: arrayBufferFromUrl, type } = await urlToUint8Array(
+              ref.value,
+            );
 
             // Check content-type and return appropriate format
             if (type === "application/json") {
@@ -1073,10 +1074,9 @@ Available cache utilities (loaded on-demand):
                   linkImport.type = linkType;
                 }
 
-                const linkCrossorigin =
-                  /<link\s+.*crossorigin="([^"]*)"/.exec(
-                    elementTrimmed,
-                  )?.[1];
+                const linkCrossorigin = /<link\s+.*crossorigin="([^"]*)"/.exec(
+                  elementTrimmed,
+                )?.[1];
                 if (linkCrossorigin) {
                   linkImport.crossorigin = linkCrossorigin;
                 }
@@ -1110,8 +1110,8 @@ Available cache utilities (loaded on-demand):
                 if (scriptType) {
                   scriptImport.type = scriptType;
                 }
-                const scriptCrossorigin =
-                  /<script\s+.*crossorigin="([^"]*)"/.exec(
+                const scriptCrossorigin = /<script\s+.*crossorigin="([^"]*)"/
+                  .exec(
                     elementTrimmed,
                   )?.[1];
                 if (scriptCrossorigin) {
@@ -1241,9 +1241,7 @@ Available cache utilities (loaded on-demand):
 
         // set up (maybe re-override globals)
         const root = document.getElementById("root");
-        root.style.width = inEditMode
-          ? `calc(100% - ${editorWidth})`
-          : "100%";
+        root.style.width = inEditMode ? `calc(100% - ${editorWidth})` : "100%";
         if (defaultBgColor) {
           root.style.background = defaultBgColor;
         }
@@ -1481,8 +1479,7 @@ Available cache utilities (loaded on-demand):
       const metapageDef = {
         metaframes: {
           editor: {
-            url:
-              `${window.location.origin}/editor/#?c=eyJtb2R1bGVzIjpbXX0=`,
+            url: `${window.location.origin}/editor/#?c=eyJtb2R1bGVzIjpbXX0=`,
           },
         },
         version: "0.3",
@@ -1504,8 +1501,7 @@ Available cache utilities (loaded on-demand):
         refreshUpdateSvgButton();
 
         setHashParamInWindow("edit", undefined);
-        document.getElementById("root").className =
-          "root borderFatSolidGreen";
+        document.getElementById("root").className = "root borderFatSolidGreen";
         document.getElementById("editor-root").className =
           "editor-container-hidden borderDashedBlue";
       };

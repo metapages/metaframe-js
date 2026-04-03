@@ -2,6 +2,7 @@ import fs from "fs";
 import { resolve } from "path";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
+import { VitePWA } from "vite-plugin-pwa";
 
 import react from "@vitejs/plugin-react";
 
@@ -25,7 +26,23 @@ export default defineConfig(({ command, mode }) => ({
   },
 
   // this is really stupid this should not be necessary
-  plugins: [react(), tsconfigPaths()],
+  plugins: [
+    react(),
+    tsconfigPaths(),
+    VitePWA({
+      strategies: "injectManifest",
+      srcDir: "src",
+      filename: "sw.ts",
+      registerType: "autoUpdate",
+      manifest: false,
+      injectManifest: {
+        globPatterns: ["**/*.{js,css,html,ico,woff2,webmanifest}"],
+      },
+      devOptions: {
+        enabled: false,
+      },
+    }),
+  ],
 
   esbuild: {
     logOverride: { "this-is-undefined-in-esm": "silent" },
