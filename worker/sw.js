@@ -153,34 +153,38 @@ async function fetchAndCache(request) {
       const finalUrl = response.url || request.url;
 
       if (shouldCache(finalUrl, response)) {
-        const cache = await caches.open(CACHE_NAME);
-        const responseToCache = await addCacheHeaders(response.clone());
-
-        // Create a normalized request for caching (removes AWS auth params)
-        // Use the original request URL as the cache key so redirected URLs can be found
+        // Clone before returning so the original response body remains usable
+        const responseToCache = response.clone();
         const normalizedUrl = normalizeUrlForCaching(request.url);
-        const normalizedRequest = new Request(normalizedUrl, {
-          method: request.method,
-          headers: request.headers,
-          mode: request.mode,
-          credentials: "omit",
+
+        // Cache in background — do not block the response
+        caches.open(CACHE_NAME).then(async (cache) => {
+          try {
+            const responseWithHeaders = await addCacheHeaders(responseToCache);
+            // Create a normalized request for caching (removes AWS auth params)
+            const normalizedRequest = new Request(normalizedUrl, {
+              method: request.method,
+              headers: request.headers,
+              mode: request.mode,
+              credentials: "omit",
+            });
+            await cache.put(normalizedRequest, responseWithHeaders);
+            log(
+              "🔄 Cached:",
+              request.url,
+              `→ ${finalUrl}`,
+              `(${response.headers.get("content-type") || "unknown type"})`,
+            );
+            if (normalizedUrl !== request.url) {
+              log("🔗 Using normalized cache key:", normalizedUrl);
+            }
+            if (finalUrl !== request.url) {
+              log("🔀 Followed redirect:", request.url, "→", finalUrl);
+            }
+          } catch (cacheError) {
+            log("❌ Failed to cache:", request.url, cacheError);
+          }
         });
-
-        await cache.put(normalizedRequest, responseToCache);
-        log(
-          "🔄 Cached:",
-          request.url,
-          `→ ${finalUrl}`,
-          `(${response.headers.get("content-type") || "unknown type"})`,
-        );
-
-        if (normalizedUrl !== request.url) {
-          log("🔗 Using normalized cache key:", normalizedUrl);
-        }
-
-        if (finalUrl !== request.url) {
-          log("🔀 Followed redirect:", request.url, "→", finalUrl);
-        }
       }
     }
 
@@ -240,9 +244,17 @@ self.addEventListener("fetch", (event) => {
         try {
           const response = await fetch(event.request);
           if (response.ok) {
-            const cache = await caches.open(CACHE_NAME);
-            const responseToCache = await addCacheHeaders(response.clone());
-            await cache.put(event.request, responseToCache);
+            // Cache in background — do not block navigation response
+            const responseToCache = response.clone();
+            const req = event.request;
+            caches.open(CACHE_NAME).then(async (cache) => {
+              try {
+                const responseWithHeaders = await addCacheHeaders(responseToCache);
+                await cache.put(req, responseWithHeaders);
+              } catch (cacheError) {
+                log("❌ Failed to cache navigation:", req.url, cacheError);
+              }
+            });
           }
           return response;
         } catch (error) {
