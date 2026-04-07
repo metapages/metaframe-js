@@ -30,10 +30,11 @@ export const AddModuleButtonAndModal: React.FC<{
   const { isOpen, onClose, onToggle } = useDisclosure();
 
   const onSubmit = useCallback(
-    (values: FormType) => {
+    (values: FormType, { resetForm }: { resetForm: () => void }) => {
       if (values.modulePath) {
         add(values.modulePath);
       }
+      resetForm();
       onClose();
     },
     [onClose, add],
