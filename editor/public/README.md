@@ -195,6 +195,93 @@ These will be added to the root div (see below) so if your own code manipulates 
 
 - `"use strict"` is automatically added to the top of the module code.
 
+## Jupyter Notebook Widget
+
+Use any metaframe as an interactive Jupyter notebook widget. Install the `metaframe-widget` package:
+
+```bash
+pip install metaframe-widget
+```
+
+### Basic usage
+
+```python
+from metaframe_widget import MetaframeWidget
+
+# From a URL — paste any metaframe URL
+w = MetaframeWidget(url="https://js.mtfm.io/#?js=...")
+w  # renders the iframe in the notebook
+```
+
+### Create from inline code
+
+```python
+w = MetaframeWidget.from_code("""
+export const onInputs = (inputs) => {
+    document.getElementById("root").textContent = JSON.stringify(inputs);
+    setOutput("echo", inputs);
+};
+""")
+w
+```
+
+### Push inputs from Python
+
+```python
+w.set_inputs({"data": [1, 2, 3], "message": "hello from Python"})
+w.set_input("count", 42)
+```
+
+### Read and react to outputs
+
+```python
+# Read current outputs
+print(w.outputs)
+
+# React to output changes
+w.on_outputs_change(lambda change: print("Got:", change["new"]))
+```
+
+### Pipe widgets together
+
+Connect the output of one widget to the input of another:
+
+```python
+source = MetaframeWidget.from_code("...")
+sink = MetaframeWidget.from_code("...")
+
+# When source emits "doubled", push it to sink's "data" input
+source.pipe_to(sink, output_key="doubled", input_key="data")
+```
+
+Works in Jupyter, JupyterLab, VS Code, Colab, and marimo.
+
+### marimo
+
+In [marimo](https://marimo.io), wrap the widget with `mo.ui.anywidget()` to get reactive bindings:
+
+```python
+import marimo as mo
+from metaframe_widget import MetaframeWidget
+
+w = mo.ui.anywidget(MetaframeWidget(url="https://js.mtfm.io/"))
+w
+```
+
+Then in a separate cell, `w.outputs` will reactively update when the metaframe emits output — any cell referencing it re-runs automatically.
+
+```python
+w.set_inputs({"data": [1, 2, 3]})
+```
+
+For piping, access the underlying widget via `.widget`:
+
+```python
+source.widget.pipe_to(sink.widget, output_key="result", input_key="data")
+```
+
+See `examples/marimo/demo.py` in the repo for a complete example.
+
 ## Longer description and archtecture
 
 Run arbitrary user javascript modules embedded in the URL. Designed for <a href="https://metapage.io" target="_top" rel="noopener noreferrer">metapages</a> so you can connect inputs + outputs to other metaframe URLs. Similar to <a href="https://codepen.io/" target="_top" rel="noopener noreferrer">Codepen</a>, <a href="https://jsfiddle.net/" target="_top" rel="noopener noreferrer">JSFiddle</a>, but completely self-contained and does not require an active server, these is a simple tiny static website.

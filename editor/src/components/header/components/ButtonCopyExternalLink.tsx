@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 
 import { InputsHashParam } from "/@/components/sections/settings/SectionInputs";
 import { useMetaframeUrl } from "/@/hooks/useMetaframeUrl";
+import {
+  getAllowedHashParams,
+  stripDisallowedHashParams,
+} from "/@/utils/hashParams";
 
 import { Box, Icon, Tooltip, useToast } from "@chakra-ui/react";
 import {
@@ -9,6 +13,7 @@ import {
   setHashParamValueInHashString,
   setHashParamValueJsonInHashString,
 } from "@metapages/hash-query/react-hooks";
+import { MetaframeDefinition } from "@metapages/metapage";
 import { useMetaframe } from "@metapages/metapage-react/hooks";
 import { CopyIcon } from "@phosphor-icons/react";
 
@@ -59,6 +64,14 @@ async function buildExternalShareUrl(
   if (newInputs && Object.keys(newInputs).length > 0) {
     newUrl = setHashParamValueJsonInHashString(newUrl, "inputs", newInputs);
   }
+
+  // Strip any hash params not in the metaframe.json defaults or the user's
+  // `definition` whitelist.
+  const definition = getHashParamValueJsonFromWindow<
+    MetaframeDefinition | undefined
+  >("definition");
+  newUrl = stripDisallowedHashParams(newUrl, getAllowedHashParams(definition));
+
   return newUrl;
 }
 

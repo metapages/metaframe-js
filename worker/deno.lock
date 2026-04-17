@@ -1228,7 +1228,9 @@
     "https://deno.land/x/static_files@1.1.6/src/types.ts": "ef201288626294e9e1b8ee85cdfe2cdfb282e4d78af445df1726050dfa0c0988",
     "https://deno.land/x/static_files@1.1.6/src/utils.ts": "9e6172dc97fed01e70a6b063c5afff40e20fe726b3bae0c5f0a962bad74b7107",
     "https://esm.sh/@metapages/metapage@1.10.3": "84986e4ff106a433d9b76b4036f36e68ad44946768374ed20149d5c072d45785",
-    "https://esm.sh/@metapages/metapage@1.10.3/denonext/metapage.mjs": "222af9c150a90df9dd635cb15ea9d5cf5f90050b28e85fd2d40b269828397273"
+    "https://esm.sh/@metapages/metapage@1.10.3/denonext/metapage.mjs": "222af9c150a90df9dd635cb15ea9d5cf5f90050b28e85fd2d40b269828397273",
+    "https://esm.sh/@metapages/metapage@1.10.6": "0ba5065025ac91dd5b603779124904b28d4ee73f19284326cd3c21a59da0c70f",
+    "https://esm.sh/@metapages/metapage@1.10.6/denonext/metapage.mjs": "b63ba140d77e8359baa1375a568f9a8dc839f182fcac52102f5dbf0a9b10c40b"
   },
   "workspace": {
     "dependencies": [
