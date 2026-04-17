@@ -5,7 +5,7 @@ import {
   Router,
 } from "https://deno.land/x/oak@v10.2.0/mod.ts";
 import staticFiles from "https://deno.land/x/static_files@1.1.6/mod.ts";
-import { MetaframeDefinition } from "https://esm.sh/@metapages/metapage@1.10.3";
+import { MetaframeDefinition } from "https://esm.sh/@metapages/metapage@1.10.6";
 import {
   GetObjectCommand,
   PutObjectCommand,
@@ -29,9 +29,10 @@ const getPublicUrl = (id: string) => {
   return `${S3_PUBLIC_URL}/${id}`;
 };
 
-const s3Credentials = S3_ACCESS_KEY_ID && S3_SECRET_ACCESS_KEY
-  ? { accessKeyId: S3_ACCESS_KEY_ID, secretAccessKey: S3_SECRET_ACCESS_KEY }
-  : undefined;
+const s3Credentials =
+  S3_ACCESS_KEY_ID && S3_SECRET_ACCESS_KEY
+    ? { accessKeyId: S3_ACCESS_KEY_ID, secretAccessKey: S3_SECRET_ACCESS_KEY }
+    : undefined;
 
 // Client for generating presigned URLs (uses browser-reachable endpoint)
 // Falls back to the main S3 client if S3_PRESIGN_ENDPOINT is not set (e.g. production R2)
@@ -49,9 +50,7 @@ if (s3Credentials) {
       responseChecksumValidation: "WHEN_REQUIRED",
     });
     if (S3_ENDPOINT) {
-      console.log(
-        `S3 presign client configured: endpoint=${S3_ENDPOINT}`,
-      );
+      console.log(`S3 presign client configured: endpoint=${S3_ENDPOINT}`);
     }
   }
 }
@@ -90,7 +89,11 @@ const DEFAULT_METAFRAME_DEFINITION: MetaframeDefinition = {
       description:
         "The visibility of the menu button. 'disabled' to hide, 'invisible' to hide until hover, 'visible' to show always.",
       label: "Menu Button Visibility",
-      allowedValues: ["disabled", "invisible", "visible"],
+      allowed: [
+        { value: "disabled" },
+        { value: "invisible" },
+        { value: "visible" },
+      ],
     },
     inputs: {
       type: "json",
@@ -115,11 +118,11 @@ const DEFAULT_METAFRAME_DEFINITION: MetaframeDefinition = {
       description:
         "The options of the metaframe. This is a JSON object with the option name as the key and the value as a string or boolean. The options are used to configure the metaframe. The options are: 'debug', 'disableCache', 'disableDatarefs', 'disableSmartInputUnpacking'.",
       label: "Options",
-      allowedValues: [
-        "debug",
-        "disableCache",
-        "disableDatarefs",
-        "disableSmartInputUnpacking",
+      allowed: [
+        { value: "debug" },
+        { value: "disableCache" },
+        { value: "disableDatarefs" },
+        { value: "disableSmartInputUnpacking" },
       ],
     },
   },
@@ -395,14 +398,13 @@ router.get("/j/:sha256", async (ctx: any) => {
     // Serve index.html with injected script that sets window.__SHORT_URL_ID
     // and calls history.replaceState so the hash is correct before module scripts run
     const indexHtml = await Deno.readTextFile("./index.html");
-    const injectedScript =
-      `<script id="short-url-init">window.__SHORT_URL_ID = ${
-        JSON.stringify(sha256)
-      };window.__SHORT_URL_HASH_PARAMS = ${
-        JSON.stringify(hashParams)
-      };history.replaceState(null, '', window.location.pathname + '#' + ${
-        JSON.stringify(hashParams)
-      });</script>`;
+    const injectedScript = `<script id="short-url-init">window.__SHORT_URL_ID = ${JSON.stringify(
+      sha256,
+    )};window.__SHORT_URL_HASH_PARAMS = ${JSON.stringify(
+      hashParams,
+    )};history.replaceState(null, '', window.location.pathname + '#' + ${JSON.stringify(
+      hashParams,
+    )});</script>`;
     const modifiedHtml = indexHtml.replace(
       "</head>",
       injectedScript + "\n</head>",

@@ -24,7 +24,13 @@ import {
 import { Plus, PencilSimple } from "@phosphor-icons/react";
 import { HashParamDefinition, HashParamType } from "@metapages/metapage";
 
-export type HashParamMetadata = HashParamDefinition;
+// `allowedValues` is preserved locally for backwards compatibility with
+// existing URLs/definitions — the upstream `HashParamDefinition` type has
+// migrated to a richer `allowed` shape but we still read/write the legacy
+// `allowedValues: string[]` shape here.
+export type HashParamMetadata = HashParamDefinition & {
+  allowedValues?: string[];
+};
 
 const validationSchema = yup.object({
   name: yup.string().required("Hash parameter name is required"),

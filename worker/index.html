@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
   <head>
-    <meta charset="utf-8" />
-    <base target="_parent" />
+    <meta charset="utf-8"/>
+    <base target="_parent"/>
     <title>Metaframe JS</title>
     <style>
       body,
@@ -182,27 +183,14 @@
 
   <body>
     <button id="menu-button">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="15"
-        height="15"
-        fill="#818382"
-        viewbox="0 0 256 256"
-      >
-        <path
-          d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z"
-        >
-        </path>
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="#818382" viewbox="0 0 256 256">
+        <path d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z"></path>
       </svg>
       <span>Edit</span>
     </button>
 
     <div id="root" class="root borderFatSolidGreen transparent"></div>
-    <div
-      id="editor-root"
-      class="editor-container-hidden borderDashedPurple transparent"
-    >
-    </div>
+    <div id="editor-root" class="editor-container-hidden borderDashedPurple transparent"></div>
 
     <!-- Service Worker Registration and Configuration -->
     <script id="service-worker-setup" type="module">
@@ -222,12 +210,8 @@
               this.registration = registration;
               if (
                 globalThis.serviceWorkerConfig
-                  ?.enableLogging
-              ) {
-                console.log(
-                  "[SW Manager] Service worker registered:",
-                  registration,
-                );
+                ?.enableLogging) {
+                console.log("[SW Manager] Service worker registered:", registration,);
               }
 
               // Handle service worker updates
@@ -235,28 +219,17 @@
                 const newWorker = registration.installing;
                 if (
                   globalThis.serviceWorkerConfig
-                    ?.enableLogging
-                ) {
-                  console.log(
-                    "[SW Manager] New service worker installing...",
-                  );
+                  ?.enableLogging) {
+                  console.log("[SW Manager] New service worker installing...",);
                 }
 
                 newWorker.addEventListener("statechange", () => {
-                  if (
-                    newWorker.state === "installed" &&
-                    navigator.serviceWorker.controller
-                  ) {
+                  if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
                     if (
                       globalThis.serviceWorkerConfig
-                        ?.enableLogging
-                    ) {
-                      console.log(
-                        "[SW Manager] New service worker installed, will activate on page refresh",
-                      );
-                      console.log(
-                        "🔄 Website updated! Refresh the page to get the latest version.",
-                      );
+                      ?.enableLogging) {
+                      console.log("[SW Manager] New service worker installed, will activate on page refresh",);
+                      console.log("🔄 Website updated! Refresh the page to get the latest version.",);
                     }
                   }
                 });
@@ -268,11 +241,8 @@
                 .addEventListener("controllerchange", () => {
                   if (
                     globalThis.serviceWorkerConfig
-                      ?.enableLogging
-                  ) {
-                    console.log(
-                      "[SW Manager] Service worker updated and active",
-                    );
+                    ?.enableLogging) {
+                    console.log("[SW Manager] Service worker updated and active",);
                   }
                   // Send configuration to new service worker
                   setTimeout(() => {
@@ -289,23 +259,16 @@
             } catch (error) {
               if (
                 globalThis.serviceWorkerConfig
-                  ?.enableLogging
-              ) {
-                console.error(
-                  "[SW Manager] Service worker registration failed:",
-                  error,
-                );
+                ?.enableLogging) {
+                console.error("[SW Manager] Service worker registration failed:", error,);
               }
               throw error;
             }
           } else {
             if (
               globalThis.serviceWorkerConfig
-                ?.enableLogging
-            ) {
-              console.warn(
-                "[SW Manager] Service workers not supported",
-              );
+              ?.enableLogging) {
+              console.warn("[SW Manager] Service workers not supported",);
             }
             throw new Error("Service workers not supported");
           }
@@ -315,11 +278,8 @@
           if (!navigator.serviceWorker.controller) {
             if (
               globalThis.serviceWorkerConfig
-                ?.enableLogging
-            ) {
-              console.warn(
-                "[SW Manager] No active service worker to configure",
-              );
+              ?.enableLogging) {
+              console.warn("[SW Manager] No active service worker to configure",);
             }
             return;
           }
@@ -330,8 +290,7 @@
               if (event.data.success) {
                 if (
                   globalThis.serviceWorkerConfig
-                    ?.enableLogging
-                ) {
+                  ?.enableLogging) {
                   console.log("[SW Manager] Configuration updated");
                 }
                 resolve(event.data);
@@ -345,7 +304,7 @@
               .controller
               .postMessage({
                 type: "UPDATE_CONFIG",
-                payload: config,
+                payload: config
               }, [channel.port2]);
           });
         },
@@ -365,7 +324,7 @@
               .serviceWorker
               .controller
               .postMessage({
-                type: "GET_CONFIG",
+                type: "GET_CONFIG"
               }, [channel.port2]);
           });
         },
@@ -390,7 +349,7 @@
               .serviceWorker
               .controller
               .postMessage({
-                type: "CLEAR_CACHE",
+                type: "CLEAR_CACHE"
               }, [channel.port2]);
           });
         },
@@ -410,7 +369,7 @@
               .serviceWorker
               .controller
               .postMessage({
-                type: "GET_CACHE_INFO",
+                type: "GET_CACHE_INFO"
               }, [channel.port2]);
           });
         },
@@ -422,11 +381,8 @@
 
           if (
             globalThis.serviceWorkerConfig
-              ?.enableLogging
-          ) {
-            console.log(
-              "[SW Manager] Checking for service worker updates...",
-            );
+            ?.enableLogging) {
+            console.log("[SW Manager] Checking for service worker updates...",);
           }
           await this
             .registration
@@ -436,16 +392,14 @@
             if (this.registration.installing) {
               if (
                 globalThis.serviceWorkerConfig
-                  ?.enableLogging
-              ) {
+                ?.enableLogging) {
                 console.log("[SW Manager] Update found, installing...");
               }
               resolve(true);
             } else {
               if (
                 globalThis.serviceWorkerConfig
-                  ?.enableLogging
-              ) {
+                ?.enableLogging) {
                 console.log("[SW Manager] No updates found");
               }
               resolve(false);
@@ -460,11 +414,8 @@
 
           if (
             globalThis.serviceWorkerConfig
-              ?.enableLogging
-          ) {
-            console.log(
-              "[SW Manager] Forcing service worker update...",
-            );
+            ?.enableLogging) {
+            console.log("[SW Manager] Forcing service worker update...",);
           }
           await this
             .registration
@@ -472,7 +423,7 @@
           window
             .location
             .reload();
-        },
+        }
       };
 
       // Initialize service worker on page load
@@ -487,8 +438,7 @@
             setTimeout(() => {
               if (
                 globalThis.serviceWorkerConfig
-                  ?.enableLogging
-              ) {
+                ?.enableLogging) {
                 console.log(`
 🚀 Metaframe JS with Stale-While-Revalidate Caching (Debug Mode)
 
@@ -512,12 +462,8 @@ Available cache utilities (loaded on-demand):
           } catch (error) {
             if (
               globalThis.serviceWorkerConfig
-                ?.enableLogging
-            ) {
-              console.error(
-                "[SW Manager] Failed to initialize service worker:",
-                error,
-              );
+              ?.enableLogging) {
+              console.error("[SW Manager] Failed to initialize service worker:", error,);
             }
           }
         });
@@ -529,12 +475,8 @@ Available cache utilities (loaded on-demand):
           .catch((error) => {
             if (
               globalThis.serviceWorkerConfig
-                ?.enableLogging
-            ) {
-              console.error(
-                "[SW Manager] Failed to initialize service worker:",
-                error,
-              );
+              ?.enableLogging) {
+              console.error("[SW Manager] Failed to initialize service worker:", error,);
             }
           });
       }
@@ -546,20 +488,17 @@ Available cache utilities (loaded on-demand):
         const cacheStatus = response
           .headers
           .get("sw-cache-status");
-        const url = typeof args[0] === "string" ? args[0] : args[0].url;
+        const url = typeof args[0] === "string"
+          ? args[0]
+          : args[0].url;
 
-        if (
-          cacheStatus && globalThis.serviceWorkerConfig.enableLogging
-        ) {
+        if (cacheStatus && globalThis.serviceWorkerConfig.enableLogging) {
           const statusEmoji = {
             "fresh": "✅",
             "stale": "📡",
-            "miss": "🌐",
+            "miss": "🌐"
           };
-          console.log(
-            `${statusEmoji[cacheStatus] || "❓"} Cache ${cacheStatus}:`,
-            url,
-          );
+          console.log(`${statusEmoji[cacheStatus] || "❓"} Cache ${cacheStatus}:`, url,);
         }
 
         return response;
@@ -581,7 +520,7 @@ Available cache utilities (loaded on-demand):
         isIframe,
         Metaframe,
         Metapage,
-      } from "https://cdn.jsdelivr.net/npm/@metapages/metapage@1.10.3";
+      } from "https://cdn.jsdelivr.net/npm/@metapages/metapage@1.10.6";
 
       globalThis.logStdout = (s) => {
         const root = document.getElementById("root");
@@ -1621,5 +1560,6 @@ Available cache utilities (loaded on-demand):
         }
       }
     </script>
-  </body>
+</body>
+
 </html>
