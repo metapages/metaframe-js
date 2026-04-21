@@ -5,9 +5,12 @@
 # never commit this
 /.env
 # ignored on the main branch, force-added on the gh-pages branch
-docs
+#docs
+# VitePress build output
+docs/.vitepress/dist
+docs/.vitepress/cache
 # Assets ready for publishing are put here
 /deploy
 
 #dependencies
-node_modules
+**/node_modules

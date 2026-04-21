@@ -525,6 +525,14 @@ app.use(
     },
   }),
 );
+app.use(
+  staticFiles("docs", {
+    prefix: "/docs",
+    setHeaders: (headers: Headers) => {
+      headers.set("Access-Control-Allow-Origin", "*");
+    },
+  }),
+);
 app.use(router.routes());
 app.use(router.allowedMethods());
 

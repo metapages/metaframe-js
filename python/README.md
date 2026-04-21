@@ -1,0 +1,78 @@
+# metaframe-widget
+
+An [anywidget](https://anywidget.dev/) for embedding [metaframe](https://metapages.org/) URLs in Jupyter and marimo notebooks.
+
+## Install
+
+```bash
+pip install metaframe-widget
+```
+
+With environment extras:
+
+```bash
+pip install "metaframe-widget[jupyter]"   # includes jupyterlab
+pip install "metaframe-widget[marimo]"    # includes marimo
+```
+
+## Quick start
+
+### Jupyter
+
+```python
+from metaframe_widget import MetaframeWidget
+
+w = MetaframeWidget(url="https://js.mtfm.io/#?js=...", height="300px")
+w
+```
+
+### marimo
+
+```python
+import marimo as mo
+from metaframe_widget import MetaframeWidget
+
+w = MetaframeWidget(url="https://js.mtfm.io/#?js=...", height="300px")
+mo.ui.anywidget(w)
+```
+
+## Create from inline JavaScript
+
+```python
+w = MetaframeWidget.from_code("""
+  setOutput("result", getInput("data") * 2);
+""", height="300px")
+```
+
+## API reference
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `url` | `str` | `""` | Full metaframe URL (including hash params) |
+| `inputs` | `dict` | `{}` | Dict of inputs to push to the metaframe |
+| `outputs` | `dict` | `{}` | Dict of outputs received from the metaframe (read-only) |
+| `width` | `str` | `"100%"` | CSS width for the widget container |
+| `height` | `str` | `"400px"` | CSS height for the widget container |
+| `allow` | `str` | `""` | iframe `allow` attribute (e.g. `"camera; microphone"`) |
+
+### Methods
+
+- **`set_inputs(d)`** — merge a dict into current inputs
+- **`set_input(key, value)`** — set a single input key
+- **`on_outputs_change(callback)`** — register a callback for output changes
+- **`from_code(js_code, **kwargs)`** — class method to create a widget from inline JS
+- **`pipe_to(target, output_key, input_key=None)`** — connect an output to another widget's input
+
+## Piping widgets
+
+```python
+source = MetaframeWidget(url="...")
+sink = MetaframeWidget(url="...")
+source.pipe_to(sink, output_key="result", input_key="data")
+```
+
+## Links
+
+- [GitHub](https://github.com/metapages/metaframe-js)
+- [Jupyter examples](https://github.com/metapages/metaframe-js/tree/main/examples/jupyter)
+- [marimo examples](https://github.com/metapages/metaframe-js/tree/main/examples/marimo)

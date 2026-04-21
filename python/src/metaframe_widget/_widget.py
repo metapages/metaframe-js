@@ -8,13 +8,15 @@ from ._esm import ESM
 
 
 class MetaframeWidget(anywidget.AnyWidget):
-    """Jupyter widget that renders a metaframe iframe.
+    """Widget that renders a metaframe iframe (works in Jupyter and marimo).
 
     Args:
         url: Full metaframe URL (including hash params).
         inputs: Dict of inputs to push to the metaframe.
         outputs: Dict of outputs received from the metaframe (read-only).
-        height: CSS height for the widget container.
+        width: CSS width for the widget container (default "100%").
+        height: CSS height for the widget container (default "400px").
+        allow: iframe allow attribute string (e.g. "camera; microphone").
     """
 
     _esm = ESM
@@ -22,7 +24,9 @@ class MetaframeWidget(anywidget.AnyWidget):
     url = traitlets.Unicode("").tag(sync=True)
     inputs = traitlets.Dict({}).tag(sync=True)
     outputs = traitlets.Dict({}).tag(sync=True)
+    width = traitlets.Unicode("100%").tag(sync=True)
     height = traitlets.Unicode("400px").tag(sync=True)
+    allow = traitlets.Unicode("").tag(sync=True)
 
     def set_inputs(self, d: dict):
         """Merge a dict into the current inputs."""
@@ -40,14 +44,27 @@ class MetaframeWidget(anywidget.AnyWidget):
         self.observe(callback, names=["outputs"])
 
     @classmethod
-    def from_code(cls, js_code: str, **kwargs) -> "MetaframeWidget":
+    def from_code(
+        cls,
+        js_code: str,
+        width: str = "100%",
+        height: str = "400px",
+        allow: str = "",
+        **kwargs,
+    ) -> "MetaframeWidget":
         """Create a MetaframeWidget from raw JavaScript code.
 
         Encodes the code into a js.mtfm.io URL with the code in the hash.
+
+        Args:
+            js_code: JavaScript source for the metaframe.
+            width: CSS width for the widget container (default "100%").
+            height: CSS height for the widget container (default "400px").
+            allow: iframe allow attribute string (e.g. "camera; microphone").
         """
         encoded = base64.b64encode(js_code.encode()).decode()
         url = f"https://js.mtfm.io/#?js={urllib.parse.quote(encoded)}"
-        return cls(url=url, **kwargs)
+        return cls(url=url, width=width, height=height, allow=allow, **kwargs)
 
     def pipe_to(self, target: "MetaframeWidget", output_key: str, input_key: str = None):
         """Connect an output of this widget to an input of another.

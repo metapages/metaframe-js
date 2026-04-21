@@ -68,6 +68,7 @@ services:
     volumes:
       - deno:/deno
       - ./worker:/app/worker
+      - ./docs/.vitepress/dist:/app/worker/docs
       - ./editor/src:/app/editor/src
     logging:
       driver: ${LOGGING_SERVER:-local}
@@ -116,7 +117,7 @@ services:
       - traefik.http.routers.app-editor.rule=Host("${APP_FQDN:-server1.localhost}") && PathPrefix(`/editor`)
 
   traefik:
-    image: "traefik:v2.10.7"
+    image: "traefik:v2.11"
     container_name: "traefik-connect-metaframe-js"
     labels:
      - "traefik.enable=true"

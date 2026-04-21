@@ -38,3 +38,6 @@ RUN curl -L -o /usr/local/bin/watchexec https://github.com/watchexec/watchexec/r
     && chmod +x /usr/local/bin/watchexec
 
 WORKDIR /app/worker
+
+# Ensure docs directory exists (overridden by volume mount when docs are built)
+RUN mkdir -p /app/worker/docs
