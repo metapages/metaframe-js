@@ -1,0 +1,52 @@
+services:
+
+  # marimo in edit mode — open the URL printed in the logs.
+  marimo:
+    build:
+      context: ../../
+      dockerfile: examples/marimo/Dockerfile
+    ports:
+      - "${MARIMO_PORT:-2718}:2718"
+    stdin_open: true
+    tty: true
+    working_dir: /app/examples/marimo
+    volumes:
+      - ../../python/src:/app/python/src
+    command:
+      [
+        "marimo",
+        "edit",
+        "--host=0.0.0.0",
+        "--port=2718",
+        "--no-token",
+        "demo.py",
+      ]
+
+  # Pure Python unit tests – no browser, no server needed.
+  test-unit:
+    build:
+      context: ../../
+      dockerfile: examples/marimo/Dockerfile
+    working_dir: /app/examples/marimo
+    command: ["pytest", "tests/test_widget.py", "-v"]
+
+  # Playwright + marimo – verifies the widget renders in a real browser.
+  # No external network required (CDN/js.mtfm.io tests excluded).
+  # shm_size is needed for Chromium's shared-memory use inside Docker.
+  test-browser:
+    build:
+      context: ../../
+      dockerfile: examples/marimo/Dockerfile
+    working_dir: /app/examples/marimo
+    shm_size: 1gb
+    command: ["pytest", "tests/test_browser.py", "-m", "integration and not network", "-v"]
+
+  # Same as test-browser but also runs @pytest.mark.network tests,
+  # which load the metapage CDN and js.mtfm.io iframe.
+  test-browser-network:
+    build:
+      context: ../../
+      dockerfile: examples/marimo/Dockerfile
+    working_dir: /app/examples/marimo
+    shm_size: 1gb
+    command: ["pytest", "tests/test_browser.py", "-m", "integration", "-v"]

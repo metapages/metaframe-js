@@ -131,7 +131,10 @@ export const MainHeader: React.FC = () => {
         {icon(
           QuestionMarkIcon,
           "docs",
-          () => setShownPanel(shownPanel === "docs" ? null : "docs"),
+          () => {
+            const docsUrl = `${window.location.origin}/docs/`;
+            (window.top || window).open(docsUrl, "_blank", "noopener,noreferrer");
+          },
           true,
         )}
         {icon(XIcon, "close", () => setEdit(false))}

@@ -14,6 +14,14 @@ blue                               := "\\e[34m"
 magenta                            := "\\e[35m"
 grey                               := "\\e[90m"
 
+# Serve docs locally
+docs:
+  cd docs && npm run dev
+
+# Build docs (install deps if needed)
+docs-build:
+  cd docs && npm install && npm run build
+
 @_help:
     just --list --unsorted
     echo -e ""
@@ -24,7 +32,7 @@ grey                               := "\\e[90m"
 
 # open
 # Run the server in development mode
-@dev +args="": _mkcert open
+@dev +args="": _mkcert docs-build open
   docker compose up --build {{args}}
 
 # Shut down the local server
@@ -48,7 +56,7 @@ fmt:
 open:
   deno run --allow-all https://deno.land/x/metapages@v0.0.17/exec/open_url.ts 'https://metapages.github.io/load-page-when-available/?url=https://{{APP_FQDN}}:{{APP_PORT}}'
 
-publish: _ensure_deployctl
+publish: _ensure_deployctl docs-build
   #!/usr/bin/env bash
   set -euo pipefail
   # build the client in editor/dist
@@ -56,6 +64,7 @@ publish: _ensure_deployctl
   rm -rf deploy
   mkdir -p deploy
   cp -r editor/dist deploy/editor
+  cp -r docs/.vitepress/dist deploy/docs
   cp -r worker/server.ts deploy/
   cp -r worker/deno.json deploy/
   cp -r worker/deno.lock deploy/
@@ -71,6 +80,79 @@ test:
   just editor/test
   just worker/test
   just _integration-test
+  just test-jupyter
+  just test-marimo
+
+# Build the Jupyter test Docker image
+_build-jupyter-docker:
+  docker compose -f examples/jupyter/docker-compose.yml build
+
+# Run Jupyter widget unit tests in Docker (no browser needed)
+test-jupyter-unit: _build-jupyter-docker
+  docker compose -f examples/jupyter/docker-compose.yml run --rm test-unit
+
+# Run notebook execution test via nbmake in Docker (kernel only, no browser)
+test-jupyter-notebook: _build-jupyter-docker
+  docker compose -f examples/jupyter/docker-compose.yml run --rm test-notebook
+
+# Run Playwright browser integration tests in Docker (no external network required)
+test-jupyter-browser: _build-jupyter-docker
+  docker compose -f examples/jupyter/docker-compose.yml run --rm test-browser
+
+# Run all Playwright browser tests in Docker, including network-dependent ones (CDN + js.mtfm.io)
+test-jupyter-browser-network: _build-jupyter-docker
+  docker compose -f examples/jupyter/docker-compose.yml run --rm test-browser-network
+
+# Run all Jupyter-related tests in Docker (unit + notebook + browser, no external network)
+test-jupyter:
+  just test-jupyter-unit
+  just test-jupyter-notebook
+  just test-jupyter-browser
+
+# Run JupyterLab in Docker (editable metaframe-widget). http://localhost:${JUPYTER_PORT:-8888} — copy the access URL from the container logs (token in query string). Optional: JUPYTER_PORT=9999 just jupyter-docker
+jupyter-docker: _build-jupyter-docker
+  docker compose -f examples/jupyter/docker-compose.yml up jupyter
+
+# Run test-jupyter, then start JupyterLab in Docker (same image as CI tests).
+jupyter-docker-check: test-jupyter
+  docker compose -f examples/jupyter/docker-compose.yml up jupyter
+
+# Build the marimo test Docker image
+_build-marimo-docker:
+  docker compose -f examples/marimo/docker-compose.yml build
+
+# Run marimo widget unit tests in Docker (no browser needed)
+test-marimo-unit: _build-marimo-docker
+  docker compose -f examples/marimo/docker-compose.yml run --rm test-unit
+
+# Run Playwright browser integration tests for marimo in Docker (no external network required)
+test-marimo-browser: _build-marimo-docker
+  docker compose -f examples/marimo/docker-compose.yml run --rm test-browser
+
+# Run all Playwright browser tests for marimo in Docker, including network-dependent ones
+test-marimo-browser-network: _build-marimo-docker
+  docker compose -f examples/marimo/docker-compose.yml run --rm test-browser-network
+
+# Run all marimo-related tests in Docker (unit + browser, no external network)
+test-marimo:
+  just test-marimo-unit
+  just test-marimo-browser
+
+# Run marimo in Docker (editable metaframe-widget). http://localhost:${MARIMO_PORT:-2718}
+marimo-docker:
+  docker compose -f examples/marimo/docker-compose.yml up --build
+
+# Run canonical metaframe-widget unit tests
+test-python:
+  cd python && pytest tests/ -v
+
+# Build the metaframe-widget package (outputs to python/dist/)
+build-python:
+  cd python && hatch build
+
+# Build and publish metaframe-widget to PyPI (requires HATCH_INDEX_USER and HATCH_INDEX_AUTH env vars, or interactive login)
+publish-python: build-python
+  cd python && hatch publish
 
 # Run integration tests: starts the dev stack, runs vitest unit + playwright integration tests, tears down
 _integration-test: _mkcert

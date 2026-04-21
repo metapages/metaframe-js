@@ -43,7 +43,8 @@ def __(MetaframeWidget, mo):
             """
 export const onInputs = (inputs) => {
     document.getElementById("root").textContent = JSON.stringify(inputs);
-    setOutput("echo", inputs);
+    // Pass each input key through as a separate output
+    Object.keys(inputs).forEach(key => setOutput(key, inputs[key]));
 };
 """
         )
@@ -78,34 +79,90 @@ def __(echo):
 
 @app.cell
 def __(mo):
-    mo.md("## 5. Pipe widgets together")
+    mo.md("## 5. Pipe five widgets together")
     return
 
 
 @app.cell
-def __(MetaframeWidget, echo, mo):
-    doubler = mo.ui.anywidget(
-        MetaframeWidget.from_code(
-            """
+def __(MetaframeWidget, mo):
+    # Create all widgets upfront in one cell so they are never recreated.
+    # Use pipe_to() for connections — traitlets observers forward outputs
+    # to the next widget's inputs without triggering marimo cell re-runs.
+
+    w_echo = MetaframeWidget.from_code("""
+export const onInputs = (inputs) => {
+    document.getElementById("root").textContent = "1 echo: " + JSON.stringify(inputs);
+    Object.keys(inputs).forEach(key => setOutput(key, inputs[key]));
+};
+""", height="80px")
+
+    w_double = MetaframeWidget.from_code("""
 export const onInputs = (inputs) => {
     if (inputs.data) {
-        const doubled = inputs.data.map(x => x * 2);
-        document.getElementById("root").textContent = JSON.stringify(doubled);
-        setOutput("doubled", doubled);
+        const r = inputs.data.map(x => x * 2);
+        document.getElementById("root").textContent = "2 doubled: " + JSON.stringify(r);
+        setOutput("data", r);
     }
 };
-"""
-        )
-    )
-    # Connect echo's output to doubler's input
-    echo.widget.pipe_to(doubler.widget, output_key="echo", input_key="data")
-    doubler
-    return (doubler,)
+""", height="80px")
+
+    w_triple = MetaframeWidget.from_code("""
+export const onInputs = (inputs) => {
+    if (inputs.data) {
+        const r = inputs.data.map(x => x * 3);
+        document.getElementById("root").textContent = "3 tripled: " + JSON.stringify(r);
+        setOutput("data", r);
+    }
+};
+""", height="80px")
+
+    w_add10 = MetaframeWidget.from_code("""
+export const onInputs = (inputs) => {
+    if (inputs.data) {
+        const r = inputs.data.map(x => x + 10);
+        document.getElementById("root").textContent = "4 +10: " + JSON.stringify(r);
+        setOutput("data", r);
+    }
+};
+""", height="80px")
+
+    w_negate = MetaframeWidget.from_code("""
+export const onInputs = (inputs) => {
+    if (inputs.data) {
+        const r = inputs.data.map(x => -x);
+        document.getElementById("root").textContent = "5 negated: " + JSON.stringify(r);
+        setOutput("data", r);
+    }
+};
+""", height="80px")
+
+    # Chain: echo → double → triple → add10 → negate
+    w_echo.pipe_to(w_double, "data")
+    w_double.pipe_to(w_triple, "data")
+    w_triple.pipe_to(w_add10, "data")
+    w_add10.pipe_to(w_negate, "data")
+
+    pipe_echo = mo.ui.anywidget(w_echo)
+    mo.vstack([
+        pipe_echo,
+        mo.ui.anywidget(w_double),
+        mo.ui.anywidget(w_triple),
+        mo.ui.anywidget(w_add10),
+        mo.ui.anywidget(w_negate),
+    ])
+    return (pipe_echo,)
 
 
 @app.cell
-def __(doubler):
-    doubler.outputs
+def __(pipe_echo):
+    # Push data through the 5-widget pipeline: [1,2,3] → ×2 → ×3 → +10 → negate
+    pipe_echo.set_inputs({"data": [1, 2, 3]})
+    return
+
+
+@app.cell
+def __(pipe_echo):
+    pipe_echo.outputs
     return
 
 

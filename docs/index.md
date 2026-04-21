@@ -1,0 +1,28 @@
+---
+layout: home
+
+hero:
+  name: metaframe-js
+  text: JavaScript embedded in the URL
+  tagline: Run and edit JavaScript in the browser. Share and connect self-contained websites with other chunks of code and visualization.
+  actions:
+    - theme: brand
+      text: Get Started
+      link: /guide/getting-started
+    - theme: alt
+      text: JavaScript API
+      link: /guide/javascript-api
+    - theme: alt
+      text: View on GitHub
+      link: https://github.com/metapages/metaframe-js
+
+features:
+  - title: Edit with AI
+    details: Copy the AI prompt, paste into Claude or ChatGPT, then copy the result back. Instant shareable code.
+  - title: Share via URL
+    details: All state is embedded in the URL — no server storage. Copy the link and anyone can run your code.
+  - title: Connect Metaframes
+    details: Wire inputs and outputs between metaframes to build apps, workflows, and dashboards.
+  - title: Notebook Widgets
+    details: Use any metaframe as an interactive Jupyter or marimo widget with the metaframe-widget Python package.
+---

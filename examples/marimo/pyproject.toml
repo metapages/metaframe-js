@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "metaframe-widget-jupyter-examples"
+name = "metaframe-widget-marimo-examples"
 version = "0.0.0"
-description = "Jupyter integration tests and examples for metaframe-widget"
+description = "marimo integration tests and examples for metaframe-widget"
 license = "MIT"
 requires-python = ">=3.8"
 dependencies = [
@@ -14,9 +14,8 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+    "marimo",
     "pytest",
-    "jupyterlab",
-    "nbmake",
     "playwright==1.58.0",
     "pytest-playwright",
     "requests",
@@ -24,6 +23,6 @@ dev = [
 
 [tool.pytest.ini_options]
 markers = [
-    "integration: requires a running JupyterLab server",
+    "integration: requires a running marimo server",
     "network: requires external network access (CDN, js.mtfm.io)",
 ]

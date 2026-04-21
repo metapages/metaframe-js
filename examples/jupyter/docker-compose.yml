@@ -1,0 +1,72 @@
+services:
+
+  # JupyterLab with editable metaframe-widget (same image as tests). Open the URL
+  # printed in the logs (includes access token unless JUPYTER_TOKEN is set).
+  # A named volume persists the cookie secret so browser sessions survive restarts.
+  jupyter:
+    build:
+      context: ../../
+      dockerfile: examples/jupyter/Dockerfile
+    ports:
+      - "${JUPYTER_PORT:-8888}:8888"
+    stdin_open: true
+    tty: true
+    working_dir: /app/examples/jupyter
+    volumes:
+      - ../../python/src:/app/python/src
+      - ./examples:/app/examples/jupyter/examples
+      - ./tests:/app/examples/jupyter/tests
+      - jupyter-runtime:/root/.local/share/jupyter/runtime
+    command:
+      [
+        "jupyter",
+        "lab",
+        "--ip=0.0.0.0",
+        "--port=8888",
+        "--no-browser",
+        "--allow-root",
+        "--ServerApp.root_dir=/app/examples/jupyter",
+        "--IdentityProvider.token=",
+        "--ServerApp.password=",
+      ]
+
+  # Pure Python unit tests – no browser, no kernel needed.
+  test-unit:
+    build:
+      context: ../../
+      dockerfile: examples/jupyter/Dockerfile
+    working_dir: /app/examples/jupyter
+    command: ["pytest", "tests/test_widget.py", "-v"]
+
+  # Execute the demo notebook via nbmake (Python kernel, no browser).
+  # Verifies all cells run without raising Python exceptions.
+  test-notebook:
+    build:
+      context: ../../
+      dockerfile: examples/jupyter/Dockerfile
+    working_dir: /app/examples/jupyter
+    command: ["pytest", "--nbmake", "examples/demo.ipynb", "-v"]
+
+  # Playwright + JupyterLab – verifies the widget renders in a real browser.
+  # No external network required (CDN/js.mtfm.io tests excluded).
+  # shm_size is needed for Chromium's shared-memory use inside Docker.
+  test-browser:
+    build:
+      context: ../../
+      dockerfile: examples/jupyter/Dockerfile
+    working_dir: /app/examples/jupyter
+    shm_size: 1gb
+    command: ["pytest", "tests/test_browser.py", "-m", "integration and not network", "-v"]
+
+  # Same as test-browser but also runs @pytest.mark.network tests,
+  # which load the metapage CDN and js.mtfm.io iframe.
+  test-browser-network:
+    build:
+      context: ../../
+      dockerfile: examples/jupyter/Dockerfile
+    working_dir: /app/examples/jupyter
+    shm_size: 1gb
+    command: ["pytest", "tests/test_browser.py", "-m", "integration", "-v"]
+
+volumes:
+  jupyter-runtime:

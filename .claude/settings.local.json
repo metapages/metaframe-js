@@ -27,7 +27,21 @@
       "Bash(cd /Users/dion/dev/git/metapages/metaframes/metaframe-js && just editor/check 2>&1)",
       "Bash(just:*)",
       "Bash(.venv/bin/pip install:*)",
-      "Bash(.venv/bin/pytest:*)"
+      "Bash(.venv/bin/pytest:*)",
+      "Bash(docker compose:*)",
+      "WebFetch(domain:cdn.jsdelivr.net)",
+      "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:anywidget.dev)",
+      "WebFetch(domain:ipywidgets.readthedocs.io)",
+      "WebFetch(domain:docs.anywidget.dev)",
+      "Bash(docker run:*)",
+      "Bash(git:*)",
+      "Bash(which pip3:*)",
+      "Bash(pip3 install:*)",
+      "Bash(python3:*)",
+      "Bash(pip3 install --break-system-packages hatch 2>&1 | tail -3 && hatch build 2>&1)",
+      "Bash(hatch build:*)"
     ],
     "deny": [],
     "ask": []

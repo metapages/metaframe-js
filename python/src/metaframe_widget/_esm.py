@@ -13,15 +13,35 @@ async function loadRenderMetapage() {
 
 export default {
     async render({ model, el }) {
+        // Size el explicitly so marimo and Jupyter honour width/height
+        el.style.display = "block";
+        el.style.boxSizing = "border-box";
+        el.style.width = model.get("width") || "100%";
+        el.style.height = model.get("height") || "400px";
+
+        // Inject CSS to remove iframe borders and inline gaps
+        const style = document.createElement("style");
+        style.textContent = ".metaframe-widget-container { box-sizing: border-box; width: 100%; height: 100%; } .metaframe-widget-container iframe { border: none; display: block; margin: 0; padding: 0; box-sizing: border-box; width: 100%; height: 100%; }";
+        el.appendChild(style);
+
         const container = document.createElement("div");
+        container.className = "metaframe-widget-container";
         container.style.width = "100%";
-        container.style.height = model.get("height") || "400px";
-        container.style.overflow = "hidden";
+        container.style.height = "100%";
         el.appendChild(container);
 
         const renderMetapage = await loadRenderMetapage();
 
         let currentResult = null;
+
+        function applyAllowToIframes() {
+            const allow = model.get("allow") || "";
+            if (allow) {
+                container.querySelectorAll("iframe").forEach(iframe => {
+                    iframe.allow = allow;
+                });
+            }
+        }
 
         async function createMetapage() {
             if (currentResult) {
@@ -51,6 +71,8 @@ export default {
             });
             currentResult = result;
 
+            applyAllowToIframes();
+
             // Push current inputs if any
             const inputs = model.get("inputs");
             if (inputs && Object.keys(inputs).length > 0) {
@@ -67,9 +89,15 @@ export default {
             }
         });
 
-        model.on("change:height", () => {
-            container.style.height = model.get("height") || "400px";
+        model.on("change:width", () => {
+            el.style.width = model.get("width") || "100%";
         });
+
+        model.on("change:height", () => {
+            el.style.height = model.get("height") || "400px";
+        });
+
+        model.on("change:allow", applyAllowToIframes);
 
         await createMetapage();
 
