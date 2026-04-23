@@ -1,5 +1,7 @@
 # Javascript embedded in the URL: run and edit with AI tools
 
+[Official Docs](https://js.mtfm.io/docs)
+
 <a href="https://github.com/metapages/metaframe-js" target="_top" rel="noopener noreferrer">Github</a>
 
 Edit and run javascript code in the browser. Share and connect the self-contained websites with other chunks of code and visualization.
