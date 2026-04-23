@@ -38,7 +38,7 @@ jobs:
           deno-version: v2.7.12
 
       - name: Unignore build output for deploy
-        run: sed -i '\|^public/build/deploy$|d' .gitignore
+        run: find . -type f -name .gitignore -delete
 
       - name: deno deploy
         env:
