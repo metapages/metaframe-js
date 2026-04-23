@@ -249,7 +249,9 @@ self.addEventListener("fetch", (event) => {
             const req = event.request;
             caches.open(CACHE_NAME).then(async (cache) => {
               try {
-                const responseWithHeaders = await addCacheHeaders(responseToCache);
+                const responseWithHeaders = await addCacheHeaders(
+                  responseToCache,
+                );
                 await cache.put(req, responseWithHeaders);
               } catch (cacheError) {
                 log("❌ Failed to cache navigation:", req.url, cacheError);

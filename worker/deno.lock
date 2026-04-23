@@ -1,6 +1,7 @@
 {
   "version": "5",
   "specifiers": {
+    "jsr:@hono/hono@4": "4.6.15",
     "jsr:@std/assert@1": "1.0.19",
     "jsr:@std/internal@^1.0.12": "1.0.12",
     "npm:@aws-sdk/client-s3@*": "3.972.0",
@@ -8,6 +9,9 @@
     "npm:@aws-sdk/s3-request-presigner@^3.997.0": "3.997.0"
   },
   "jsr": {
+    "@hono/hono@4.6.15": {
+      "integrity": "935b3b12e98e4b22bcd1aa4dbe6587321e431c79829eba61f535b4ede39fd8b1"
+    },
     "@std/assert@1.0.19": {
       "integrity": "eaada96ee120cb980bc47e040f82814d786fe8162ecc53c91d8df60b8755991e",
       "dependencies": [
@@ -23,7 +27,7 @@
       "integrity": "sha512-nLbCWqQNgUiwwtFsen1AdzAtvuLRsQS8rYgMuxCrdKf9kOssamGLuPwyTY9wyYblNr9+1XM8v6zoDTPPSIeANg==",
       "dependencies": [
         "@aws-crypto/util",
-        "@aws-sdk/types@3.972.0",
+        "@aws-sdk/types@3.973.2",
         "tslib"
       ]
     },
@@ -31,7 +35,7 @@
       "integrity": "sha512-+iWb8qaHLYKrNvGRbiYRHSdKRWhto5XlZUEBwDjYNf+ly5SVYG6zEoYIdxvf5R3zyeP16w4PLBn3rH1xc74Rag==",
       "dependencies": [
         "@aws-crypto/util",
-        "@aws-sdk/types@3.972.0",
+        "@aws-sdk/types@3.973.2",
         "tslib"
       ]
     },
@@ -40,7 +44,7 @@
       "dependencies": [
         "@aws-crypto/supports-web-crypto",
         "@aws-crypto/util",
-        "@aws-sdk/types@3.972.0",
+        "@aws-sdk/types@3.973.2",
         "@aws-sdk/util-locate-window",
         "@smithy/util-utf8@2.3.0",
         "tslib"
@@ -52,7 +56,7 @@
         "@aws-crypto/sha256-js",
         "@aws-crypto/supports-web-crypto",
         "@aws-crypto/util",
-        "@aws-sdk/types@3.972.0",
+        "@aws-sdk/types@3.973.2",
         "@aws-sdk/util-locate-window",
         "@smithy/util-utf8@2.3.0",
         "tslib"
@@ -62,7 +66,7 @@
       "integrity": "sha512-FFQQyu7edu4ufvIZ+OadFpHHOt+eSTBaYaki44c+akjg7qZg9oOQeLlk77F6tSYqjDAFClrHJk9tMf0HdVyOvA==",
       "dependencies": [
         "@aws-crypto/util",
-        "@aws-sdk/types@3.972.0",
+        "@aws-sdk/types@3.973.2",
         "tslib"
       ]
     },
@@ -75,7 +79,7 @@
     "@aws-crypto/util@5.2.0": {
       "integrity": "sha512-4RkU9EsI6ZpBve5fseQlGNUWKMa1RLPQ1dnjnQoe07ldfIzcsGb5hC5W0Dm7u423KWzawlrpbjXBrXCEv9zazQ==",
       "dependencies": [
-        "@aws-sdk/types@3.972.0",
+        "@aws-sdk/types@3.973.2",
         "@smithy/util-utf8@2.3.0",
         "tslib"
       ]
@@ -1234,6 +1238,7 @@
   },
   "workspace": {
     "dependencies": [
+      "jsr:@hono/hono@4",
       "jsr:@std/assert@1",
       "npm:@aws-sdk/s3-request-presigner@^3.997.0"
     ]
