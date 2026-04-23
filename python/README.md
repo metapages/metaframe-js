@@ -1,6 +1,6 @@
 # metaframe-widget
 
-An [anywidget](https://anywidget.dev/) for embedding [metaframe](https://metapages.org/) URLs in Jupyter and marimo notebooks.
+An [anywidget](https://anywidget.dev/) for embedding [metaframe](https://js.mtfm.io/docs) and [metapage](https://docs.metapage.io/) URLs in Jupyter and marimo notebooks.
 
 ## Install
 

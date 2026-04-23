@@ -133,7 +133,11 @@ export const MainHeader: React.FC = () => {
           "docs",
           () => {
             const docsUrl = `${window.location.origin}/docs/`;
-            (window.top || window).open(docsUrl, "_blank", "noopener,noreferrer");
+            (window.top || window).open(
+              docsUrl,
+              "_blank",
+              "noopener,noreferrer",
+            );
           },
           true,
         )}

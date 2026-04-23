@@ -1,10 +1,6 @@
-import { oakCors } from "https://deno.land/x/cors@v1.2.2/mod.ts";
-import {
-  Application,
-  Context,
-  Router,
-} from "https://deno.land/x/oak@v10.2.0/mod.ts";
-import staticFiles from "https://deno.land/x/static_files@1.1.6/mod.ts";
+import { Hono } from "@hono/hono";
+import { cors } from "@hono/hono/cors";
+import { serveStatic } from "@hono/hono/deno";
 import { MetaframeDefinition } from "https://esm.sh/@metapages/metapage@1.10.6";
 import {
   GetObjectCommand,
@@ -29,10 +25,9 @@ const getPublicUrl = (id: string) => {
   return `${S3_PUBLIC_URL}/${id}`;
 };
 
-const s3Credentials =
-  S3_ACCESS_KEY_ID && S3_SECRET_ACCESS_KEY
-    ? { accessKeyId: S3_ACCESS_KEY_ID, secretAccessKey: S3_SECRET_ACCESS_KEY }
-    : undefined;
+const s3Credentials = S3_ACCESS_KEY_ID && S3_SECRET_ACCESS_KEY
+  ? { accessKeyId: S3_ACCESS_KEY_ID, secretAccessKey: S3_SECRET_ACCESS_KEY }
+  : undefined;
 
 // Client for generating presigned URLs (uses browser-reachable endpoint)
 // Falls back to the main S3 client if S3_PRESIGN_ENDPOINT is not set (e.g. production R2)
@@ -135,78 +130,79 @@ const DEFAULT_METAFRAME_DEFINITION_STRING = JSON.stringify(
   2,
 );
 
-// const certFile = "../.certs/server1.localhost.pem",
-//   keyFile = "../.certs/server1.localhost-key.pem";
+const app = new Hono();
 
-const router = new Router();
+// Global CORS
+app.use("*", cors({ origin: "*" }));
 
-const serveIndex = async (ctx: Context) => {
+// Routes
+const serveIndex = async () => {
   const indexHtml = await Deno.readTextFile("./index.html");
-  ctx.response.body = indexHtml;
+  return new Response(indexHtml, {
+    headers: { "Content-Type": "text/html; charset=utf-8" },
+  });
 };
 
-const serveServiceWorker = async (ctx: Context) => {
+app.get("/", () => serveIndex());
+app.get("/index.html", () => serveIndex());
+
+app.get("/sw.js", async () => {
   try {
     const swJs = await Deno.readTextFile("./sw.js");
-    ctx.response.headers.set("Content-Type", "application/javascript");
-    ctx.response.headers.set("Service-Worker-Allowed", "/");
-    ctx.response.body = swJs;
+    return new Response(swJs, {
+      headers: {
+        "Content-Type": "application/javascript",
+        "Service-Worker-Allowed": "/",
+      },
+    });
   } catch (error) {
     console.error("Error serving service worker:", error);
-    ctx.response.status = 404;
-    ctx.response.body = "Service worker not found";
+    return new Response("Service worker not found", { status: 404 });
   }
-};
+});
 
-const serveCacheTestUtils = async (ctx: Context) => {
+app.get("/cache-test-utils.js", async () => {
   try {
     const testUtilsJs = await Deno.readTextFile("./cache-test-utils.js");
-    ctx.response.headers.set("Content-Type", "application/javascript");
-    ctx.response.headers.set("Cache-Control", "no-cache"); // Don't cache test utilities
-    ctx.response.body = testUtilsJs;
+    return new Response(testUtilsJs, {
+      headers: {
+        "Content-Type": "application/javascript",
+        "Cache-Control": "no-cache",
+      },
+    });
   } catch (error) {
     console.error("Error serving cache test utilities:", error);
-    ctx.response.status = 404;
-    ctx.response.body = "Cache test utilities not found";
+    return new Response("Cache test utilities not found", { status: 404 });
   }
-};
+});
 
-router.get("/", serveIndex);
-router.get("/index.html", serveIndex);
-router.get("/sw.js", serveServiceWorker);
-router.get("/cache-test-utils.js", serveCacheTestUtils);
-router.get("/metaframe.json", (ctx: Context) => {
-  ctx.response.headers.set("Content-Type", "application/json");
-  ctx.response.body = DEFAULT_METAFRAME_DEFINITION_STRING;
+app.get("/metaframe.json", (c) => {
+  return c.json(DEFAULT_METAFRAME_DEFINITION);
 });
-router.get("/editor/metaframe.json", (ctx: Context) => {
-  ctx.response.headers.set("Content-Type", "application/json");
-  ctx.response.body = DEFAULT_METAFRAME_DEFINITION_STRING;
+
+app.get("/editor/metaframe.json", (c) => {
+  return c.json(DEFAULT_METAFRAME_DEFINITION);
 });
+
 // Upload presign endpoint — returns a presigned URL for direct browser-to-S3 upload
-router.post("/api/upload/presign", async (ctx: Context) => {
+app.post("/api/upload/presign", async (c) => {
   if (!s3PresignClient) {
-    ctx.response.status = 503;
-    ctx.response.body = { error: "File upload not configured" };
-    return;
+    return c.json({ error: "File upload not configured" }, 503);
   }
 
   try {
-    const body = await (ctx.request as any).body({ type: "json" }).value;
+    const body = await c.req.json();
     const { contentType, fileSize, sha256 } = body;
 
     if (!contentType) {
-      ctx.response.status = 400;
-      ctx.response.body = { error: "Missing required field: contentType" };
-      return;
+      return c.json({ error: "Missing required field: contentType" }, 400);
     }
 
     if (fileSize && fileSize > S3_UPLOAD_MAX_SIZE_MB * 1024 * 1024) {
-      ctx.response.status = 400;
-      ctx.response.body = {
-        error: `File too large. Max size: ${S3_UPLOAD_MAX_SIZE_MB}MB`,
-      };
-      return;
+      return c.json(
+        { error: `File too large. Max size: ${S3_UPLOAD_MAX_SIZE_MB}MB` },
+        400,
+      );
     }
 
     // Use SHA256 content hash if provided, otherwise fall back to UUID
@@ -227,38 +223,25 @@ router.post("/api/upload/presign", async (ctx: Context) => {
     // Canonical path for accessing the file via the worker's download endpoint
     const canonicalPath = `/f/${id}`;
 
-    ctx.response.headers.set("Content-Type", "application/json");
-    ctx.response.body = JSON.stringify({
-      presignedUrl,
-      canonicalPath,
-      key,
-      id,
-    });
+    return c.json({ presignedUrl, canonicalPath, key, id });
   } catch (error) {
     console.error("Presign error:", error);
-    ctx.response.status = 500;
-    ctx.response.body = { error: "Failed to generate presigned URL" };
+    return c.json({ error: "Failed to generate presigned URL" }, 500);
   }
 });
 
 // URL shortening endpoint — stores hash params in S3
-router.post("/api/shorten", async (ctx: any) => {
+app.post("/api/shorten", async (c) => {
   if (!s3PresignClient) {
-    ctx.response.status = 503;
-    ctx.response.body = { error: "URL shortening not configured" };
-    return;
+    return c.json({ error: "URL shortening not configured" }, 503);
   }
 
   try {
-    const body = await (ctx.request as any).body({ type: "json" }).value;
+    const body = await c.req.json();
     const { hashParams } = body;
 
     if (!hashParams) {
-      ctx.response.status = 400;
-      ctx.response.body = {
-        error: "Missing required field: hashParams",
-      };
-      return;
+      return c.json({ error: "Missing required field: hashParams" }, 400);
     }
 
     // Calculate SHA256 hash on the server
@@ -280,29 +263,25 @@ router.post("/api/shorten", async (ctx: any) => {
 
     await s3PresignClient.send(command);
 
-    ctx.response.headers.set("Content-Type", "application/json");
-    ctx.response.body = JSON.stringify({
+    return c.json({
       success: true,
       id: sha256,
       path: `/j/${sha256}`,
     });
   } catch (error) {
     console.error("Shorten URL error:", error);
-    ctx.response.status = 500;
-    ctx.response.body = { error: "Failed to shorten URL" };
+    return c.json({ error: "Failed to shorten URL" }, 500);
   }
 });
 
 // URL shortening from JSON body — encodes each field to hash-param format
-router.post("/api/shorten/json", async (ctx: any) => {
+app.post("/api/shorten/json", async (c) => {
   if (!s3PresignClient) {
-    ctx.response.status = 503;
-    ctx.response.body = { error: "URL shortening not configured" };
-    return;
+    return c.json({ error: "URL shortening not configured" }, 503);
   }
 
   try {
-    const body = await (ctx.request as any).body({ type: "json" }).value;
+    const body = await c.req.json();
 
     // Supported keys, sorted alphabetically for SHA256 consistency
     const supportedKeys = ["definition", "inputs", "js", "modules", "options"];
@@ -322,9 +301,7 @@ router.post("/api/shorten/json", async (ctx: any) => {
     }
 
     if (paramParts.length === 0) {
-      ctx.response.status = 400;
-      ctx.response.body = { error: "No recognised fields provided" };
-      return;
+      return c.json({ error: "No recognised fields provided" }, 400);
     }
 
     const hashParams = `?${paramParts.join("&")}`;
@@ -347,12 +324,11 @@ router.post("/api/shorten/json", async (ctx: any) => {
     });
     await s3PresignClient.send(command);
 
-    const protocol = ctx.request.headers.get("x-forwarded-proto") || "https";
-    const host = ctx.request.headers.get("host");
+    const protocol = c.req.header("x-forwarded-proto") || "https";
+    const host = c.req.header("host");
     const origin = `${protocol}://${host}`;
 
-    ctx.response.headers.set("Content-Type", "application/json");
-    ctx.response.body = JSON.stringify({
+    return c.json({
       id: sha256,
       shortUrl: `${origin}/j/${sha256}`,
       fullUrl: `${origin}/#${hashParams}`,
@@ -360,27 +336,22 @@ router.post("/api/shorten/json", async (ctx: any) => {
     });
   } catch (error) {
     console.error("Shorten JSON error:", error);
-    ctx.response.status = 500;
-    ctx.response.body = { error: "Failed to shorten URL" };
+    return c.json({ error: "Failed to shorten URL" }, 500);
   }
 });
 
 // Shortened URL — fetches hash params from S3 and serves index.html with injected init script
-router.get("/j/:sha256", async (ctx: any) => {
+app.get("/j/:sha256", async (c) => {
   if (!s3PresignClient) {
-    ctx.response.status = 503;
-    ctx.response.body = { error: "URL shortening not configured" };
-    return;
+    return c.json({ error: "URL shortening not configured" }, 503);
   }
 
   try {
-    const { sha256 } = ctx.params;
+    const sha256 = c.req.param("sha256");
 
     // Validate sha256 format (64 hex characters)
     if (!sha256 || !/^[a-f0-9]{64}$/.test(sha256)) {
-      ctx.response.status = 400;
-      ctx.response.body = { error: "Invalid shortened URL ID" };
-      return;
+      return c.json({ error: "Invalid shortened URL ID" }, 400);
     }
 
     const key = `j/${sha256}`;
@@ -398,51 +369,54 @@ router.get("/j/:sha256", async (ctx: any) => {
     // Serve index.html with injected script that sets window.__SHORT_URL_ID
     // and calls history.replaceState so the hash is correct before module scripts run
     const indexHtml = await Deno.readTextFile("./index.html");
-    const injectedScript = `<script id="short-url-init">window.__SHORT_URL_ID = ${JSON.stringify(
-      sha256,
-    )};window.__SHORT_URL_HASH_PARAMS = ${JSON.stringify(
-      hashParams,
-    )};history.replaceState(null, '', window.location.pathname + '#' + ${JSON.stringify(
-      hashParams,
-    )});</script>`;
+    const injectedScript =
+      `<script id="short-url-init">window.__SHORT_URL_ID = ${
+        JSON.stringify(
+          sha256,
+        )
+      };window.__SHORT_URL_HASH_PARAMS = ${
+        JSON.stringify(
+          hashParams,
+        )
+      };history.replaceState(null, '', window.location.pathname + '#' + ${
+        JSON.stringify(
+          hashParams,
+        )
+      });</script>`;
     const modifiedHtml = indexHtml.replace(
       "</head>",
       injectedScript + "\n</head>",
     );
 
-    ctx.response.headers.set("Content-Type", "text/html; charset=utf-8");
-    ctx.response.headers.set("Cache-Control", "no-cache");
-    ctx.response.body = modifiedHtml;
+    return new Response(modifiedHtml, {
+      headers: {
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "no-cache",
+      },
+    });
   } catch (error: any) {
     console.error("Shortened URL error:", error);
 
     // Handle S3 NoSuchKey error (404)
     if (error.name === "NoSuchKey" || error.Code === "NoSuchKey") {
-      ctx.response.status = 404;
-      ctx.response.body = { error: "Shortened URL not found" };
-      return;
+      return c.json({ error: "Shortened URL not found" }, 404);
     }
 
-    ctx.response.status = 500;
-    ctx.response.body = { error: "Failed to retrieve shortened URL" };
+    return c.json({ error: "Failed to retrieve shortened URL" }, 500);
   }
 });
 
 // Short URL JSON API — returns id and hashParams for a given sha256
-router.get("/api/j/:sha256", async (ctx: any) => {
+app.get("/api/j/:sha256", async (c) => {
   if (!s3PresignClient) {
-    ctx.response.status = 503;
-    ctx.response.body = { error: "URL shortening not configured" };
-    return;
+    return c.json({ error: "URL shortening not configured" }, 503);
   }
 
   try {
-    const { sha256 } = ctx.params;
+    const sha256 = c.req.param("sha256");
 
     if (!sha256 || !/^[a-f0-9]{64}$/.test(sha256)) {
-      ctx.response.status = 400;
-      ctx.response.body = { error: "Invalid shortened URL ID" };
-      return;
+      return c.json({ error: "Invalid shortened URL ID" }, 400);
     }
 
     const key = `j/${sha256}`;
@@ -455,86 +429,50 @@ router.get("/api/j/:sha256", async (ctx: any) => {
     if (!response.Body) throw new Error("S3 response body is empty");
     const hashParams = await response.Body.transformToString();
 
-    ctx.response.headers.set("Content-Type", "application/json");
-    ctx.response.headers.set(
-      "Cache-Control",
-      "public, max-age=31536000, immutable",
-    );
-    ctx.response.body = JSON.stringify({ id: sha256, hashParams });
+    c.header("Cache-Control", "public, max-age=31536000, immutable");
+    return c.json({ id: sha256, hashParams });
   } catch (error: any) {
     console.error("Short URL API error:", error);
 
     if (error.name === "NoSuchKey" || error.Code === "NoSuchKey") {
-      ctx.response.status = 404;
-      ctx.response.body = { error: "Shortened URL not found" };
-      return;
+      return c.json({ error: "Shortened URL not found" }, 404);
     }
 
-    ctx.response.status = 500;
-    ctx.response.body = { error: "Failed to retrieve shortened URL" };
+    return c.json({ error: "Failed to retrieve shortened URL" }, 500);
   }
 });
 
 // File download endpoint — redirects to the public S3 URL
-router.get("/f/:id", async (ctx: any) => {
+app.get("/f/:id", (c) => {
   if (!S3_PUBLIC_URL) {
-    ctx.response.status = 503;
-    ctx.response.body = {
-      error: "File access not configured (missing S3_PUBLIC_URL)",
-    };
-    return;
+    return c.json(
+      { error: "File access not configured (missing S3_PUBLIC_URL)" },
+      503,
+    );
   }
 
   try {
-    const { id } = ctx.params;
-    // Construct the public S3 URL: bucket is already in the S3_PUBLIC_URL path
+    const id = c.req.param("id");
     const publicUrl = getPublicUrl(id);
 
-    ctx.response.headers.set("Cache-Control", "public, max-age=3600");
-    ctx.response.redirect(publicUrl);
+    c.header("Cache-Control", "public, max-age=3600");
+    return c.redirect(publicUrl);
   } catch (error) {
     console.error("File download error:", error);
-    ctx.response.status = 500;
-    ctx.response.body = { error: "Failed to redirect to file" };
+    return c.json({ error: "Failed to redirect to file" }, 500);
   }
 });
 
-// After creating the router, we can add it to the app.
+// Static file serving
+app.use("/editor/*", serveStatic({ root: "./" }));
+app.use("/docs/*", serveStatic({ root: "./" }));
+app.use(
+  "/*",
+  serveStatic({
+    root: "./",
+    rewriteRequestPath: (path) => `/static${path}`,
+  }),
+);
 
-const app = new Application();
-app.addEventListener("listen", ({ hostname, port, secure }) => {
-  console.log(
-    `🚀 Listening on: ${secure ? "https://" : "http://"}${
-      hostname ?? "localhost"
-    }:${port}`,
-  );
-});
-app.use(oakCors({ origin: "*" }));
-app.use(
-  staticFiles("static", {
-    setHeaders: (headers: Headers) => {
-      headers.set("Access-Control-Allow-Origin", "*");
-    },
-  }),
-);
-app.use(
-  staticFiles("editor", {
-    prefix: "/editor",
-    setHeaders: (headers: Headers) => {
-      headers.set("Access-Control-Allow-Origin", "*");
-    },
-  }),
-);
-app.use(
-  staticFiles("docs", {
-    prefix: "/docs",
-    setHeaders: (headers: Headers) => {
-      headers.set("Access-Control-Allow-Origin", "*");
-    },
-  }),
-);
-app.use(router.routes());
-app.use(router.allowedMethods());
-
-// await app.listen({ port, certFile, keyFile });
-await app.listen({ port });
+console.log(`🚀 Listening on: http://localhost:${port}`);
+Deno.serve({ port }, app.fetch);
