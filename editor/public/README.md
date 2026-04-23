@@ -282,7 +282,226 @@ source.widget.pipe_to(sink.widget, output_key="result", input_key="data")
 
 See `examples/marimo/demo.py` in the repo for a complete example.
 
-## Longer description and archtecture
+## Short URLs
+
+Full URLs with embedded code can get long. Use the shorten button in the editor toolbar to generate a compact short URL.
+
+**Full URL** (code and all config embedded in the hash):
+
+```
+https://js.mtfm.io/#?js=ZXhwb3J0IGNvbnN0IG9uSW5wdXRzID0gKGlucHV0cykgPT4gew0KICAgIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJyb290IikudGV4dENvbnRlbnQgPSBKU09OLnN0cmluZ2lmeShpbnB1dHMpOwp9&inputs=%7B%22data.json%22%3A%7B%22type%22%3A%22url%22%2C%22value%22%3A%22https%3A%2F%2Fjs.mtfm.io%2Ff%2Fabc123%22%7D%7D
+```
+
+**Short URL** (same content, shareable):
+
+```
+https://js.mtfm.io/j/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+```
+
+Short URLs are content-addressed: the path is `/j/{sha256}` where the SHA-256 is computed from the hash parameters. Identical content always produces the same short URL.
+
+### Programmatic shortening
+
+**From raw hash params:**
+
+```bash
+curl -X POST https://js.mtfm.io/api/shorten \
+  -H "Content-Type: application/json" \
+  -d '{"hashParams": "?js=ZXhwb3J0IGNvbnN0IG9uSW5wdXRzID0gKGlucHV0cykgPT4ge30%3D"}'
+```
+
+**From structured JSON (preferred):**
+
+```bash
+curl -X POST https://js.mtfm.io/api/shorten/json \
+  -H "Content-Type: application/json" \
+  -d '{
+    "js": "export const onInputs = (inputs) => { root.textContent = JSON.stringify(inputs); }",
+    "inputs": {
+      "data.json": { "type": "url", "value": "https://js.mtfm.io/f/abc123def456..." }
+    }
+  }'
+```
+
+Response:
+
+```json
+{
+  "id": "e3b0c44298fc1c14...",
+  "shortUrl": "https://js.mtfm.io/j/e3b0c44298fc1c14...",
+  "fullUrl": "https://js.mtfm.io/#?js=...&inputs=...",
+  "hashParams": "?js=...&inputs=..."
+}
+```
+
+Supported fields in `/api/shorten/json`: `js`, `inputs`, `definition`, `modules`, `options`.
+
+## File and blob handling
+
+You can upload files (images, data, etc.) by dragging them onto the editor or by adding file-type inputs in Settings. Uploaded files are stored in S3-compatible storage and referenced by content hash.
+
+### How uploads work
+
+1. The client computes a SHA-256 hash of the file content
+2. A presigned upload URL is requested from `POST /api/upload/presign`
+3. The file is uploaded directly to S3 via the presigned URL
+4. The file becomes accessible at `https://js.mtfm.io/f/{sha256}`
+
+### File references in inputs
+
+Uploaded files are added to the `inputs` hash parameter as DataRef objects with `type: "url"`:
+
+```json
+{
+  "inputs": {
+    "photo.jpg": {
+      "type": "url",
+      "value": "https://js.mtfm.io/f/a1b2c3d4e5f6..."
+    },
+    "data.csv": {
+      "type": "url",
+      "value": "https://js.mtfm.io/f/f6e5d4c3b2a1..."
+    }
+  }
+}
+```
+
+When the code runs, the runtime fetches each URL and delivers the content to your `onInputs` function. JSON files are automatically parsed into objects; other types arrive as Blobs.
+
+### DataRef types
+
+Inputs support several reference types:
+
+| Type     | Value                 | Resolved to                                                              |
+| -------- | --------------------- | ------------------------------------------------------------------------ |
+| `url`    | A URL string          | Fetched content (JSON object, string, or Blob depending on content-type) |
+| `utf8`   | Plain text            | String                                                                   |
+| `base64` | Base64-encoded binary | Blob                                                                     |
+| `json`   | A JSON value          | The value as-is                                                          |
+| (none)   | Any value             | Treated as native JSON                                                   |
+
+### Example: short URL with file inputs
+
+```bash
+# 1. Upload a file
+SHA=$(shasum -a 256 mydata.json | cut -d' ' -f1)
+PRESIGN=$(curl -s -X POST https://js.mtfm.io/api/upload/presign \
+  -H "Content-Type: application/json" \
+  -d "{\"contentType\": \"application/json\", \"fileSize\": $(stat -f%z mydata.json), \"sha256\": \"$SHA\"}")
+curl -X PUT "$(echo $PRESIGN | jq -r .presignedUrl)" \
+  -H "Content-Type: application/json" \
+  --data-binary @mydata.json
+
+# 2. Create a short URL that references the uploaded file
+curl -X POST https://js.mtfm.io/api/shorten/json \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"js\": \"export const onInputs = (inputs) => { root.textContent = JSON.stringify(inputs); }\",
+    \"inputs\": {
+      \"mydata.json\": { \"type\": \"url\", \"value\": \"https://js.mtfm.io/f/$SHA\" }
+    }
+  }"
+```
+
+## Data persistence and storage lifetime
+
+### Code (stored forever)
+
+Code and configuration stored via URL shortening (`/j/{sha256}`) are **persisted indefinitely**. Short URLs will continue to resolve for as long as the service is running. Since the storage key is a content hash, identical content is deduplicated automatically.
+
+### Uploaded files (planned: 1 month expiry)
+
+Files uploaded via `/f/{sha256}` are currently stored without expiration, but **file expiry of approximately 1 month is planned**. Once enabled, files that have not been re-uploaded will be removed after roughly 30 days.
+
+This gives you plenty of time to transfer blobs to your own storage if you are building on top of this platform. The recommended workflow:
+
+1. Upload files and create short URLs as needed
+2. If you want permanent file hosting, copy the blobs from `https://js.mtfm.io/f/{sha256}` to your own S3/CDN/storage
+3. Update the `inputs` in your short URL (or your own stored URL) to point to your permanent file URLs instead
+
+### What this means for your URLs
+
+| What                      | Path format   | Persistence                             |
+| ------------------------- | ------------- | --------------------------------------- |
+| Short URL (code + config) | `/j/{sha256}` | Forever                                 |
+| Uploaded file             | `/f/{sha256}` | ~1 month (planned), currently no expiry |
+
+If a short URL references uploaded files via `/f/...` URLs and those files expire, the short URL itself will still resolve but the file fetches will fail. To avoid this, either re-upload files periodically or migrate them to your own storage.
+
+## URL format reference
+
+The full URL format is:
+
+```
+https://js.mtfm.io/#?js={base64}&inputs={json}&modules={json}&definition={json}&options={json}&edit={bool}
+```
+
+| Parameter     | Encoding                                  | Description                                                        |
+| ------------- | ----------------------------------------- | ------------------------------------------------------------------ |
+| `js`          | `btoa(encodeURIComponent(code))`          | JavaScript ES6 module source code                                  |
+| `inputs`      | `encodeURIComponent(JSON.stringify(obj))` | Input DataRef objects (see above)                                  |
+| `modules`     | `encodeURIComponent(JSON.stringify(arr))` | Array of CSS/JS URLs or import maps to load                        |
+| `definition`  | `encodeURIComponent(JSON.stringify(obj))` | Metaframe definition (input/output names)                          |
+| `options`     | `encodeURIComponent(JSON.stringify(obj))` | Runtime options (`debug`, `disableCache`, `disableDatarefs`, etc.) |
+| `edit`        | `true` or absent                          | Show the editor panel                                              |
+| `editorWidth` | CSS value (e.g. `80ch`)                   | Width of the editor panel                                          |
+| `bgColor`     | CSS color                                 | Background color                                                   |
+| `hm`          | `disabled`, `invisible`, `visible`        | Menu button visibility                                             |
+
+## Security and iframe permissions
+
+When embedding a metaframe as an iframe in your own page, browsers restrict certain APIs by default. You need to explicitly grant permissions via the `allow` attribute on the `<iframe>` tag.
+
+### Clipboard access
+
+If your embedded code uses the Clipboard API (e.g. copying a URL or text to the clipboard), you must grant clipboard permissions:
+
+```html
+<iframe
+  src="https://js.mtfm.io/#?js=..."
+  allow="clipboard-read *; clipboard-write *"
+></iframe>
+```
+
+Without this, calls to `navigator.clipboard.writeText()` or `navigator.clipboard.readText()` inside the iframe will be blocked by the browser.
+
+The metaframe definition already declares `clipboard-write` in its `allow` field, which is used when metaframes are loaded by the <a href="https://docs.metapage.io" target="_top" rel="noopener noreferrer">metapage</a> runtime. But if you embed the iframe directly in your own HTML, you must set the `allow` attribute yourself.
+
+### Other permissions
+
+Depending on what your code does, you may need additional permissions:
+
+```html
+<iframe
+  src="https://js.mtfm.io/j/abc123..."
+  allow="clipboard-read *; clipboard-write *; camera; microphone; geolocation"
+></iframe>
+```
+
+Common permissions:
+
+| Permission          | When needed                     |
+| ------------------- | ------------------------------- |
+| `clipboard-read *`  | Reading from the clipboard      |
+| `clipboard-write *` | Writing to the clipboard        |
+| `camera`            | Accessing the user's camera     |
+| `microphone`        | Accessing the user's microphone |
+| `geolocation`       | Using location APIs             |
+| `fullscreen`        | Requesting fullscreen mode      |
+
+### Sandbox attribute
+
+If you use the `sandbox` attribute on your iframe, you must also include `allow-scripts` and `allow-same-origin` for the metaframe to function:
+
+```html
+<iframe
+  src="https://js.mtfm.io/#?js=..."
+  sandbox="allow-scripts allow-same-origin allow-popups"
+  allow="clipboard-read *; clipboard-write *"
+></iframe>
+```
+
+## Longer description and architecture
 
 Run arbitrary user javascript modules embedded in the URL. Designed for <a href="https://metapage.io" target="_top" rel="noopener noreferrer">metapages</a> so you can connect inputs + outputs to other metaframe URLs. Similar to <a href="https://codepen.io/" target="_top" rel="noopener noreferrer">Codepen</a>, <a href="https://jsfiddle.net/" target="_top" rel="noopener noreferrer">JSFiddle</a>, but completely self-contained and does not require an active server, these is a simple tiny static website.
 
@@ -303,10 +522,10 @@ This website is also a <a href="https://docs.metapage.io/docs/what-is-a-metafram
 
 ### Architecture
 
-- no state is stored on the server (all embedded in the URL)
-  - this imposes some limits but current URL lengths are large or not specifically limited
-- The server simply serves a little `index.html`
-- The client then runs the embedded javascript (the javascript code is **not** sent to the server)
+- Code and configuration are embedded in the URL hash or stored via short URLs
+- Short URLs (`/j/{sha256}`) store hash params in S3, persisted indefinitely
+- Uploaded files (`/f/{sha256}`) are stored in S3 with planned ~1 month expiry
+- The client runs the embedded javascript directly (code is **not** sent to the server for execution)
 
 The server runs on https://deno.com/deploy which is
 
@@ -314,4 +533,3 @@ The server runs on https://deno.com/deploy which is
 - fast
 - very performant
 - deploys immediately with a simply push to the repository
-- 🌟🌟🌟🌟🌟

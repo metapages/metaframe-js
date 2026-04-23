@@ -25,10 +25,9 @@ const getPublicUrl = (id: string) => {
   return `${S3_PUBLIC_URL}/${id}`;
 };
 
-const s3Credentials =
-  S3_ACCESS_KEY_ID && S3_SECRET_ACCESS_KEY
-    ? { accessKeyId: S3_ACCESS_KEY_ID, secretAccessKey: S3_SECRET_ACCESS_KEY }
-    : undefined;
+const s3Credentials = S3_ACCESS_KEY_ID && S3_SECRET_ACCESS_KEY
+  ? { accessKeyId: S3_ACCESS_KEY_ID, secretAccessKey: S3_SECRET_ACCESS_KEY }
+  : undefined;
 
 // Client for generating presigned URLs (uses browser-reachable endpoint)
 // Falls back to the main S3 client if S3_PRESIGN_ENDPOINT is not set (e.g. production R2)
@@ -370,13 +369,20 @@ app.get("/j/:sha256", async (c) => {
     // Serve index.html with injected script that sets window.__SHORT_URL_ID
     // and calls history.replaceState so the hash is correct before module scripts run
     const indexHtml = await Deno.readTextFile("./index.html");
-    const injectedScript = `<script id="short-url-init">window.__SHORT_URL_ID = ${JSON.stringify(
-      sha256,
-    )};window.__SHORT_URL_HASH_PARAMS = ${JSON.stringify(
-      hashParams,
-    )};history.replaceState(null, '', window.location.pathname + '#' + ${JSON.stringify(
-      hashParams,
-    )});</script>`;
+    const injectedScript =
+      `<script id="short-url-init">window.__SHORT_URL_ID = ${
+        JSON.stringify(
+          sha256,
+        )
+      };window.__SHORT_URL_HASH_PARAMS = ${
+        JSON.stringify(
+          hashParams,
+        )
+      };history.replaceState(null, '', window.location.pathname + '#' + ${
+        JSON.stringify(
+          hashParams,
+        )
+      });</script>`;
     const modifiedHtml = indexHtml.replace(
       "</head>",
       injectedScript + "\n</head>",

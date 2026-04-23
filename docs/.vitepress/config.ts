@@ -25,7 +25,9 @@ export default defineConfig({
           { text: "Getting Started", link: "/guide/getting-started" },
           { text: "JavaScript API", link: "/guide/javascript-api" },
           { text: "URL State", link: "/guide/url-state" },
+          { text: "Short URLs", link: "/guide/short-urls" },
           { text: "Examples", link: "/guide/examples" },
+          { text: "AI Usage", link: "/guide/ai" },
         ],
       },
       {
