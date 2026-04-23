@@ -60,7 +60,7 @@ fmt:
 open:
     deno run --allow-all https://deno.land/x/metapages@v0.0.17/exec/open_url.ts 'https://metapages.github.io/load-page-when-available/?url=https://{{ APP_FQDN }}:{{ APP_PORT }}'
 
-# deno deploy
+# deno deploy to js.mtfm.io
 deploy: docs-build
     #!/usr/bin/env bash
     set -euo pipefail
