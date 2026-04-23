@@ -37,7 +37,6 @@ jobs:
         with:
           deno-version: v2.7.12
 
-      # TODO: add a build step here
       - name: deno deploy
         env:
           DENO_DEPLOY_TOKEN: ${{ secrets.DENO_DEPLOY_TOKEN }}
