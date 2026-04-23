@@ -14,7 +14,7 @@ metaframe-js runs user JavaScript modules embedded in the URL. The key design pr
 ```
 metaframe-js/
 ├── editor/          # React frontend (Vite + Chakra UI + TypeScript)
-├── worker/          # Deno backend (Oak framework)
+├── worker/          # Deno backend (Hono framework)
 ├── python/          # metaframe-widget Python package (anywidget)
 ├── examples/
 │   ├── jupyter/     # Jupyter integration tests and examples

@@ -1,6 +1,6 @@
 # Worker
 
-The worker is a Deno backend using the Oak framework. It serves the static frontend and handles routing.
+The worker is a Deno backend using the Hono framework. It serves the static frontend and handles routing.
 
 ## Location
 
