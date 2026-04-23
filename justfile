@@ -200,3 +200,51 @@ clean: _delete-certs
 
 show-metapage-lib:
     @rg "@metapages/metapage@"
+
+python-bump-version:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    pyproject_path="python/pyproject.toml"
+    # Read the version currently in pyproject.toml
+    toml_version=$(python3 - <<'PY'
+    import pathlib, re, sys
+    text = pathlib.Path("python/pyproject.toml").read_text()
+    match = re.search(r'^version\s*=\s*"(\d+)\.(\d+)\.(\d+)"\s*$', text, re.MULTILINE)
+    if not match:
+        sys.exit("Could not find semver version in python/pyproject.toml")
+    print(".".join(match.groups()))
+    PY
+    )
+    toml_tag="python-v$toml_version"
+    # If the tag for the toml version already exists, bump patch
+    if git rev-parse "$toml_tag" >/dev/null 2>&1; then
+        IFS=. read -r major minor patch <<< "$toml_version"
+        new_version="$major.$minor.$((patch + 1))"
+        echo "Tag $toml_tag exists — bumping to $new_version"
+        python3 - <<PY "$new_version"
+    import pathlib, re, sys
+    new_version = sys.argv[1]
+    path = pathlib.Path("python/pyproject.toml")
+    text = path.read_text()
+    updated, count = re.subn(
+        r'^version\s*=\s*"\d+\.\d+\.\d+"\s*$',
+        f'version = "{new_version}"',
+        text,
+        count=1,
+        flags=re.MULTILINE,
+    )
+    if count != 1:
+        sys.exit("Failed to update version in python/pyproject.toml")
+    path.write_text(updated)
+    PY
+        git add "$pyproject_path"
+        git commit -m "python: bump version to $new_version"
+    else
+        new_version="$toml_version"
+        echo "Tag $toml_tag does not exist — using toml version $new_version as-is"
+    fi
+    new_tag="python-v$new_version"
+    git tag "$new_tag"
+    git push origin HEAD
+    git push origin "$new_tag"
+    echo "$new_tag"
