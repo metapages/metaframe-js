@@ -21,13 +21,6 @@ const S3_UPLOAD_MAX_SIZE_MB = parseInt(
   Deno.env.get("S3_UPLOAD_MAX_SIZE_MB") || "500",
 );
 
-console.log("S3_ENDPOINT", S3_ENDPOINT);
-console.log("S3_ACCESS_KEY_ID", S3_ACCESS_KEY_ID);
-console.log("S3_SECRET_ACCESS_KEY", !!S3_SECRET_ACCESS_KEY);
-console.log("S3_BUCKET_NAME", S3_BUCKET_NAME);
-console.log("S3_PUBLIC_URL", S3_PUBLIC_URL);
-console.log("S3_UPLOAD_MAX_SIZE_MB", S3_UPLOAD_MAX_SIZE_MB);
-
 const getPublicUrl = (id: string) => {
   return `${S3_PUBLIC_URL}/${id}`;
 };
