@@ -20,9 +20,10 @@ grey := "\\e[90m"
 @_help:
     just --list --unsorted
     echo -e ""
-    echo -e "    Github  URL 🔗 {{ green }}https://github.com/metapages/metaframe-js{{ normal }}"
-    echo -e "    Publish URL 🔗 {{ green }}https://js.mtfm.io/{{ normal }}"
-    echo -e "    Develop URL 🔗 {{ green }}https://{{ APP_FQDN }}:{{ APP_PORT }}/{{ normal }}"
+    echo -e "    Production URL 🔗     {{ green }}https://js.mtfm.io/{{ normal }}"
+    echo -e "    Github  URL 🔗        {{ green }}https://github.com/metapages/metaframe-js{{ normal }}"
+    echo -e "    Local develop URL 🔗  {{ green }}https://{{ APP_FQDN }}:{{ APP_PORT }}/{{ normal }}"
+    echo -e "    Deploy Console URL 🔗 {{ green }}https://console.deno.com/metapage/metaframe-js{{ normal }}"
     echo -e ""
   
 # Serve docs locally
