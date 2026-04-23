@@ -116,6 +116,23 @@ services:
       - traefik.http.routers.app-editor.tls=true
       - traefik.http.routers.app-editor.rule=Host("${APP_FQDN:-server1.localhost}") && PathPrefix(`/editor`)
 
+  docs:
+    image: node:25-alpine
+    command: sh -c "npm install && npx vitepress dev --host 0.0.0.0 --port 4173"
+    working_dir: /app/docs
+    expose:
+      - 4173
+    volumes:
+      - docs_node_modules:/app/docs/node_modules
+      - ./docs:/app/docs
+    logging:
+      driver: ${LOGGING_SERVER:-local}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.app-docs.tls=true
+      - traefik.http.routers.app-docs.rule=Host("${APP_FQDN:-server1.localhost}") && PathPrefix(`/docs`)
+      - traefik.http.services.app-docs.loadbalancer.server.port=4173
+
   traefik:
     image: "traefik:v2.11"
     container_name: "traefik-connect-metaframe-js"
@@ -139,6 +156,8 @@ volumes:
   node_modules:
     driver: local
   minio_data:
+    driver: local
+  docs_node_modules:
     driver: local
 
 

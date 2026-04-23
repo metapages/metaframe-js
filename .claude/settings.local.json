@@ -41,7 +41,11 @@
       "Bash(pip3 install:*)",
       "Bash(python3:*)",
       "Bash(pip3 install --break-system-packages hatch 2>&1 | tail -3 && hatch build 2>&1)",
-      "Bash(hatch build:*)"
+      "Bash(hatch build:*)",
+      "Bash(ls:*)",
+      "WebFetch(domain:js.mtfm.io)",
+      "Bash(true:*)",
+      "Bash(npx vitepress:*)"
     ],
     "deny": [],
     "ask": []

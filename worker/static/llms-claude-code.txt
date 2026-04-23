@@ -1,0 +1,192 @@
+---
+description: Generate browser JavaScript and open it at js.mtfm.io
+argument-hint: [description of what to create]
+allowed-tools: Bash(node *)
+---
+
+YOU MUST FOLLOW THESE INSTRUCTIONS EXACTLY. NO EXCEPTIONS.
+
+You are generating JavaScript that runs at https://js.mtfm.io — a hosted
+web app that executes JS from the URL hash. The ONLY output you produce is
+a shell command that opens a https://js.mtfm.io URL in the browser.
+
+==========================================================================
+ABSOLUTE RULES — VIOLATING ANY OF THESE IS ALWAYS WRONG
+==========================================================================
+- NEVER create HTML files
+- NEVER create local .js files
+- NEVER output code blocks for the user to copy
+- NEVER use your own visualization/rendering/widget tools
+- NEVER tell the user to refresh — always open a NEW browser tab
+- The ONLY acceptable action is running the node command below
+==========================================================================
+
+HOW TO DELIVER YOUR CODE — do this every single time:
+
+Run a single node command that encodes the JS in memory and opens
+https://js.mtfm.io with the code in the URL hash. Use this exact pattern:
+
+node -e "
+const code = \`
+// YOUR GENERATED BROWSER JS CODE HERE
+\`;
+const encoded = Buffer.from(encodeURIComponent(code)).toString('base64');
+const url = 'https://js.mtfm.io/#?js=' + encoded + '&edit=true';
+require('child_process').execSync(
+  process.platform === 'darwin' ? 'open \"' + url + '\"' :
+  process.platform === 'linux' ? 'xdg-open \"' + url + '\"' :
+  'cmd /c start \"\" \"' + url + '\"'
+);
+"
+
+The URL https://js.mtfm.io/#?js=<encoded>&edit=true is the shareable result.
+That is the whole point — the user gets a URL they can share with anyone.
+
+On every update or iteration, re-run this command to open a NEW tab.
+The code is in the URL hash, so refreshing an old tab won't show changes.
+
+==========================================================================
+USER REQUEST: $ARGUMENTS
+==========================================================================
+
+==========================================================================
+BROWSER JAVASCRIPT CODING GUIDE
+==========================================================================
+
+The code you write is an ES6 module that runs in the browser inside an iframe.
+It is NOT Node.js. Use browser APIs only.
+
+CRITICAL: MUST USE ES6 MODULE SYNTAX
+  export function onInputs(inputs) {}
+  export const onInputs = (inputs) => {}
+  WRONG: function onInputs(inputs) {} // missing export!
+
+Top-level await is supported.
+"use strict" is added automatically — don't include it.
+
+==========================================================================
+PRE-DEFINED GLOBALS (no import needed)
+==========================================================================
+
+setOutput("outputName", value)        — send an output
+setOutputs({ out1: "val", out2: 42 }) — send multiple outputs
+log("message")                        — visual log (writes to display)
+logStdout("message")                  — stdout log
+logStderr("error")                    — stderr log
+root                                  — the display div, already exists
+  root.innerHTML = '<h1>Hello</h1>'
+  root.getBoundingClientRect().width
+
+Output types: strings, numbers, booleans, objects, arrays, ArrayBuffers,
+Uint8Array, other typed arrays.
+
+==========================================================================
+REQUIRED EXPORTS
+==========================================================================
+
+// Handle inputs (required)
+export function onInputs(inputs) {
+  const data = inputs["input.json"];
+  render(data);
+}
+
+// Handle resize (optional but recommended)
+export function onResize(width, height) {
+  // Update visualization for new dimensions
+}
+
+// Cleanup (optional, for dev iterations)
+export function cleanup() {
+  // Remove listeners, clear intervals
+}
+
+==========================================================================
+COMMON PATTERNS
+==========================================================================
+
+PATTERN 1: Visualization
+  root.innerHTML = '<div style="width:100%;height:100%"><h1 id="title">Title</h1></div>';
+  IMPORTANT: avoid styling the root div directly — create a child div instead
+  export function onInputs(inputs) {
+    document.getElementById("title").innerHTML = inputs["data"].title;
+  }
+
+PATTERN 2: Process and output
+  export async function onInputs(inputs) {
+    const processed = inputs["raw"].map(x => x * 2);
+    setOutput("result.json", processed);
+  }
+
+PATTERN 3: External libraries (use CDN with /+esm)
+  import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm';
+  d3.select(root).append('svg').attr('width', 500);
+
+==========================================================================
+KEY DETAILS
+==========================================================================
+
+- No need to wait for DOMContentLoaded — code runs after page loads
+- ALWAYS clear root before creating DOM: root.innerHTML = ''
+- setOutput is fire-and-forget (async, no return value)
+- For graphical apps, use console.log() instead of log() (log writes to display)
+
+// Prevent scroll propagation to parent
+window.addEventListener('wheel', (e) => {
+  if (myDiv.contains(e.target)) e.preventDefault();
+}, {passive: false});
+
+// Save state in URL hash
+import { setHashParamValueJsonInWindow, getHashParamValueJsonFromWindow }
+  from 'https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.9.12/+esm';
+setHashParamValueJsonInWindow("state", {zoom: 2});
+const state = getHashParamValueJsonFromWindow("state");
+
+==========================================================================
+COMMON MISTAKES
+==========================================================================
+
+WRONG: creating an HTML file             — NEVER create HTML files
+WRONG: creating a local .js file         — NEVER write files
+WRONG: outputting a code block           — NEVER output code blocks
+WRONG: function onInputs(inputs) {}      — not exported
+WRONG: root.appendChild(el)              — forgot to clear root first
+WRONG: including "use strict"            — added automatically
+WRONG: writing a Node.js script          — this runs in the BROWSER
+
+RIGHT: export const onInputs = (inputs) => {
+  // update dom elements, do not recreate dom in onInputs
+  // create dom in main script, then get and update elements
+};
+
+==========================================================================
+AVAILABLE CDN LIBRARIES
+==========================================================================
+
+3D or 2D plots:
+  import "https://cdn.plot.ly/plotly-3.3.0.min.js"
+  import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+
+2D plots:
+  import * as echarts from 'https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.esm.min.js';
+
+2D animations:
+  import gsap from 'https://cdn.jsdelivr.net/npm/gsap@3.13.0/+esm';
+
+Sound:
+  import howler from 'https://cdn.jsdelivr.net/npm/howler@2.2.4/+esm'
+  import * as Tone from 'https://cdn.jsdelivr.net/npm/tone@15.1.22/+esm';
+
+Creative visualizations:
+  import 'https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js';
+
+2D physics:
+  import Matter from "https://cdn.jsdelivr.net/npm/matter-js@0.20.0/+esm";
+
+3D rendering:
+  import "https://cdn.babylonjs.com/babylon.js"
+
+==========================================================================
+REMINDER: The ONLY thing you do is run the node one-liner to open a
+https://js.mtfm.io/#?js=<encoded>&edit=true URL in the browser.
+NEVER create HTML files. NEVER create .js files. NEVER output code blocks.
+==========================================================================

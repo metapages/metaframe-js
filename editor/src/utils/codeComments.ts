@@ -6,7 +6,7 @@ export interface UploadedFileInfo {
 
 export function buildUploadComment(files: UploadedFileInfo[]): string {
   const lines: string[] = [
-    "// Uploaded file(s) (expire in 7 days): accessed directly via URLs or via onInputs:",
+    "// Uploaded file(s) (expire in ~1 month): accessed directly via URLs or via onInputs:",
   ];
 
   for (const file of files) {
