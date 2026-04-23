@@ -21,13 +21,21 @@ const S3_UPLOAD_MAX_SIZE_MB = parseInt(
   Deno.env.get("S3_UPLOAD_MAX_SIZE_MB") || "500",
 );
 
+console.log("S3_ENDPOINT", S3_ENDPOINT);
+console.log("S3_ACCESS_KEY_ID", S3_ACCESS_KEY_ID);
+console.log("S3_SECRET_ACCESS_KEY", !!S3_SECRET_ACCESS_KEY);
+console.log("S3_BUCKET_NAME", S3_BUCKET_NAME);
+console.log("S3_PUBLIC_URL", S3_PUBLIC_URL);
+console.log("S3_UPLOAD_MAX_SIZE_MB", S3_UPLOAD_MAX_SIZE_MB);
+
 const getPublicUrl = (id: string) => {
   return `${S3_PUBLIC_URL}/${id}`;
 };
 
-const s3Credentials = S3_ACCESS_KEY_ID && S3_SECRET_ACCESS_KEY
-  ? { accessKeyId: S3_ACCESS_KEY_ID, secretAccessKey: S3_SECRET_ACCESS_KEY }
-  : undefined;
+const s3Credentials =
+  S3_ACCESS_KEY_ID && S3_SECRET_ACCESS_KEY
+    ? { accessKeyId: S3_ACCESS_KEY_ID, secretAccessKey: S3_SECRET_ACCESS_KEY }
+    : undefined;
 
 // Client for generating presigned URLs (uses browser-reachable endpoint)
 // Falls back to the main S3 client if S3_PRESIGN_ENDPOINT is not set (e.g. production R2)
@@ -369,20 +377,13 @@ app.get("/j/:sha256", async (c) => {
     // Serve index.html with injected script that sets window.__SHORT_URL_ID
     // and calls history.replaceState so the hash is correct before module scripts run
     const indexHtml = await Deno.readTextFile("./index.html");
-    const injectedScript =
-      `<script id="short-url-init">window.__SHORT_URL_ID = ${
-        JSON.stringify(
-          sha256,
-        )
-      };window.__SHORT_URL_HASH_PARAMS = ${
-        JSON.stringify(
-          hashParams,
-        )
-      };history.replaceState(null, '', window.location.pathname + '#' + ${
-        JSON.stringify(
-          hashParams,
-        )
-      });</script>`;
+    const injectedScript = `<script id="short-url-init">window.__SHORT_URL_ID = ${JSON.stringify(
+      sha256,
+    )};window.__SHORT_URL_HASH_PARAMS = ${JSON.stringify(
+      hashParams,
+    )};history.replaceState(null, '', window.location.pathname + '#' + ${JSON.stringify(
+      hashParams,
+    )});</script>`;
     const modifiedHtml = indexHtml.replace(
       "</head>",
       injectedScript + "\n</head>",
