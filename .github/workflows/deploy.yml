@@ -37,6 +37,9 @@ jobs:
         with:
           deno-version: v2.7.12
 
+      - name: Unignore build output for deploy
+        run: sed -i '\|^public/build/deploy$|d' .gitignore
+
       - name: deno deploy
         env:
           DENO_DEPLOY_TOKEN: ${{ secrets.DENO_DEPLOY_TOKEN }}
