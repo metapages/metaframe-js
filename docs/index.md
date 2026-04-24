@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: [js.mtfm.io](https://js.mtfm.io)
+  name: js.mtfm.io
   text: URL with editable javascript embedded
   tagline: Run and edit JavaScript in the browser. Share and connect self-contained websites with other chunks of code and visualization.
   actions:

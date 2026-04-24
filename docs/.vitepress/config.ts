@@ -2,7 +2,7 @@ import { defineConfig } from 'vitepress';
 import { withMermaid } from 'vitepress-plugin-mermaid';
 
 export default withMermaid(defineConfig({
-  title: "metaframe-js",
+  title: "js.mtfm.io/docs",
   description: "Run and edit JavaScript in the browser, embedded in the URL",
   base: "/docs/",
 
