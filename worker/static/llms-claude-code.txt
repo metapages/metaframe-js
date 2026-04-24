@@ -24,14 +24,18 @@ ABSOLUTE RULES — VIOLATING ANY OF THESE IS ALWAYS WRONG
 HOW TO DELIVER YOUR CODE — do this every single time:
 
 Run a single node command that encodes the JS in memory and opens
-https://js.mtfm.io with the code in the URL hash. Use this exact pattern:
+https://js.mtfm.io with the code and modules in the URL hash. Use this exact pattern:
 
 node -e "
 const code = \`
 // YOUR GENERATED BROWSER JS CODE HERE
 \`;
 const encoded = Buffer.from(encodeURIComponent(code)).toString('base64');
-const url = 'https://js.mtfm.io/#?js=' + encoded + '&edit=true';
+const classicScripts = [
+  // YOUR GENERATED CLASSIC JS SCRIPTS TO IMPORT HERE
+]
+const encodedImports = Buffer.from(encodeURIComponent(JSON.stringify(classicScripts))).toString('base64');
+const url = 'https://js.mtfm.io/#?js=' + encoded + '&modules=' + encodedImports;
 require('child_process').execSync(
   process.platform === 'darwin' ? 'open \"' + url + '\"' :
   process.platform === 'linux' ? 'xdg-open \"' + url + '\"' :
@@ -39,7 +43,7 @@ require('child_process').execSync(
 );
 "
 
-The URL https://js.mtfm.io/#?js=<encoded>&edit=true is the shareable result.
+The URL https://js.mtfm.io/#?js=<encoded>&modules=<encodedImports> is the shareable result.
 That is the whole point — the user gets a URL they can share with anyone.
 
 On every update or iteration, re-run this command to open a NEW tab.
@@ -63,6 +67,14 @@ CRITICAL: MUST USE ES6 MODULE SYNTAX
 
 Top-level await is supported.
 "use strict" is added automatically — don't include it.
+
+
+==========================================================================
+CLASSIC VS ES6 imports
+==========================================================================
+
+Prefer es6 imports at the top of the code. If the code is not an es6 import
+then add to the classicScripts array of strings
 
 ==========================================================================
 PRE-DEFINED GLOBALS (no import needed)
