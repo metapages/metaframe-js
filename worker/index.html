@@ -1448,11 +1448,17 @@ Available cache utilities (loaded on-demand):
 
       metaframe.connected().then(() => metaframe.log("connected"));
 
-      // Handle Safari timing issue: check if page is already loaded
+      // Handle Safari timing issue: check if page is already loaded.
+      // We capture the promise so that short-URL cleanup can wait for it.
+      var initialRunPromise;
       if (document.readyState === "complete") {
-        runJsFromUrl();
+        initialRunPromise = runJsFromUrl();
       } else {
-        globalThis.addEventListener("load", runJsFromUrl);
+        initialRunPromise = new Promise(function (resolve) {
+          globalThis.addEventListener("load", function () {
+            runJsFromUrl().then(resolve, resolve);
+          });
+        });
       }
 
       // reload on hash changes and refresh service worker config
@@ -1597,18 +1603,15 @@ Available cache utilities (loaded on-demand):
         });
       }
 
-      // In short URL mode, clean the hash params from the URL after all
-      // initialization is complete. history.replaceState does NOT fire
-      // hashchange, so existing listeners are unaffected.
+      // In short URL mode, clean the hash params from the URL AFTER
+      // runJsFromUrl has finished.  Previously this was a separate "load"
+      // handler that raced with the async runJsFromUrl — the cleanup could
+      // fire while runJsFromUrl was still awaiting module import, wiping
+      // the hash before getHashParamValueJsonFromWindow("inputs") ran.
       if (window.__SHORT_URL_ID && window.__SHORT_URL_HASH_PARAMS) {
-        const cleanShortUrl = () => {
+        initialRunPromise.then(function () {
           history.replaceState(null, "", window.location.pathname);
-        };
-        if (document.readyState === "complete") {
-          cleanShortUrl();
-        } else {
-          window.addEventListener("load", cleanShortUrl);
-        }
+        });
       }
     </script>
   </body>

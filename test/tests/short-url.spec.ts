@@ -90,8 +90,11 @@ test("short URL does not show hash params in the URL after page load", async ({
 
   await page.goto(`/j/${id}`);
 
-  // Wait for the load-event cleanup to run
-  await page.waitForLoadState("load");
+  // The hash cleanup runs asynchronously after runJsFromUrl completes,
+  // so wait for it rather than just the load event.
+  await page.waitForFunction(() => !window.location.hash, null, {
+    timeout: 10_000,
+  });
 
   // The URL must be the clean short URL – no hash fragment with params
   const url = new URL(page.url());
@@ -137,6 +140,54 @@ test("short URL page still executes the JS code correctly", async ({
   const url = new URL(page.url());
   expect(url.pathname).toBe(`/j/${id}`);
   expect(url.hash).toBe("");
+});
+
+// ---------------------------------------------------------------------------
+// API + Browser tests – inputs are preserved in short URLs
+// ---------------------------------------------------------------------------
+
+test("POST /api/shorten/json with inputs preserves them in stored hash params", async ({
+  request,
+}) => {
+  const inputs = { greeting: { type: "utf8", value: "hello world" } };
+  const body = await createShortUrl(request, "console.log(1)", { inputs });
+
+  // Verify inputs appear in the returned hash params
+  expect(body.hashParams).toContain("inputs=");
+
+  // Fetch the stored data and verify round-trip
+  const response = await request.get(`/api/j/${body.id}`);
+  expect(response.ok()).toBeTruthy();
+  const data = await response.json();
+
+  const params = new URLSearchParams(data.hashParams.replace(/^\?/, ""));
+  // Values are base64-encoded by @metapages/hash-query: atob → decodeURIComponent → JSON.parse
+  const storedInputs = JSON.parse(decodeURIComponent(atob(params.get("inputs")!)));
+  expect(storedInputs).toEqual(inputs);
+});
+
+test("short URL with inputs delivers them to onInputs handler", async ({
+  page,
+}) => {
+  // JS that exports onInputs – the handler writes received inputs to the DOM
+  const js = [
+    'export const onInputs = (inputs) => {',
+    '  document.getElementById("root").textContent = JSON.stringify(inputs);',
+    '};',
+  ].join("\n");
+  const inputs = {
+    greeting: { type: "utf8", value: "hello from short url" },
+  };
+  const { id } = await createShortUrl(page.request, js, { inputs });
+
+  await page.goto(`/j/${id}`);
+  await page.waitForLoadState("load");
+
+  // The onInputs handler should have been called with the resolved input.
+  // DataRef { type: "utf8", value: "hello from short url" } resolves to "hello from short url"
+  await expect(page.locator("#root")).toContainText("hello from short url", {
+    timeout: 15_000,
+  });
 });
 
 // ---------------------------------------------------------------------------
