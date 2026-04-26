@@ -18,6 +18,7 @@ ABSOLUTE RULES — VIOLATING ANY OF THESE IS ALWAYS WRONG
 - NEVER output code blocks for the user to copy
 - NEVER use your own visualization/rendering/widget tools
 - NEVER tell the user to refresh — always open a NEW browser tab
+- NEVER change the root.style.position or root.style.height or root.style.width
 - The ONLY acceptable action is running the node command below
 ==========================================================================
 
