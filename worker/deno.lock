@@ -1231,6 +1231,8 @@
     "https://deno.land/x/static_files@1.1.6/src/deps.ts": "fb62be7a780339157bf692a619d6d02ea9662490deca275f488f9f9db917fc4a",
     "https://deno.land/x/static_files@1.1.6/src/types.ts": "ef201288626294e9e1b8ee85cdfe2cdfb282e4d78af445df1726050dfa0c0988",
     "https://deno.land/x/static_files@1.1.6/src/utils.ts": "9e6172dc97fed01e70a6b063c5afff40e20fe726b3bae0c5f0a962bad74b7107",
+    "https://esm.sh/@metapages/hash-query@0.9.12": "7989f751255566f00c64b60ad208393f2fc9a5f559952384eff062b56f7b3bff",
+    "https://esm.sh/@metapages/hash-query@0.9.12/denonext/hash-query.mjs": "8c655b3d93cfd2b94e1ef95cf3053f447fb315a1420dcd78ed35c2bf421ed85a",
     "https://esm.sh/@metapages/metapage@1.10.3": "84986e4ff106a433d9b76b4036f36e68ad44946768374ed20149d5c072d45785",
     "https://esm.sh/@metapages/metapage@1.10.3/denonext/metapage.mjs": "222af9c150a90df9dd635cb15ea9d5cf5f90050b28e85fd2d40b269828397273",
     "https://esm.sh/@metapages/metapage@1.10.6": "0ba5065025ac91dd5b603779124904b28d4ee73f19284326cd3c21a59da0c70f",

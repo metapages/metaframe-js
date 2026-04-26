@@ -284,17 +284,30 @@ source.widget.pipe_to(sink.widget, output_key="result", input_key="data")
 
 See `examples/marimo/demo.py` in the repo for a complete example.
 
-## Short URLs
+## Sharing: Copy URL and Shorten URL
 
-Full URLs with embedded code can get long. Use the shorten button in the editor toolbar to generate a compact short URL.
+The editor toolbar has two sharing buttons:
 
-**Full URL** (code and all config embedded in the hash):
+- **Copy URL** — copies the full URL (with all code, config, and inputs in the hash) to your clipboard
+- **Shorten URL** — creates a compact `/j/{sha256}` short URL and copies it to your clipboard
+
+Both buttons capture a **snapshot** of the current state, including:
+
+- Your JavaScript code
+- All current **inputs** (the values most recently received by `onInputs`)
+- Module imports, definition, options, and other configuration
+
+This means the shared URL is a frozen point-in-time copy. If inputs change after you copy/shorten, the URL still contains the values from the moment you clicked the button. Anyone who opens the URL gets exactly the same code running with exactly the same input data.
+
+### Full URL vs short URL
+
+**Full URL** (everything embedded in the hash):
 
 ```
 https://js.mtfm.io/#?js=ZXhwb3J0IGNvbnN0IG9uSW5wdXRzID0gKGlucHV0cykgPT4gew0KICAgIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJyb290IikudGV4dENvbnRlbnQgPSBKU09OLnN0cmluZ2lmeShpbnB1dHMpOwp9&inputs=%7B%22data.json%22%3A%7B%22type%22%3A%22url%22%2C%22value%22%3A%22https%3A%2F%2Fjs.mtfm.io%2Ff%2Fabc123%22%7D%7D
 ```
 
-**Short URL** (same content, shareable):
+**Short URL** (same content, compact):
 
 ```
 https://js.mtfm.io/j/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -338,16 +351,50 @@ Response:
 
 Supported fields in `/api/shorten/json`: `js`, `inputs`, `definition`, `modules`, `options`.
 
-## File and blob handling
+## File system
 
-You can upload files (images, data, etc.) by dragging them onto the editor or by adding file-type inputs in Settings. Uploaded files are stored in S3-compatible storage and referenced by content hash.
+Files uploaded to js.mtfm.io are stored in a content-addressed file system. Every file is identified by its SHA-256 hash and accessible at a permanent URL.
 
-### How uploads work
+### URL schema
+
+```
+https://js.mtfm.io/f/{sha256}
+```
+
+For example:
+
+```
+https://js.mtfm.io/f/a1b2c3d4e5f67890abcdef1234567890abcdef1234567890abcdef1234567890
+```
+
+You can access any uploaded file directly by visiting its `/f/{sha256}` URL in a browser or fetching it programmatically. The file is served with its original content type.
+
+### Uploading files
+
+Upload files by **dragging them onto the editor** or by adding file-type inputs in Settings. The upload flow:
 
 1. The client computes a SHA-256 hash of the file content
 2. A presigned upload URL is requested from `POST /api/upload/presign`
 3. The file is uploaded directly to S3 via the presigned URL
 4. The file becomes accessible at `https://js.mtfm.io/f/{sha256}`
+
+### Accessing files in code
+
+Uploaded files appear as inputs to your code. Fetch them directly or receive them via `onInputs`:
+
+```javascript
+// Option 1: Receive files via onInputs (automatic when files are in inputs)
+export const onInputs = (inputs) => {
+  // JSON files are auto-parsed into objects
+  const data = inputs["data.json"];
+  // Images and other binary files arrive as Blobs
+  const image = inputs["photo.jpg"];
+};
+
+// Option 2: Fetch a file directly by its URL
+const response = await fetch("https://js.mtfm.io/f/a1b2c3d4e5f6...");
+const data = await response.json(); // or .text(), .blob(), .arrayBuffer()
+```
 
 ### File references in inputs
 
@@ -382,7 +429,7 @@ Inputs support several reference types:
 | `json`   | A JSON value          | The value as-is                                                          |
 | (none)   | Any value             | Treated as native JSON                                                   |
 
-### Example: short URL with file inputs
+### Example: upload a file and create a short URL
 
 ```bash
 # 1. Upload a file
@@ -407,9 +454,17 @@ curl -X POST https://js.mtfm.io/api/shorten/json \
 
 ## Data persistence and storage lifetime
 
-### Code (stored forever)
+### Code is stored forever
 
-Code and configuration stored via URL shortening (`/j/{sha256}`) are **persisted indefinitely**. Short URLs will continue to resolve for as long as the service is running. Since the storage key is a content hash, identical content is deduplicated automatically.
+All code and configuration stored via URL shortening (`/j/{sha256}`) are **persisted indefinitely**. Every short URL you create is permanent — it will continue to resolve for as long as the service is running.
+
+This means:
+
+- Every version of your code that you shorten is preserved forever
+- You can always go back to any previously shared short URL
+- Since storage is content-addressed (keyed by SHA-256), identical content is automatically deduplicated — shortening the same code twice produces the same URL, not a duplicate
+
+Full URLs (with code in the hash) are also permanent by nature since they carry their own data — they don't depend on any server storage at all.
 
 ### Uploaded files (planned: 1 month expiry)
 
@@ -421,16 +476,27 @@ This gives you plenty of time to transfer blobs to your own storage if you are b
 2. If you want permanent file hosting, copy the blobs from `https://js.mtfm.io/f/{sha256}` to your own S3/CDN/storage
 3. Update the `inputs` in your short URL (or your own stored URL) to point to your permanent file URLs instead
 
-### What this means for your URLs
+### Summary
 
 | What                      | Path format   | Persistence                             |
 | ------------------------- | ------------- | --------------------------------------- |
-| Short URL (code + config) | `/j/{sha256}` | Forever                                 |
+| Short URL (code + config) | `/j/{sha256}` | **Forever**                             |
+| Full URL (hash params)    | `/#?js=...`   | **Forever** (self-contained, no server) |
 | Uploaded file             | `/f/{sha256}` | ~1 month (planned), currently no expiry |
 
 If a short URL references uploaded files via `/f/...` URLs and those files expire, the short URL itself will still resolve but the file fetches will fail. To avoid this, either re-upload files periodically or migrate them to your own storage.
 
 ## URL format reference
+
+### Page URLs
+
+| URL pattern          | Description                                                            |
+| -------------------- | ---------------------------------------------------------------------- |
+| `/#?js={base64}&...` | Full URL with code and config embedded in the hash                     |
+| `/j/{sha256}`        | Short URL — resolves to the same content as the full URL               |
+| `/f/{sha256}`        | Uploaded file — directly accessible, served with original content type |
+
+### Hash parameters
 
 The full URL format is:
 
@@ -525,8 +591,8 @@ This website is also a <a href="https://docs.metapage.io/docs/what-is-a-metafram
 ### Architecture
 
 - Code and configuration are embedded in the URL hash or stored via short URLs
-- Short URLs (`/j/{sha256}`) store hash params in S3, persisted indefinitely
-- Uploaded files (`/f/{sha256}`) are stored in S3 with planned ~1 month expiry
+- **All code is stored forever** — short URLs (`/j/{sha256}`) store hash params in S3, persisted indefinitely
+- Uploaded files (`/f/{sha256}`) are stored in S3 (planned ~1 month expiry)
 - The client runs the embedded javascript directly (code is **not** sent to the server for execution)
 
 The server runs on https://deno.com/deploy which is

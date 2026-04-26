@@ -1,6 +1,7 @@
 import { Hono } from "@hono/hono";
 import { cors } from "@hono/hono/cors";
 import { serveStatic } from "@hono/hono/deno";
+import { blobToBase64String } from "https://esm.sh/@metapages/hash-query@0.9.12";
 import { MetaframeDefinition } from "https://esm.sh/@metapages/metapage@1.10.6";
 import {
   GetObjectCommand,
@@ -293,10 +294,9 @@ app.post("/api/shorten/json", async (c) => {
         // js is base64-encoded: btoa(encodeURIComponent(value))
         paramParts.push(`js=${btoa(encodeURIComponent(body[key]))}`);
       } else {
-        // other fields are JSON-encoded: encodeURIComponent(JSON.stringify(value))
-        paramParts.push(
-          `${key}=${encodeURIComponent(JSON.stringify(body[key]))}`,
-        );
+        // Encode using @metapages/hash-query's blobToBase64String for
+        // consistent encoding with the client-side hash-query library
+        paramParts.push(`${key}=${blobToBase64String(body[key])}`);
       }
     }
 

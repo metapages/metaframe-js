@@ -90,8 +90,11 @@ test("short URL does not show hash params in the URL after page load", async ({
 
   await page.goto(`/j/${id}`);
 
-  // Wait for the load-event cleanup to run
-  await page.waitForLoadState("load");
+  // The hash cleanup runs asynchronously after runJsFromUrl completes,
+  // so wait for it rather than just the load event.
+  await page.waitForFunction(() => !window.location.hash, null, {
+    timeout: 10_000,
+  });
 
   // The URL must be the clean short URL – no hash fragment with params
   const url = new URL(page.url());
@@ -158,7 +161,8 @@ test("POST /api/shorten/json with inputs preserves them in stored hash params", 
   const data = await response.json();
 
   const params = new URLSearchParams(data.hashParams.replace(/^\?/, ""));
-  const storedInputs = JSON.parse(decodeURIComponent(params.get("inputs")!));
+  // Values are base64-encoded by @metapages/hash-query: atob → decodeURIComponent → JSON.parse
+  const storedInputs = JSON.parse(decodeURIComponent(atob(params.get("inputs")!)));
   expect(storedInputs).toEqual(inputs);
 });
 

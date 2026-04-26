@@ -99,17 +99,8 @@ export const ButtonShortenUrl: React.FC = () => {
       >("definition");
       const allowed = getAllowedHashParams(definition);
 
-      const keysBefore = [...new URLSearchParams(hash.replace(/^\?/, ""))].map(
-        ([k]) => k,
-      );
-
       const tempUrl = `${window.location.origin}/#${hash}`;
       hash = new URL(stripDisallowedHashParams(tempUrl, allowed)).hash.slice(1);
-
-      const keysAfter = [...new URLSearchParams(hash.replace(/^\?/, ""))].map(
-        ([k]) => k,
-      );
-      const removed = keysBefore.filter((k) => !keysAfter.includes(k));
 
       // Store in S3 via API (SHA256 calculated on server)
       const response = await fetch("/api/shorten", {
