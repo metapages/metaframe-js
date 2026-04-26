@@ -140,6 +140,53 @@ test("short URL page still executes the JS code correctly", async ({
 });
 
 // ---------------------------------------------------------------------------
+// API + Browser tests – inputs are preserved in short URLs
+// ---------------------------------------------------------------------------
+
+test("POST /api/shorten/json with inputs preserves them in stored hash params", async ({
+  request,
+}) => {
+  const inputs = { greeting: { type: "utf8", value: "hello world" } };
+  const body = await createShortUrl(request, "console.log(1)", { inputs });
+
+  // Verify inputs appear in the returned hash params
+  expect(body.hashParams).toContain("inputs=");
+
+  // Fetch the stored data and verify round-trip
+  const response = await request.get(`/api/j/${body.id}`);
+  expect(response.ok()).toBeTruthy();
+  const data = await response.json();
+
+  const params = new URLSearchParams(data.hashParams.replace(/^\?/, ""));
+  const storedInputs = JSON.parse(decodeURIComponent(params.get("inputs")!));
+  expect(storedInputs).toEqual(inputs);
+});
+
+test("short URL with inputs delivers them to onInputs handler", async ({
+  page,
+}) => {
+  // JS that exports onInputs – the handler writes received inputs to the DOM
+  const js = [
+    'export const onInputs = (inputs) => {',
+    '  document.getElementById("root").textContent = JSON.stringify(inputs);',
+    '};',
+  ].join("\n");
+  const inputs = {
+    greeting: { type: "utf8", value: "hello from short url" },
+  };
+  const { id } = await createShortUrl(page.request, js, { inputs });
+
+  await page.goto(`/j/${id}`);
+  await page.waitForLoadState("load");
+
+  // The onInputs handler should have been called with the resolved input.
+  // DataRef { type: "utf8", value: "hello from short url" } resolves to "hello from short url"
+  await expect(page.locator("#root")).toContainText("hello from short url", {
+    timeout: 15_000,
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Browser tests – edit button exits short URL mode
 // ---------------------------------------------------------------------------
 

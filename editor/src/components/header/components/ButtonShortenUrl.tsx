@@ -1,4 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+
+import { InputsHashParam } from "/@/components/sections/settings/SectionInputs";
+import {
+  getAllowedHashParams,
+  stripDisallowedHashParams,
+} from "/@/utils/hashParams";
 
 import {
   Box,
@@ -8,33 +14,109 @@ import {
   useClipboard,
   useToast,
 } from "@chakra-ui/react";
-import { setHashParamValueInHashString } from "@metapages/hash-query/react-hooks";
+import {
+  getHashParamValueJsonFromWindow,
+  setHashParamValueInHashString,
+  setHashParamValueJsonInHashString,
+} from "@metapages/hash-query/react-hooks";
+import { MetaframeDefinition } from "@metapages/metapage";
+import { useMetaframe } from "@metapages/metapage-react/hooks";
 import { ArrowsInLineHorizontalIcon } from "@phosphor-icons/react";
+
+async function encodeBase64(blob: Blob): Promise<string> {
+  const arrayBuffer = await blob.arrayBuffer();
+  const bytes = new Uint8Array(arrayBuffer);
+  let binString = "";
+  const size = bytes.length;
+  for (let i = 0; i < size; i++) {
+    binString += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binString);
+}
 
 export const ButtonShortenUrl: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [shortenedUrl, setShortenedUrl] = useState("");
   const { onCopy } = useClipboard(shortenedUrl);
   const toast = useToast();
+  const metaframeBlob = useMetaframe();
+  const [metaframeInputs, setMetaframeInputs] = useState<
+    InputsHashParam | undefined
+  >(undefined);
+
+  useEffect(() => {
+    if (metaframeBlob.metaframe) {
+      setMetaframeInputs(metaframeBlob.metaframe.getInputs());
+      return metaframeBlob.metaframe.onInputs(() => {
+        setMetaframeInputs(metaframeBlob.metaframe.getInputs());
+      });
+    }
+  }, [metaframeBlob.metaframe]);
 
   const handleShorten = async () => {
     try {
       setLoading(true);
 
       // Get current hash params and remove "edit"
-      const hash = window.location.hash.slice(1); // Remove leading "#"
-      const cleanedHash = setHashParamValueInHashString(
-        hash,
-        "edit",
-        undefined,
+      let hash = window.location.hash.slice(1); // Remove leading "#"
+      hash = setHashParamValueInHashString(hash, "edit", undefined);
+
+      // Merge metaframe inputs (received via onInputs) into hash params
+      let newInputs = getHashParamValueJsonFromWindow<
+        InputsHashParam | undefined
+      >("inputs");
+      if (metaframeInputs && Object.keys(metaframeInputs).length > 0) {
+        if (!newInputs) {
+          newInputs = {};
+        }
+        for (const [key, value] of Object.entries(metaframeInputs)) {
+          if (typeof value === "string") {
+            newInputs[key] = { type: "utf8", value };
+          } else if (typeof value === "object") {
+            if (value instanceof Blob) {
+              const blobString = await encodeBase64(value);
+              if (blobString.length > 10000) {
+                console.warn(`Blob ${key} is too large, skipping`);
+                continue;
+              }
+              newInputs[key] = { type: "base64", value: blobString };
+            } else {
+              newInputs[key] = { type: "json", value };
+            }
+          } else {
+            newInputs[key] = { type: "json", value };
+          }
+        }
+      }
+      if (newInputs && Object.keys(newInputs).length > 0) {
+        hash = setHashParamValueJsonInHashString(hash, "inputs", newInputs);
+      }
+
+      // Strip any hash params not in the metaframe.json defaults or the
+      // user's `definition` whitelist (same logic as ButtonCopyExternalLink).
+      const definition = getHashParamValueJsonFromWindow<
+        MetaframeDefinition | undefined
+      >("definition");
+      const allowed = getAllowedHashParams(definition);
+
+      const keysBefore = [...new URLSearchParams(hash.replace(/^\?/, ""))].map(
+        ([k]) => k,
       );
+
+      const tempUrl = `${window.location.origin}/#${hash}`;
+      hash = new URL(stripDisallowedHashParams(tempUrl, allowed)).hash.slice(1);
+
+      const keysAfter = [...new URLSearchParams(hash.replace(/^\?/, ""))].map(
+        ([k]) => k,
+      );
+      const removed = keysBefore.filter((k) => !keysAfter.includes(k));
 
       // Store in S3 via API (SHA256 calculated on server)
       const response = await fetch("/api/shorten", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          hashParams: cleanedHash,
+          hashParams: hash,
         }),
       });
 
