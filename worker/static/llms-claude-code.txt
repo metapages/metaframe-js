@@ -1,6 +1,6 @@
 ---
 description: Generate browser JavaScript and open it at js.mtfm.io
-argument-hint: [description of what to create]
+argument-hint: [description of what to create or an existing URL]
 allowed-tools: Bash(node *)
 ---
 
@@ -52,6 +52,8 @@ The code is in the URL hash, so refreshing an old tab won't show changes.
 ==========================================================================
 USER REQUEST: $ARGUMENTS
 ==========================================================================
+
+$ARGUMENTS can be a combination of existing code and or a description of what to create
 
 ==========================================================================
 BROWSER JAVASCRIPT CODING GUIDE
