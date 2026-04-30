@@ -16,6 +16,7 @@ yellow := "\\e[33m"
 blue := "\\e[34m"
 magenta := "\\e[35m"
 grey := "\\e[90m"
+cyan := "\\e[36m"
 
 @_help:
     just --list --unsorted
@@ -25,15 +26,9 @@ grey := "\\e[90m"
     echo -e "    Local develop URL 🔗  {{ green }}https://{{ APP_FQDN }}:{{ APP_PORT }}/{{ normal }}"
     echo -e "    Deploy Console URL 🔗 {{ green }}https://console.deno.com/metapage/metaframe-js{{ normal }}"
     echo -e ""
-  
-# Serve docs locally
-docs:
-    cd docs && npm run dev
-
-# Build docs (install deps if needed)
-docs-build:
-    cd docs && npm install && npm run build
-# open
+    echo -e "    Sub-commands: (just <sub-command> <?command>)"
+    echo -e "        {{ cyan }}docs{{ normal }}"
+    echo -e "        {{ cyan }}examples{{ normal }}"
 
 # Run the server in development mode
 @dev +args="": _mkcert open
@@ -61,8 +56,9 @@ open:
     deno run --allow-all https://deno.land/x/metapages@v0.0.17/exec/open_url.ts 'https://metapages.github.io/load-page-when-available/?url=https://{{ APP_FQDN }}:{{ APP_PORT }}'
 
 # deno deploy to js.mtfm.io
-deploy: docs-build
+deploy:
     #!/usr/bin/env bash
+    just docs/build
     set -euo pipefail
     # build the client in editor/dist
     just editor/build
@@ -85,67 +81,8 @@ test:
     just editor/test
     just worker/test
     just _integration-test
-    just test-jupyter
-    just test-marimo
-
-# Build the Jupyter test Docker image
-_build-jupyter-docker:
-    docker compose -f examples/jupyter/docker-compose.yml build
-
-# Run Jupyter widget unit tests in Docker (no browser needed)
-test-jupyter-unit: _build-jupyter-docker
-    docker compose -f examples/jupyter/docker-compose.yml run --rm test-unit
-
-# Run notebook execution test via nbmake in Docker (kernel only, no browser)
-test-jupyter-notebook: _build-jupyter-docker
-    docker compose -f examples/jupyter/docker-compose.yml run --rm test-notebook
-
-# Run Playwright browser integration tests in Docker (no external network required)
-test-jupyter-browser: _build-jupyter-docker
-    docker compose -f examples/jupyter/docker-compose.yml run --rm test-browser
-
-# Run all Playwright browser tests in Docker, including network-dependent ones (CDN + js.mtfm.io)
-test-jupyter-browser-network: _build-jupyter-docker
-    docker compose -f examples/jupyter/docker-compose.yml run --rm test-browser-network
-
-# Run all Jupyter-related tests in Docker (unit + notebook + browser, no external network)
-test-jupyter:
-    just test-jupyter-unit
-    just test-jupyter-notebook
-    just test-jupyter-browser
-
-# Run JupyterLab in Docker (editable metaframe-widget). http://localhost:${JUPYTER_PORT:-8888} — copy the access URL from the container logs (token in query string). Optional: JUPYTER_PORT=9999 just jupyter-docker
-jupyter-docker: _build-jupyter-docker
-    docker compose -f examples/jupyter/docker-compose.yml up jupyter
-
-# Run test-jupyter, then start JupyterLab in Docker (same image as CI tests).
-jupyter-docker-check: test-jupyter
-    docker compose -f examples/jupyter/docker-compose.yml up jupyter
-
-# Build the marimo test Docker image
-_build-marimo-docker:
-    docker compose -f examples/marimo/docker-compose.yml build
-
-# Run marimo widget unit tests in Docker (no browser needed)
-test-marimo-unit: _build-marimo-docker
-    docker compose -f examples/marimo/docker-compose.yml run --rm test-unit
-
-# Run Playwright browser integration tests for marimo in Docker (no external network required)
-test-marimo-browser: _build-marimo-docker
-    docker compose -f examples/marimo/docker-compose.yml run --rm test-browser
-
-# Run all Playwright browser tests for marimo in Docker, including network-dependent ones
-test-marimo-browser-network: _build-marimo-docker
-    docker compose -f examples/marimo/docker-compose.yml run --rm test-browser-network
-
-# Run all marimo-related tests in Docker (unit + browser, no external network)
-test-marimo:
-    just test-marimo-unit
-    just test-marimo-browser
-
-# Run marimo in Docker (editable metaframe-widget). http://localhost:${MARIMO_PORT:-2718}
-marimo-docker:
-    docker compose -f examples/marimo/docker-compose.yml up --build
+    just examples/test-jupyter
+    just examples/test-marimo
 
 # Run canonical metaframe-widget unit tests
 test-python:
@@ -163,6 +100,13 @@ publish-python: build-python
 _integration-test: _mkcert
     #!/usr/bin/env bash
     set -uo pipefail
+
+    # s3.localhost must resolve for Playwright to follow S3 redirects
+    if ! grep -q 's3\.localhost' /etc/hosts; then
+      echo "⚠️  s3.localhost not found in /etc/hosts. Add it with:"
+      echo "   echo '127.0.0.1 s3.localhost' | sudo tee -a /etc/hosts"
+      exit 1
+    fi
 
     npm --prefix test install
     npx --prefix test playwright install chromium
@@ -248,3 +192,12 @@ python-bump-version:
     git push origin HEAD
     git push origin "$new_tag"
     echo "$new_tag"
+
+
+alias docs := _docs
+@_docs +args="":
+    just docs/{{ args }}
+
+alias examples := _examples
+@_examples +args="":
+    just examples/{{ args }}

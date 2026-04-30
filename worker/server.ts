@@ -378,7 +378,7 @@ app.get("/j/:sha256", async (c) => {
         JSON.stringify(
           hashParams,
         )
-      };history.replaceState(null, '', window.location.pathname + '#' + ${
+      };history.replaceState(null, '', window.location.pathname + window.location.search + '#' + ${
         JSON.stringify(
           hashParams,
         )

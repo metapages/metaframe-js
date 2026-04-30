@@ -6,6 +6,15 @@ import traitlets
 
 from ._esm import ESM
 
+import base64
+
+import urllib.parse
+
+# Equivalent to btoa(encodeURIComponent(value));
+def string_to_base64_string(value: str) -> str:
+    encoded_uri_component = urllib.parse.quote(value, safe="-_.!~*'()")
+    return base64.b64encode(encoded_uri_component.encode("ascii")).decode("ascii")
+
 
 class MetaframeWidget(anywidget.AnyWidget):
     """Widget that renders a metaframe iframe (works in Jupyter and marimo).
@@ -62,8 +71,8 @@ class MetaframeWidget(anywidget.AnyWidget):
             height: CSS height for the widget container (default "400px").
             allow: iframe allow attribute string (e.g. "camera; microphone").
         """
-        encoded = base64.b64encode(js_code.encode()).decode()
-        url = f"https://js.mtfm.io/#?js={urllib.parse.quote(encoded)}"
+        encoded = string_to_base64_string(js_code)
+        url = f"https://js.mtfm.io/#?js={encoded}"
         return cls(url=url, width=width, height=height, allow=allow, **kwargs)
 
     def pipe_to(self, target: "MetaframeWidget", output_key: str, input_key: str = None):

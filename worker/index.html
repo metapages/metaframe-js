@@ -467,26 +467,48 @@
         },
       };
 
-      // Initialize service worker on page load
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", async () => {
-          try {
-            await globalThis
-              .serviceWorkerManager
-              .register();
+      // Only enable the caching service worker on production or when explicitly forced via ?sw=force.
+      // In dev, unregister any previously registered SW to avoid stale caches.
+      const PRODUCTION_HOSTS = ["js.mtfm.io"];
+      const forceSW =
+        new URLSearchParams(window.location.search).get("sw") === "force";
+      const isProduction =
+        PRODUCTION_HOSTS.includes(window.location.hostname) || forceSW;
 
-            // Show cache info after service worker is ready
-            setTimeout(() => {
-              if (
-                globalThis.serviceWorkerConfig
-                  ?.enableLogging
-              ) {
-                console.log(`
+      async function unregisterAllServiceWorkers() {
+        if ("serviceWorker" in navigator) {
+          const registrations = await navigator.serviceWorker
+            .getRegistrations();
+          for (const reg of registrations) {
+            await reg.unregister();
+          }
+          if (registrations.length > 0) {
+            console.log(
+              "[SW Manager] Dev mode: unregistered",
+              registrations.length,
+              "service worker(s)",
+            );
+          }
+        }
+      }
+
+      async function initServiceWorker() {
+        await globalThis
+          .serviceWorkerManager
+          .register();
+
+        // Show cache info after service worker is ready
+        setTimeout(() => {
+          if (
+            globalThis.serviceWorkerConfig
+              ?.enableLogging
+          ) {
+            console.log(`
 🚀 Metaframe JS with Stale-While-Revalidate Caching (Debug Mode)
 
 Available cache utilities (loaded on-demand):
 • cacheUtils.showCacheInfo() - Show cached resources
-• cacheUtils.clearCache() - Clear all cached resources  
+• cacheUtils.clearCache() - Clear all cached resources
 • cacheUtils.showConfig() - Show current configuration
 • cacheUtils.testCaching() - Test cache functionality
 • cacheUtils.testS3Caching() - Demo AWS S3 URL normalization
@@ -495,12 +517,23 @@ Available cache utilities (loaded on-demand):
 
 ✨ Features:
 - Content-Type based caching (videos, audio, etc.)
-- AWS S3 pre-signed URL normalization  
+- AWS S3 pre-signed URL normalization
 - Lightweight: test utilities load only when used
 - Debug logging enabled via options.debug hash param
 `);
-              }
-            }, 1000);
+          }
+        }, 1000);
+      }
+
+      // Initialize service worker on page load
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", async () => {
+          if (!isProduction) {
+            await unregisterAllServiceWorkers();
+            return;
+          }
+          try {
+            await initServiceWorker();
           } catch (error) {
             if (
               globalThis.serviceWorkerConfig
@@ -514,21 +547,23 @@ Available cache utilities (loaded on-demand):
           }
         });
       } else {
-        // Document already loaded
-        globalThis
-          .serviceWorkerManager
-          .register()
-          .catch((error) => {
-            if (
-              globalThis.serviceWorkerConfig
-                ?.enableLogging
-            ) {
-              console.error(
-                "[SW Manager] Failed to initialize service worker:",
-                error,
-              );
-            }
-          });
+        if (!isProduction) {
+          unregisterAllServiceWorkers();
+        } else {
+          // Document already loaded
+          initServiceWorker()
+            .catch((error) => {
+              if (
+                globalThis.serviceWorkerConfig
+                  ?.enableLogging
+              ) {
+                console.error(
+                  "[SW Manager] Failed to initialize service worker:",
+                  error,
+                );
+              }
+            });
+        }
       }
 
       // Add cache status logging to existing fetch monitoring
@@ -1610,7 +1645,11 @@ Available cache utilities (loaded on-demand):
       // the hash before getHashParamValueJsonFromWindow("inputs") ran.
       if (window.__SHORT_URL_ID && window.__SHORT_URL_HASH_PARAMS) {
         initialRunPromise.then(function () {
-          history.replaceState(null, "", window.location.pathname);
+          history.replaceState(
+            null,
+            "",
+            window.location.pathname + window.location.search,
+          );
         });
       }
     </script>

@@ -11,6 +11,7 @@ docs/.vitepress/dist
 docs/.vitepress/cache
 # Assets ready for publishing are put here
 /deploy
+docs/public/jupyterlite
 
 #dependencies
 **/node_modules
