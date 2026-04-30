@@ -11,4 +11,4 @@ dev: _dependencies
 
 @_dependencies:
   # this copies the JupyterLite static site to the docs/public/jupyterlite directory
-  just ../examples/jupyterlite-build
+  just ../examples/jupyterlite/build
