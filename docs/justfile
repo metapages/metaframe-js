@@ -1,0 +1,10 @@
+@_help:
+    just --list --unsorted
+  
+# Serve docs locally
+dev:
+    npm run dev
+
+# Build docs (install deps if needed)
+build:
+    npm install && npm run build
