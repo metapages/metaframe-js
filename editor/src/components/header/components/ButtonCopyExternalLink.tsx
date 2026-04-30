@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { InputsHashParam } from "/@/components/sections/settings/SectionInputs";
 import { useMetaframeUrl } from "/@/hooks/useMetaframeUrl";
+import { convertMetaframeInputs } from "/@/utils/convertInputs";
 import {
   getAllowedHashParams,
   stripDisallowedHashParams,
@@ -17,17 +18,6 @@ import { MetaframeDefinition } from "@metapages/metapage";
 import { useMetaframe } from "@metapages/metapage-react/hooks";
 import { CopyIcon } from "@phosphor-icons/react";
 
-async function encodeBase64(blob: Blob) {
-  const arrayBuffer = await blob.arrayBuffer();
-  const bytes = new Uint8Array(arrayBuffer);
-  let binString = "";
-  const size = bytes.length;
-  for (let i = 0; i < size; i++) {
-    binString += String.fromCharCode(bytes[i]);
-  }
-  return btoa(binString);
-}
-
 async function buildExternalShareUrl(
   url: string | undefined,
   metaframeInputs: InputsHashParam | undefined,
@@ -38,27 +28,7 @@ async function buildExternalShareUrl(
     InputsHashParam | undefined
   >("inputs");
   if (metaframeInputs && Object.keys(metaframeInputs).length > 0) {
-    if (!newInputs) {
-      newInputs = {};
-    }
-    for (const [key, value] of Object.entries(metaframeInputs)) {
-      if (typeof value === "string") {
-        newInputs[key] = { type: "utf8", value: value };
-      } else if (typeof value === "object") {
-        if (value instanceof Blob) {
-          const blobString = await encodeBase64(value);
-          if (blobString.length > 10000) {
-            console.warn(`Blob ${key} is too large, skipping`);
-            continue;
-          }
-          newInputs[key] = { type: "base64", value: blobString };
-        } else {
-          newInputs[key] = { type: "json", value };
-        }
-      } else {
-        newInputs[key] = { type: "json", value };
-      }
-    }
+    newInputs = await convertMetaframeInputs(metaframeInputs, newInputs || undefined);
   }
 
   if (newInputs && Object.keys(newInputs).length > 0) {

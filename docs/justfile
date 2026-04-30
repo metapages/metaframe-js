@@ -2,9 +2,13 @@
     just --list --unsorted
   
 # Serve docs locally
-dev:
-    npm run dev
+dev: _dependencies
+    npm install && npm run dev
 
-# Build docs (install deps if needed)
-build:
+# Build docs (install deps if needed), including JupyterLite
+@build: _dependencies
     npm install && npm run build
+
+@_dependencies:
+  # this copies the JupyterLite static site to the docs/public/jupyterlite directory
+  just ../examples/jupyterlite-build

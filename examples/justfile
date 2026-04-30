@@ -9,9 +9,11 @@ yellow := "\\e[33m"
 blue := "\\e[34m"
 magenta := "\\e[35m"
 grey := "\\e[90m"
-
+cyan := "\\e[36m"
 @_help:
     just --list --unsorted
+    echo -e "    Sub-commands: (just <sub-command> <?command>)"
+    echo -e "        {{ cyan }}jupyterlite{{ normal }}"
 
 # Build the Jupyter test Docker image
 _build-jupyter-docker:
@@ -71,3 +73,7 @@ test-marimo:
 # Run marimo in Docker (editable metaframe-widget). http://localhost:${MARIMO_PORT:-2718}
 marimo-docker:
     docker compose -f marimo/docker-compose.yml up --build
+
+alias jupyterlite := _jupyterlite
+@_jupyterlite +args="":
+    just jupyterlite/{{ args }}

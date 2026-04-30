@@ -1,0 +1,27 @@
+
+@_help:
+    just --list --unsorted
+
+build:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    python3 -m venv .venv
+    source .venv/bin/activate
+    pip install -q -r requirements.txt
+    rm -rf _output .jupyterlite.doit.db
+    jupyter lite build --contents content --output-dir _output
+    rm -rf ../../docs/public/jupyterlite
+    cp -r _output ../../docs/public/jupyterlite
+
+# Serve the JupyterLite site locally at http://localhost:8000
+serve: build (open "http://localhost:8733")
+    cd _output && python3 -m http.server 8733
+
+open url:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+      xdg-open {{url}}
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+      open {{url}}
+    fi
