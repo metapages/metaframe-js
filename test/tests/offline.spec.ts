@@ -26,7 +26,7 @@ test.describe("offline mode (service worker cache)", () => {
     context,
   }) => {
     // First load: SW installs, activates with skipWaiting/clients.claim
-    await page.goto("/");
+    await page.goto("/?sw=force");
     await page.waitForLoadState("networkidle");
     await waitForServiceWorkerController(page);
 
@@ -69,7 +69,7 @@ test.describe("offline mode (service worker cache)", () => {
     const { id } = await createShortUrl(request, js);
 
     // Online: first load so the SW installs and activates
-    await page.goto(`/j/${id}`);
+    await page.goto(`/j/${id}?sw=force`);
     await page.waitForLoadState("networkidle");
 
     // Confirm the user JS ran and the CDN asset was fetched successfully

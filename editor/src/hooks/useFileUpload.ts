@@ -9,6 +9,37 @@ import {
 } from "/@/utils/codeComments";
 import { InputsHashParam } from "/@/components/sections/settings/SectionInputs";
 
+export async function uploadString(
+  name: string,
+  s: string,
+): Promise<UploadedFileInfo> {
+  // Convert string `s` into a File object for upload
+  const file = new File([s], name, { type: "text/plain;charset=UTF-8" });
+  return await uploadFile(file);
+}
+
+export async function uploadJson(
+  name: string,
+  json: any,
+): Promise<UploadedFileInfo> {
+  // Convert JSON `json` into a File object for upload
+  const jsonString = JSON.stringify(json);
+  const file = new File([jsonString], name, {
+    type: "application/json;charset=UTF-8",
+  });
+  return await uploadFile(file);
+}
+
+export async function uploadBlob(
+  name: string,
+  blob: Blob,
+): Promise<UploadedFileInfo> {
+  const file = new File([blob], name, {
+    type: blob.type || "application/octet-stream",
+  });
+  return await uploadFile(file);
+}
+
 async function uploadFile(file: File): Promise<UploadedFileInfo> {
   // Compute SHA256 hash of file content
   const buffer = await file.arrayBuffer();

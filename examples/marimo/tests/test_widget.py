@@ -31,8 +31,10 @@ def test_set_input():
 def test_from_code():
     code = 'console.log("hello");'
     w = MetaframeWidget.from_code(code)
-    encoded = base64.b64encode(code.encode()).decode()
-    expected_url = f"https://js.mtfm.io/#?js={urllib.parse.quote(encoded)}"
+    # from_code does: encodeURIComponent(code) then base64
+    encoded_uri = urllib.parse.quote(code, safe="-_.!~*'()")
+    encoded = base64.b64encode(encoded_uri.encode("ascii")).decode("ascii")
+    expected_url = f"https://js.mtfm.io/#?js={encoded}"
     assert w.url == expected_url
 
 
