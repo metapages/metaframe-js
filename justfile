@@ -60,20 +60,19 @@ deploy:
     #!/usr/bin/env bash
     set -euo pipefail
     just docs/build
+    deploy=$(mktemp -d)
     # build the client in editor/dist
     just editor/build
-    rm -rf deploy
-    mkdir -p deploy
-    cp -r editor/dist deploy/editor
-    cp -r docs/.vitepress/dist deploy/docs
-    cp -r worker/server.ts deploy/
-    cp -r worker/deno.json deploy/
-    cp -r worker/deno.lock deploy/
-    cp -r worker/index.html deploy/
-    cp -r worker/sw.js deploy/
-    cp -r worker/cache-test-utils.js deploy/
-    cp -r worker/static deploy/
-    cd deploy
+    cp -r editor/dist $deploy/editor
+    cp -r docs/.vitepress/dist $deploy/docs
+    cp -r worker/server.ts $deploy/
+    cp -r worker/deno.json $deploy/
+    cp -r worker/deno.lock $deploy/
+    cp -r worker/index.html $deploy/
+    cp -r worker/sw.js $deploy/
+    cp -r worker/cache-test-utils.js $deploy/
+    cp -r worker/static $deploy/
+    cd $deploy
     deno deploy --prod
 
 # Checks and tests
