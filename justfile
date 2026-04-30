@@ -58,8 +58,8 @@ open:
 # deno deploy to js.mtfm.io
 deploy:
     #!/usr/bin/env bash
-    just docs/build
     set -euo pipefail
+    just docs/build
     # build the client in editor/dist
     just editor/build
     rm -rf deploy
