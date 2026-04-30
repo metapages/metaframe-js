@@ -46,7 +46,8 @@
       "WebFetch(domain:js.mtfm.io)",
       "Bash(true:*)",
       "Bash(npx vitepress:*)",
-      "WebFetch(domain:esm.sh)"
+      "WebFetch(domain:esm.sh)",
+      "Bash(md5:*)"
     ],
     "deny": [],
     "ask": []
