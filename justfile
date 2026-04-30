@@ -101,6 +101,13 @@ _integration-test: _mkcert
     #!/usr/bin/env bash
     set -uo pipefail
 
+    # s3.localhost must resolve for Playwright to follow S3 redirects
+    if ! grep -q 's3\.localhost' /etc/hosts; then
+      echo "⚠️  s3.localhost not found in /etc/hosts. Add it with:"
+      echo "   echo '127.0.0.1 s3.localhost' | sudo tee -a /etc/hosts"
+      exit 1
+    fi
+
     npm --prefix test install
     npx --prefix test playwright install chromium
 
