@@ -1,6 +1,6 @@
 // Version should be updated whenever the website is updated
 // This should ideally be set during build process
-const SW_VERSION = "1.0.1";
+const SW_VERSION = "1.0.2";
 const CACHE_NAME = `metaframe-js-cache-v${SW_VERSION.replace(/\./g, "-")}`;
 
 // Default configuration - can be overridden via message
@@ -310,41 +310,32 @@ self.addEventListener("fetch", (event) => {
 
       if (cachedResponse) {
         const isStale = await isResponseStale(cachedResponse);
+        const status = isStale ? "stale" : "fresh";
 
-        if (isStale) {
+        log(
+          isStale
+            ? "📡 Serving stale content, revalidating in background:"
+            : "✅ Serving fresh cached content, revalidating in background:",
+          event.request.url,
+        );
+
+        // Always revalidate in background so the next load gets the latest version
+        fetchAndCache(event.request).catch((error) => {
           log(
-            "📡 Serving stale content, revalidating in background:",
+            "❌ Background revalidation failed:",
+            error,
+            "for",
             event.request.url,
           );
-          // Serve stale content immediately
-          // Revalidate in background (don't await) - fetchAndCache already handles redirects
-          fetchAndCache(event.request).catch((error) => {
-            log(
-              "❌ Background revalidation failed:",
-              error,
-              "for",
-              event.request.url,
-            );
-          });
+        });
 
-          // Add header to indicate this was served from cache
-          const headers = new Headers(cachedResponse.headers);
-          headers.set("sw-cache-status", "stale");
-          return new Response(cachedResponse.body, {
-            status: cachedResponse.status,
-            statusText: cachedResponse.statusText,
-            headers: headers,
-          });
-        } else {
-          log("✅ Serving fresh cached content:", event.request.url);
-          const headers = new Headers(cachedResponse.headers);
-          headers.set("sw-cache-status", "fresh");
-          return new Response(cachedResponse.body, {
-            status: cachedResponse.status,
-            statusText: cachedResponse.statusText,
-            headers: headers,
-          });
-        }
+        const headers = new Headers(cachedResponse.headers);
+        headers.set("sw-cache-status", status);
+        return new Response(cachedResponse.body, {
+          status: cachedResponse.status,
+          statusText: cachedResponse.statusText,
+          headers: headers,
+        });
       } else {
         log("🌐 No cache, fetching fresh:", event.request.url);
         try {

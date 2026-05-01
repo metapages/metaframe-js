@@ -35,6 +35,7 @@ export default withMermaid(defineConfig({
         text: "Integrations",
         items: [
           { text: "Jupyter", link: "/integrations/jupyter" },
+          { text: "JupyterLite (Live)", link: "/integrations/jupyterlite" },
           { text: "marimo", link: "/integrations/marimo" },
         ],
       },
