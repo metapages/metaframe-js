@@ -13,10 +13,6 @@ export default withMermaid(defineConfig({
       { text: "Guide", link: "/guide/getting-started" },
       { text: "Integrations", link: "/integrations/jupyter" },
       { text: "Development", link: "/development/local-setup" },
-      {
-        text: "GitHub",
-        link: "https://github.com/metapages/metaframe-js",
-      },
     ],
 
     sidebar: [

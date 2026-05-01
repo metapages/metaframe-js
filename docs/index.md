@@ -13,8 +13,8 @@ hero:
       text: JavaScript API
       link: /guide/javascript-api
     - theme: alt
-      text: View on GitHub
-      link: https://github.com/metapages/metaframe-js
+      text: Create new
+      link: https://js.mtfm.io#?edit=true
 
 features:
   - title: Edit with AI
