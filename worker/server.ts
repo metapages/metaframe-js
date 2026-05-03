@@ -2,7 +2,7 @@ import { Hono } from "@hono/hono";
 import { cors } from "@hono/hono/cors";
 import { serveStatic } from "@hono/hono/deno";
 import { blobToBase64String } from "https://esm.sh/@metapages/hash-query@0.9.12";
-import { MetaframeDefinition } from "https://esm.sh/@metapages/metapage@1.10.6";
+import { MetaframeDefinition } from "https://esm.sh/@metapages/metapage@1.10.8";
 import {
   GetObjectCommand,
   PutObjectCommand,

@@ -23,6 +23,8 @@ export default withMermaid(defineConfig({
           { text: "JavaScript API", link: "/guide/javascript-api" },
           { text: "URL State", link: "/guide/url-state" },
           { text: "Short URLs", link: "/guide/short-urls" },
+          { text: "Embedding", link: "/guide/embedding" },
+          { text: "Rendering in a Website", link: "/guide/rendering" },
           { text: "Examples", link: "/guide/examples" },
           { text: "AI Usage", link: "/guide/ai" },
         ],
