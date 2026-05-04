@@ -2,13 +2,16 @@ import { Hono } from "@hono/hono";
 import { cors } from "@hono/hono/cors";
 import { serveStatic } from "@hono/hono/deno";
 import { blobToBase64String } from "https://esm.sh/@metapages/hash-query@0.9.12";
-import { MetaframeDefinition } from "https://esm.sh/@metapages/metapage@1.10.8";
 import {
   GetObjectCommand,
   PutObjectCommand,
   S3Client,
 } from "npm:@aws-sdk/client-s3";
 import { getSignedUrl } from "npm:@aws-sdk/s3-request-presigner";
+import {
+  computeMetaframeDefinition,
+  DEFAULT_METAFRAME_DEFINITION,
+} from "./metaframe-definition.ts";
 
 const port: number = parseInt(Deno.env.get("PORT") || "3000");
 
@@ -50,86 +53,6 @@ if (s3Credentials) {
     }
   }
 }
-
-const DEFAULT_METAFRAME_DEFINITION: MetaframeDefinition = {
-  metadata: {
-    name: "Javascript code runner",
-    tags: ["javascript", "code", "js"],
-  },
-  inputs: {},
-  outputs: {},
-  hashParams: {
-    bgColor: {
-      type: "string",
-      description: "The background color of the metaframe",
-      label: "Background Color",
-    },
-    definition: {
-      type: "json",
-      description: "The definition of the metaframe",
-      label: "Definition",
-    },
-    edit: {
-      type: "boolean",
-      description: "Whether the metaframe is in edit mode",
-      label: "Edit",
-    },
-    editorWidth: {
-      type: "string",
-      description:
-        "The width of the editor, in valid CSS. If no units are provided, 'ch' is assumed.",
-      label: "Editor Width",
-    },
-    hm: {
-      type: "string",
-      description:
-        "The visibility of the menu button. 'disabled' to hide, 'invisible' to hide until hover, 'visible' to show always.",
-      label: "Menu Button Visibility",
-      allowed: [
-        { value: "disabled" },
-        { value: "invisible" },
-        { value: "visible" },
-      ],
-    },
-    inputs: {
-      type: "json",
-      description:
-        "The inputs of the metaframe. This is a JSON object with the input name as the key and the value as a dataref object. Datarefs are objects with a 'type' property and a 'value' property. The 'type' property is a string that can be one of 'base64', 'utf8', 'json', 'url', or 'key'. The 'value' property is a string or object depending on the type.",
-      label: "Inputs",
-    },
-    js: {
-      type: "stringBase64",
-      description:
-        "The JavaScript code to run in the metaframe. This is a base64 encoded string of the JavaScript code. Encoding is btoa(encodeURIComponent(value)), decoding is the reverse.",
-      label: "JavaScript Code",
-    },
-    modules: {
-      type: "json",
-      description:
-        "The modules of the metaframe. This is a JSON array of strings, each string being a module or css URL. This is deprecated, use es6 imports in the javascript directly.",
-      label: "Modules or CSS URLs",
-    },
-    options: {
-      type: "json",
-      description:
-        "The options of the metaframe. This is a JSON object with the option name as the key and the value as a string or boolean. The options are used to configure the metaframe. The options are: 'debug', 'disableCache', 'disableDatarefs', 'disableSmartInputUnpacking'.",
-      label: "Options",
-      allowed: [
-        { value: "debug" },
-        { value: "disableCache" },
-        { value: "disableDatarefs" },
-        { value: "disableSmartInputUnpacking" },
-      ],
-    },
-  },
-  allow: "clipboard-write",
-};
-
-const DEFAULT_METAFRAME_DEFINITION_STRING = JSON.stringify(
-  DEFAULT_METAFRAME_DEFINITION,
-  null,
-  2,
-);
 
 const app = new Hono();
 
@@ -398,6 +321,43 @@ app.get("/j/:sha256", async (c) => {
     console.error("Shortened URL error:", error);
 
     // Handle S3 NoSuchKey error (404)
+    if (error.name === "NoSuchKey" || error.Code === "NoSuchKey") {
+      return c.json({ error: "Shortened URL not found" }, 404);
+    }
+
+    return c.json({ error: "Failed to retrieve shortened URL" }, 500);
+  }
+});
+
+// Short URL metaframe.json — computes effective definition from stored hash params
+app.get("/j/:sha256/metaframe.json", async (c) => {
+  if (!s3PresignClient) {
+    return c.json({ error: "URL shortening not configured" }, 503);
+  }
+
+  try {
+    const sha256 = c.req.param("sha256");
+
+    if (!sha256 || !/^[a-f0-9]{64}$/.test(sha256)) {
+      return c.json({ error: "Invalid shortened URL ID" }, 400);
+    }
+
+    const key = `j/${sha256}`;
+    const command = new GetObjectCommand({
+      Bucket: S3_BUCKET_NAME,
+      Key: key,
+    });
+
+    const response = await s3PresignClient.send(command);
+    if (!response.Body) throw new Error("S3 response body is empty");
+    const hashParams = await response.Body.transformToString();
+
+    const definition = computeMetaframeDefinition(hashParams);
+    c.header("Cache-Control", "public, max-age=31536000, immutable");
+    return c.json(definition);
+  } catch (error: any) {
+    console.error("Short URL metaframe.json error:", error);
+
     if (error.name === "NoSuchKey" || error.Code === "NoSuchKey") {
       return c.json({ error: "Shortened URL not found" }, 404);
     }

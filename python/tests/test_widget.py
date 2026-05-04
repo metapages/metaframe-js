@@ -77,6 +77,33 @@ def test_pipe_to_ignores_unrelated_keys():
     assert sink.inputs == {}
 
 
+def test_layout_height_synced_on_init():
+    """layout.height must match the height trait so ipywidgets doesn't clear it."""
+    w = MetaframeWidget()
+    assert w.layout.height == "400px"
+    assert w.layout.width == "100%"
+
+
+def test_layout_height_synced_with_custom_value():
+    w = MetaframeWidget(height="600px", width="80%")
+    assert w.layout.height == "600px"
+    assert w.layout.width == "80%"
+
+
+def test_layout_height_synced_from_code():
+    w = MetaframeWidget.from_code("console.log(1)", height="420px")
+    assert w.layout.height == "420px"
+
+
+def test_layout_height_updates_on_change():
+    """Changing height trait after init must propagate to layout."""
+    w = MetaframeWidget()
+    w.height = "500px"
+    assert w.layout.height == "500px"
+    w.width = "50%"
+    assert w.layout.width == "50%"
+
+
 def test_pipe_chain_five_widgets():
     """Five widgets piped in a chain propagate data end-to-end."""
     w1 = MetaframeWidget()

@@ -37,6 +37,21 @@ class MetaframeWidget(anywidget.AnyWidget):
     height = traitlets.Unicode("400px").tag(sync=True)
     allow = traitlets.Unicode("").tag(sync=True)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Sync layout.height/width so ipywidgets' LayoutView doesn't clear
+        # the styles that the ESM sets on the element.
+        self.layout.height = self.height
+        self.layout.width = self.width
+        self.observe(self._sync_layout_height, names=["height"])
+        self.observe(self._sync_layout_width, names=["width"])
+
+    def _sync_layout_height(self, change):
+        self.layout.height = change["new"]
+
+    def _sync_layout_width(self, change):
+        self.layout.width = change["new"]
+
     def set_inputs(self, d: dict):
         """Merge a dict into the current inputs."""
         self.inputs = {**self.inputs, **d}
