@@ -4,16 +4,17 @@ Since all code and state is stored in the URL hash, metaframe URLs can get very 
 
 ## How it works
 
-1. Click the **shorten** button in the editor header
-2. The current hash parameters (code, inputs, options) are sent to the server
-3. The server stores the hash params in S3 and returns a SHA256-based short ID
-4. You get a short URL like:
+1. Click the **shorten** button in the editor header ![](./shorten-url-button.png)
+2. The current hash parameters (code, inputs, options) are stored in [R2](https://www.cloudflare.com/developer-platform/products/r2/) 
+4. You get a short URL `js.mtfm.io/j/<SHA256-based short ID>` e.g:
 
 ```
 https://js.mtfm.io/j/8a3b1c9f...
 ```
 
 The short URL is automatically copied to your clipboard.
+
+The content is immutable and we currently have no plans to expire the content. Possibly the large blobs may eventually be expired, but the code likely never. If the blobs ever do expire, it will be a human comfortable length of time: at least a month.
 
 ## Example
 
