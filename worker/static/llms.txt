@@ -67,7 +67,7 @@ built-in visualization or widget tools.
  * 
  * // PATTERN 1: Visualization
  * root.innerHTML = `<div><h1 id="title">Title</h1></div>`;
- * ❌ !important: avoid styling the root div as it will interfere with editing, instead create another div with width and height 100% and style that
+ * !important NEVER modify the root variable element root.style.position or root.style.height or root.style.width avoid styling the root div as it will interfere with editing, instead create another div with width and height 100% and style that
  * export function onInputs(inputs) {
  *   const data = inputs["data"];
  *   document.getElementById("title").innerHTML = data.title;
