@@ -47,7 +47,12 @@
       "Bash(true:*)",
       "Bash(npx vitepress:*)",
       "WebFetch(domain:esm.sh)",
-      "Bash(md5:*)"
+      "Bash(md5:*)",
+      "Bash(deno eval:*)",
+      "Bash(deno test:*)",
+      "Bash(cd /Users/dion/dev/git/metapages/metaframes/metaframe-js/python && pip install -e . 2>&1 | tail -5 && python -m pytest tests/test_widget.py -v 2>&1)",
+      "Bash(python3 -m venv /tmp/mfw-test && /tmp/mfw-test/bin/pip install -e \".[dev]\" 2>&1 | tail -5 && /tmp/mfw-test/bin/python -m pytest tests/test_widget.py -v 2>&1)",
+      "Bash(/tmp/mfw-test/bin/python:*)"
     ],
     "deny": [],
     "ask": []
