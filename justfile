@@ -66,6 +66,7 @@ deploy:
     cp -r editor/dist $deploy/editor
     cp -r docs/.vitepress/dist $deploy/docs
     cp -r worker/server.ts $deploy/
+    cp -r worker/src $deploy/
     cp -r worker/deno.json $deploy/
     cp -r worker/deno.lock $deploy/
     cp -r worker/index.html $deploy/

@@ -11,7 +11,7 @@ import { getSignedUrl } from "npm:@aws-sdk/s3-request-presigner";
 import {
   computeMetaframeDefinition,
   DEFAULT_METAFRAME_DEFINITION,
-} from "./metaframe-definition.ts";
+} from "./src/metaframe-definition.ts";
 
 const port: number = parseInt(Deno.env.get("PORT") || "3000");
 
