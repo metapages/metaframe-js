@@ -13,9 +13,9 @@ export const PanelSettings: React.FC = () => {
     <Box
       position={"absolute"}
       borderLeft={"1px"}
-      top={"3rem"}
+      top={0}
       w={"100%"}
-      h={"calc(100% - 3rem)"}
+      h={"100%"}
       right={0}
       overflowY="scroll"
       bg={"gray.100"}

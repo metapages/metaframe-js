@@ -48,7 +48,10 @@ async function buildExternalShareUrl(
   return newUrl;
 }
 
-export const ButtonCopyExternalLink: React.FC = () => {
+export const ButtonCopyExternalLink: React.FC<{
+  iconSize?: string;
+  iconPadding?: string;
+}> = ({ iconSize = "7", iconPadding = "3px" }) => {
   const { url } = useMetaframeUrl();
   const metaframeBlob = useMetaframe();
   const [metaframeInputs, setMetaframeInputs] = useState<
@@ -72,10 +75,10 @@ export const ButtonCopyExternalLink: React.FC = () => {
           aria-label="copy url"
           _hover={{ bg: "gray.300" }}
           bg={"none"}
-          p={"3px"}
+          p={iconPadding}
           borderRadius={5}
           as={CopyIcon}
-          boxSize="7"
+          boxSize={iconSize}
           onClick={async () => {
             try {
               const urlForCopy = await buildExternalShareUrl(
