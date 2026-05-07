@@ -26,9 +26,9 @@ const { Layout } = DefaultTheme;
 
 <style>
 .hero-iframe-container {
+  display: none;
   width: 100%;
   height: 100%;
-  display: flex;
   flex-direction: column;
   padding: 16px;
   padding-left: 32px;
@@ -42,6 +42,9 @@ const { Layout } = DefaultTheme;
 }
 
 @media (min-width: 960px) {
+  .hero-iframe-container {
+    display: flex;
+  }
   .hero-iframe {
     height: 500px;
   }
