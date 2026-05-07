@@ -75,7 +75,7 @@ Response:
 }
 ```
 
-### Retrieve hash params
+### Retrieve decoded hash params
 
 ```bash
 curl https://js.mtfm.io/api/j/8a3b1c9f...
@@ -86,7 +86,9 @@ Response:
 ```json
 {
   "id": "8a3b1c9f...",
-  "hashParams": "?js=Y29uc29sZS5sb2coImhlbGxvIik%3D"
+  "hashParams": {
+    "js": "console.log(\"hello\")"
+  }
 }
 ```
 

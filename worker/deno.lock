@@ -6,7 +6,8 @@
     "jsr:@std/internal@^1.0.12": "1.0.12",
     "npm:@aws-sdk/client-s3@*": "3.972.0",
     "npm:@aws-sdk/s3-request-presigner@*": "3.997.0",
-    "npm:@aws-sdk/s3-request-presigner@^3.997.0": "3.997.0"
+    "npm:@aws-sdk/s3-request-presigner@^3.997.0": "3.997.0",
+    "npm:@metapages/hash-query@*": "0.10.0_react@19.2.6"
   },
   "jsr": {
     "@hono/hono@4.6.15": {
@@ -662,6 +663,13 @@
     "@aws/lambda-invoke-store@0.2.3": {
       "integrity": "sha512-oLvsaPMTBejkkmHhjf09xTgk71mOqyr/409NKhRIL08If7AhVfUsJhVsx386uJaqNd42v9kWamQ9lFbkoC2dYw=="
     },
+    "@metapages/hash-query@0.10.0_react@19.2.6": {
+      "integrity": "sha512-EWCTY4JKxm8FMOcRQj080ief2+8L2UFzy0XiloEP/9BuTwCdOEzKXV3BNeY4M879Urh/+knI9320/4Qia8L6zA==",
+      "dependencies": [
+        "fast-json-stable-stringify",
+        "react"
+      ]
+    },
     "@smithy/abort-controller@4.2.10": {
       "integrity": "sha512-qocxM/X4XGATqQtUkbE9SPUB6wekBi+FyJOMbPj0AhvyvFGYEmOlz6VB22iMePCQsFmMIvFSeViDvA7mZJG47g==",
       "dependencies": [
@@ -1111,6 +1119,9 @@
     "bowser@2.13.1": {
       "integrity": "sha512-OHawaAbjwx6rqICCKgSG0SAnT05bzd7ppyKLVUITZpANBaaMFBAsaNkto3LoQ31tyFP5kNujE8Cdx85G9VzOkw=="
     },
+    "fast-json-stable-stringify@2.1.0": {
+      "integrity": "sha512-lhd/wF+Lk98HZoTCtlVraHtfh5XYijIjalXck7saUtuanSDyLMxnHhSXEDJqHxD7msR8D0uCmqlkwjCV8xvwHw=="
+    },
     "fast-xml-parser@5.2.5": {
       "integrity": "sha512-pfX9uG9Ki0yekDHx2SiuRIyFdyAr1kMIMitPvb0YBo8SUfKvia7w7FIyd/l6av85pFYRhZscS75MwMnbvY+hcQ==",
       "dependencies": [
@@ -1124,6 +1135,9 @@
         "strnum"
       ],
       "bin": true
+    },
+    "react@19.2.6": {
+      "integrity": "sha512-sfWGGfavi0xr8Pg0sVsyHMAOziVYKgPLNrS7ig+ivMNb3wbCBw3KxtflsGBAwD3gYQlE/AEZsTLgToRrSCjb0Q=="
     },
     "strnum@2.1.2": {
       "integrity": "sha512-l63NF9y/cLROq/yqKXSLtcMeeyOfnSQlfMSlzFt/K73oIaD8DGaQWd7Z34X9GPiKqP5rbSh84Hl4bOlLcjiSrQ=="

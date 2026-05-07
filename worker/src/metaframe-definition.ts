@@ -1,5 +1,5 @@
-import { getHashParamValueJsonFromHashString } from "https://esm.sh/@metapages/hash-query@0.9.12";
-import { MetaframeDefinition } from "https://esm.sh/@metapages/metapage@1.10.8";
+import { getHashParamValueJsonFromHashString } from "@metapages/hash-query";
+import { MetaframeDefinition } from "@metapages/metapage";
 
 export const DEFAULT_METAFRAME_DEFINITION: MetaframeDefinition = {
   metadata: {
@@ -87,9 +87,9 @@ export const getAllowedHashParams = (
 ): Set<string> => {
   const defaultHashParams = DEFAULT_METAFRAME_DEFINITION.hashParams;
   const defaultKeys = defaultHashParams
-    ? (Array.isArray(defaultHashParams)
+    ? Array.isArray(defaultHashParams)
       ? defaultHashParams
-      : Object.keys(defaultHashParams))
+      : Object.keys(defaultHashParams)
     : [];
   const allowed = new Set<string>(defaultKeys);
   const hashParams = definition?.hashParams;
@@ -156,8 +156,7 @@ export function computeMetaframeDefinition(
   }
 
   return {
-    metadata: definition.metadata ??
-      DEFAULT_METAFRAME_DEFINITION.metadata,
+    metadata: definition.metadata ?? DEFAULT_METAFRAME_DEFINITION.metadata,
     inputs: { ...DEFAULT_METAFRAME_DEFINITION.inputs, ...definition.inputs },
     outputs: { ...DEFAULT_METAFRAME_DEFINITION.outputs, ...definition.outputs },
     hashParams: mergedHashParams,

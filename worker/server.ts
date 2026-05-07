@@ -1,7 +1,14 @@
 import { Hono } from "@hono/hono";
 import { cors } from "@hono/hono/cors";
 import { serveStatic } from "@hono/hono/deno";
-import { blobToBase64String } from "https://esm.sh/@metapages/hash-query@0.9.12";
+import {
+  blobToBase64String,
+  setHashParamValueBase64EncodedInUrl,
+  setHashParamValueBooleanInUrl,
+  setHashParamValueInUrl,
+  setHashParamValueJsonInUrl,
+  stringToBase64String,
+} from "@metapages/hash-query";
 import {
   GetObjectCommand,
   PutObjectCommand,
@@ -11,7 +18,94 @@ import { getSignedUrl } from "npm:@aws-sdk/s3-request-presigner";
 import {
   computeMetaframeDefinition,
   DEFAULT_METAFRAME_DEFINITION,
+  getAllowedHashParams,
 } from "./src/metaframe-definition.ts";
+import { HashParamsObject, HashParamType } from "@metapages/metapage";
+
+/**
+ * Decodes a raw hash params string (e.g. "?js=abc&inputs=def") into a JSON
+ * object with correctly decoded values, using the type metadata from
+ * DEFAULT_METAFRAME_DEFINITION (and any user-provided definition).
+ *
+ * Handles both base64-wrapped encoding (new @metapages/hash-query format)
+ * and plain URI-encoded values (old manual format).
+ */
+function decodeHashParamsToJson(
+  hashParams: string,
+): Record<string, unknown> {
+  const cleaned = hashParams.startsWith("?") ? hashParams.slice(1) : hashParams;
+  const searchParams = new URLSearchParams(cleaned);
+
+  // Build type map from default definition
+  const typeMap: Record<string, HashParamType> = {};
+  const defaultHP = DEFAULT_METAFRAME_DEFINITION.hashParams;
+  if (defaultHP && typeof defaultHP === "object" && !Array.isArray(defaultHP)) {
+    for (const [k, v] of Object.entries(defaultHP)) {
+      typeMap[k] = (v as { type?: HashParamType }).type || "json";
+    }
+  }
+
+  // Decode definition (always json type) to discover custom param types
+  const defRaw = searchParams.get("definition");
+  if (defRaw) {
+    try {
+      let def: Record<string, unknown> | undefined;
+      try {
+        def = JSON.parse(decodeURIComponent(atob(defRaw)));
+      } catch {
+        def = JSON.parse(decodeURIComponent(defRaw));
+      }
+      const defHP = (def as Record<string, unknown>)?.hashParams;
+      if (defHP && typeof defHP === "object" && !Array.isArray(defHP)) {
+        for (
+          const [k, v] of Object.entries(
+            defHP as Record<string, { type?: HashParamType }>,
+          )
+        ) {
+          if (!typeMap[k]) {
+            typeMap[k] = v.type || "json";
+          }
+        }
+      }
+    } catch {
+      // ignore decode errors for definition
+    }
+  }
+
+  const result: Record<string, unknown> = {};
+
+  for (const [key, rawValue] of searchParams) {
+    const type = typeMap[key] || "json";
+
+    try {
+      if (type === "json") {
+        try {
+          result[key] = JSON.parse(decodeURIComponent(atob(rawValue)));
+        } catch {
+          result[key] = JSON.parse(decodeURIComponent(rawValue));
+        }
+      } else if (type === "stringBase64") {
+        try {
+          result[key] = decodeURIComponent(atob(rawValue));
+        } catch {
+          result[key] = rawValue;
+        }
+      } else if (type === "boolean") {
+        result[key] = rawValue === "true";
+      } else if (type === "number") {
+        const num = parseFloat(rawValue);
+        result[key] = isNaN(num) ? rawValue : num;
+      } else {
+        // "string" or unknown type
+        result[key] = rawValue;
+      }
+    } catch {
+      result[key] = rawValue;
+    }
+  }
+
+  return result;
+}
 
 const port: number = parseInt(Deno.env.get("PORT") || "3000");
 
@@ -208,26 +302,37 @@ app.post("/api/shorten/json", async (c) => {
     const body = await c.req.json();
 
     // Supported keys, sorted alphabetically for SHA256 consistency
-    const supportedKeys = ["definition", "inputs", "js", "modules", "options"];
-    const paramParts: string[] = [];
+    const supportedKeysSet = getAllowedHashParams(body["definition"]);
+    const supportedKeys = Array.from(supportedKeysSet);
+    supportedKeys.sort();
+
+    let url = new URL("https://js.mtfm.io/");
 
     for (const key of supportedKeys) {
       if (body[key] === undefined) continue;
-      if (key === "js") {
-        // js is base64-encoded: btoa(encodeURIComponent(value))
-        paramParts.push(`js=${btoa(encodeURIComponent(body[key]))}`);
-      } else {
-        // Encode using @metapages/hash-query's blobToBase64String for
-        // consistent encoding with the client-side hash-query library
-        paramParts.push(`${key}=${blobToBase64String(body[key])}`);
+      const type: HashParamType =
+        (DEFAULT_METAFRAME_DEFINITION?.hashParams as HashParamsObject)?.[key]
+          ?.type || "json";
+
+      if (type === "json") {
+        url = setHashParamValueJsonInUrl(url, key, body[key]);
+      } else if (type === "stringBase64") {
+        url = setHashParamValueBase64EncodedInUrl(url, key, body[key]);
+      } else if (type === "string") {
+        url = setHashParamValueInUrl(url, key, body[key]);
+      } else if (type === "boolean") {
+        url = setHashParamValueBooleanInUrl(url, key, body[key]);
+      } else if (type === "number") {
+        url = setHashParamValueInUrl(url, key, body[key]);
       }
+      // File|Blob ignored for now
     }
 
-    if (paramParts.length === 0) {
+    const hashParams = url.hash.slice(1);
+
+    if (!hashParams) {
       return c.json({ error: "No recognised fields provided" }, 400);
     }
-
-    const hashParams = `?${paramParts.join("&")}`;
 
     // Calculate SHA256
     const encoder = new TextEncoder();
@@ -390,7 +495,10 @@ app.get("/api/j/:sha256", async (c) => {
     const hashParams = await response.Body.transformToString();
 
     c.header("Cache-Control", "public, max-age=31536000, immutable");
-    return c.json({ id: sha256, hashParams });
+    return c.json({
+      id: sha256,
+      hashParams: decodeHashParamsToJson(hashParams),
+    });
   } catch (error: any) {
     console.error("Short URL API error:", error);
 
