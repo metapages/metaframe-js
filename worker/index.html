@@ -477,7 +477,8 @@
 
       async function unregisterAllServiceWorkers() {
         if ("serviceWorker" in navigator) {
-          const registrations = await navigator.serviceWorker
+          const registrations = await navigator
+            .serviceWorker
             .getRegistrations();
           for (const reg of registrations) {
             await reg.unregister();
@@ -551,18 +552,17 @@ Available cache utilities (loaded on-demand):
           unregisterAllServiceWorkers();
         } else {
           // Document already loaded
-          initServiceWorker()
-            .catch((error) => {
-              if (
-                globalThis.serviceWorkerConfig
-                  ?.enableLogging
-              ) {
-                console.error(
-                  "[SW Manager] Failed to initialize service worker:",
-                  error,
-                );
-              }
-            });
+          initServiceWorker().catch((error) => {
+            if (
+              globalThis.serviceWorkerConfig
+                ?.enableLogging
+            ) {
+              console.error(
+                "[SW Manager] Failed to initialize service worker:",
+                error,
+              );
+            }
+          });
         }
       }
 
@@ -790,7 +790,9 @@ Available cache utilities (loaded on-demand):
               // Parse and return JSON object
               const text = new TextDecoder().decode(arrayBufferFromUrl);
               return JSON.parse(text);
-            } else if (type.startsWith("text/")) {
+            } else if (
+              type.startsWith("text/") || type.startsWith("chemical/x-pdb")
+            ) {
               // Return as string for text content
               return new TextDecoder().decode(arrayBufferFromUrl);
             } else {

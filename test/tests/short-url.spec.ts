@@ -33,7 +33,7 @@ test("POST /api/shorten/json returns id, shortUrl, fullUrl", async ({
   expect(body.shortUrl).toContain("/j/");
 });
 
-test("GET /api/j/:sha256 returns id and hashParams", async ({ request }) => {
+test("GET /api/j/:sha256 returns id and decoded hashParams object", async ({ request }) => {
   const { id } = await createShortUrl(request, 'console.log("api test")');
 
   const response = await request.get(`/api/j/${id}`);
@@ -41,6 +41,8 @@ test("GET /api/j/:sha256 returns id and hashParams", async ({ request }) => {
   const body = await response.json();
   expect(body.id).toBe(id);
   expect(body).toHaveProperty("hashParams");
+  expect(typeof body.hashParams).toBe("object");
+  expect(body.hashParams.js).toBe('console.log("api test")');
 });
 
 // ---------------------------------------------------------------------------
@@ -160,10 +162,8 @@ test("POST /api/shorten/json with inputs preserves them in stored hash params", 
   expect(response.ok()).toBeTruthy();
   const data = await response.json();
 
-  const params = new URLSearchParams(data.hashParams.replace(/^\?/, ""));
-  // Values are base64-encoded by @metapages/hash-query: atob → decodeURIComponent → JSON.parse
-  const storedInputs = JSON.parse(decodeURIComponent(atob(params.get("inputs")!)));
-  expect(storedInputs).toEqual(inputs);
+  // hashParams is now a decoded JSON object
+  expect(data.hashParams.inputs).toEqual(inputs);
 });
 
 test("short URL with inputs delivers them to onInputs handler", async ({
