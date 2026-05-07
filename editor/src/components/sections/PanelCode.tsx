@@ -69,7 +69,7 @@ const LocalEditor: React.FC<{
       onOutputs={onCodeOutputsUpdate}
       style={{
         backgroundColor: "white",
-        height: `calc(100vh - 3rem)`,
+        height: "100%",
         width: "100%",
       }}
     />

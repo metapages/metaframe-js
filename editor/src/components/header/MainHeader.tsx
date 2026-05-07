@@ -30,13 +30,16 @@ export const capitalize = (str: string): string => {
 
 export const MainHeader: React.FC = () => {
   const [_edit, setEdit] = useHashParamBoolean("edit");
-  const [isLargerThan400] = useMediaQuery("(min-width: 400px)");
+  const [isDesktop] = useMediaQuery("(min-width: 768px)");
   const { copyToClipboard } = useAiText();
 
   // only show the edit button if the command points to a script in the inputs
   const setShownPanel = useStore((state) => state.setShownPanel);
   const shownPanel = useStore((state) => state.shownPanel);
   const triggerFileUpload = useStore((state) => state.triggerFileUpload);
+
+  const iconSize = isDesktop ? "7" : "48px";
+  const iconPadding = isDesktop ? "3px" : "4px";
 
   const icon = (
     svg: React.ElementType,
@@ -51,70 +54,58 @@ export const MainHeader: React.FC = () => {
           <Icon
             _hover={{ bg: hover ? "gray.300" : "none" }}
             bg={tooltipText === shownPanel ? "gray.300" : "none"}
-            p={"3px"}
+            p={iconPadding}
             borderRadius={5}
             as={svg}
-            boxSize="7"
+            boxSize={iconSize}
             onClick={callback}
           />
         </Tooltip>
       </Box>
     );
   };
-  if (!isLargerThan400) {
-    return (
-      <HStack
-        p={5}
-        justify={"flex-end"}
-        minW={"100%"}
-        h={"headerHeight"}
-        bg={"gray.100"}
-        borderBottom={"1px"}
-      >
-        {icon(
-          GearIcon,
-          "settings",
-          () => setShownPanel(shownPanel === "settings" ? null : "settings"),
-          true,
-        )}
-        {icon(XIcon, "close", () => setEdit(false))}
-      </HStack>
-    );
-  }
 
   return (
     <HStack
-      p={0}
+      px={isDesktop ? 0 : "8px"}
+      py={isDesktop ? 0 : "4px"}
       justify={"space-between"}
       minWidth={"100%"}
-      h={"headerHeight"}
+      h={isDesktop ? "headerHeight" : "auto"}
       bg={"gray.100"}
       borderBottom={"1px"}
+      flexShrink={0}
     >
       <Button
-        mx={5}
+        mx={isDesktop ? 5 : 0}
         onClick={() => setShownPanel(null)}
         variant={"ghost"}
         _hover={{ bg: "gray.300" }}
-        fontWeight={400}
+        fontWeight={isDesktop ? 400 : 500}
         color={"gray.600"}
+        fontSize={isDesktop ? "md" : "24px"}
+        px={isDesktop ? undefined : "8px"}
+        h={isDesktop ? undefined : "44px"}
+        minW={isDesktop ? undefined : "44px"}
+        flexShrink={0}
       >
-        Javascript
+        {isDesktop ? "Javascript" : "JS"}
       </Button>
       <HStack
-        borderLeft={"1px"}
+        borderLeft={isDesktop ? "1px" : "none"}
         right={0}
-        px={4}
-        bg={"gray.100"}
-        justifyContent={"space-around"}
-        h={"headerHeight"}
+        px={isDesktop ? 4 : 0}
+        bg={isDesktop ? "gray.100" : "transparent"}
+        justifyContent={isDesktop ? "space-around" : "flex-end"}
+        h={isDesktop ? "headerHeight" : "auto"}
         w={"auto"}
+        spacing={isDesktop ? undefined : "12px"}
+        flexWrap={isDesktop ? "nowrap" : "wrap"}
       >
         {icon(
           MagicWandIcon,
           "AI",
           () => copyToClipboard(),
-          // () => setShownPanel(shownPanel === "ai" ? null : "ai"),
           true,
           "ai-copy-button",
         )}
@@ -125,9 +116,8 @@ export const MainHeader: React.FC = () => {
           () => setShownPanel(shownPanel === "settings" ? null : "settings"),
           true,
         )}
-        <ButtonCopyExternalLink />
-        <ButtonShortenUrl />
-        {/* <ButtonGotoExternalLink /> */}
+        <ButtonCopyExternalLink iconSize={iconSize} iconPadding={iconPadding} />
+        <ButtonShortenUrl iconSize={iconSize} iconPadding={iconPadding} />
         {icon(
           QuestionMarkIcon,
           "docs",

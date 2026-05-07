@@ -5,7 +5,7 @@ import { useStore } from "/@/store";
 import { useHandleFilesUploaded, uploadFile } from "/@/hooks/useFileUpload";
 import { useShortUrlMode } from "/@/hooks/useShortUrlMode";
 
-import { useToast, VStack } from "@chakra-ui/react";
+import { Box, useToast, VStack } from "@chakra-ui/react";
 
 import { MainHeader } from "/@/components/header/MainHeader";
 import { PanelCode } from "./components/sections/PanelCode";
@@ -60,15 +60,11 @@ export const App: React.FC = () => {
   if (shownPanel === "settings") content = <PanelSettings />;
   if (shownPanel === "ai") content = <PanelLlms />;
   return (
-    <VStack
-      gap={0}
-      w={"100%"}
-      minHeight="100vh"
-      overflow={"hidden"}
-      borderLeft={"1px"}
-    >
+    <VStack gap={0} w={"100%"} h="100vh" overflow={"hidden"} borderLeft={"1px"}>
       <MainHeader />
-      {content}
+      <Box flex={1} w="100%" overflow="hidden" position="relative">
+        {content}
+      </Box>
       <input
         ref={fileInputRef}
         type="file"

@@ -24,7 +24,10 @@ import { MetaframeDefinition } from "@metapages/metapage";
 import { useMetaframe } from "@metapages/metapage-react/hooks";
 import { ArrowsInLineHorizontalIcon } from "@phosphor-icons/react";
 
-export const ButtonShortenUrl: React.FC = () => {
+export const ButtonShortenUrl: React.FC<{
+  iconSize?: string;
+  iconPadding?: string;
+}> = ({ iconSize = "7", iconPadding = "3px" }) => {
   const [loading, setLoading] = useState(false);
   const [shortenedUrl, setShortenedUrl] = useState("");
   const { onCopy } = useClipboard(shortenedUrl);
@@ -139,10 +142,10 @@ export const ButtonShortenUrl: React.FC = () => {
           aria-label="shorten url"
           _hover={{ bg: "gray.300" }}
           bg={"none"}
-          p={"3px"}
+          p={iconPadding}
           borderRadius={5}
           as={ArrowsInLineHorizontalIcon}
-          boxSize="7"
+          boxSize={iconSize}
           onClick={handleShorten}
           opacity={loading ? 0.5 : 1}
           cursor={loading ? "not-allowed" : "pointer"}
