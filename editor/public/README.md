@@ -143,7 +143,7 @@ import {
   setHashParamValueJsonInWindow,
   setHashParamValueBase64EncodedInWindow,
   getHashParamValueBase64DecodedFromWindow,
-} from "https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.9.12/+esm";
+} from "https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.10.0/+esm";
 
 // Get JSON stored in URL
 const myJsonBlob = getHashParamValueJsonFromWindow("someKey") || {};

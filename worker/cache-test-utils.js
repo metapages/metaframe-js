@@ -73,7 +73,7 @@ ${JSON.stringify(config, null, 2)}`);
 
     // Test with a CDN resource
     const testUrl =
-      "https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.9.12/package.json";
+      "https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.10.0/package.json";
 
     try {
       const response1 = await fetch(testUrl);

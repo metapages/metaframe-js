@@ -6,6 +6,8 @@ import { MetaframeDefinition } from "@metapages/metapage";
 
 // The default allowed hash parameters, matching the hashParams declared
 // in the worker's metaframe.json (DEFAULT_METAFRAME_DEFINITION).
+// NOTE: This list is also defined in worker/server.ts (CANONICAL_HASH_PARAM_KEYS).
+// Keep both lists in sync.
 export const DEFAULT_ALLOWED_HASH_PARAMS: readonly string[] = [
   "bgColor",
   "definition",

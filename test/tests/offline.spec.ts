@@ -60,7 +60,7 @@ test.describe("offline mode (service worker cache)", () => {
     // to be in cache (the page itself imports from it).
     const js = `
       const response = await fetch(
-        "https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.9.12/package.json"
+        "https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.10.0/package.json"
       );
       const pkg = await response.json();
       document.getElementById("root").textContent = "v" + pkg.version;

@@ -101,7 +101,7 @@ built-in visualization or widget tools.
  * 
  * // Save state in URL hash
  * import { setHashParamValueJsonInWindow, getHashParamValueJsonFromWindow }
- *   from 'https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.9.12/+esm';
+ *   from 'https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.10.0/+esm';
  * 
  * // user set state 
  * setHashParamValueJsonInWindow("state", {zoom: 2});
