@@ -2,13 +2,12 @@ import { Hono } from "@hono/hono";
 import { cors } from "@hono/hono/cors";
 import { serveStatic } from "@hono/hono/deno";
 import {
-  blobToBase64String,
   setHashParamValueBase64EncodedInUrl,
   setHashParamValueBooleanInUrl,
   setHashParamValueInUrl,
   setHashParamValueJsonInUrl,
-  stringToBase64String,
 } from "@metapages/hash-query";
+import { HashParamsObject, HashParamType } from "@metapages/metapage";
 import {
   GetObjectCommand,
   PutObjectCommand,
@@ -20,7 +19,6 @@ import {
   DEFAULT_METAFRAME_DEFINITION,
   getAllowedHashParams,
 } from "./src/metaframe-definition.ts";
-import { HashParamsObject, HashParamType } from "@metapages/metapage";
 
 /**
  * Decodes a raw hash params string (e.g. "?js=abc&inputs=def") into a JSON
@@ -30,9 +28,7 @@ import { HashParamsObject, HashParamType } from "@metapages/metapage";
  * Handles both base64-wrapped encoding (new @metapages/hash-query format)
  * and plain URI-encoded values (old manual format).
  */
-function decodeHashParamsToJson(
-  hashParams: string,
-): Record<string, unknown> {
+function decodeHashParamsToJson(hashParams: string): Record<string, unknown> {
   const cleaned = hashParams.startsWith("?") ? hashParams.slice(1) : hashParams;
   const searchParams = new URLSearchParams(cleaned);
 
@@ -106,6 +102,22 @@ function decodeHashParamsToJson(
 
   return result;
 }
+
+// Canonical hash param keys — these are stored in the short URL and cleaned
+// from the URL bar after load. Any other keys are treated as user-defined
+// state and preserved in the URL.
+// NOTE: Keep in sync with editor/src/utils/hashParams.ts (DEFAULT_ALLOWED_HASH_PARAMS).
+const CANONICAL_HASH_PARAM_KEYS = [
+  "bgColor",
+  "definition",
+  "edit",
+  "editorWidth",
+  "hm",
+  "inputs",
+  "js",
+  "modules",
+  "options",
+];
 
 const port: number = parseInt(Deno.env.get("PORT") || "3000");
 
@@ -397,20 +409,18 @@ app.get("/j/:sha256", async (c) => {
     // Serve index.html with injected script that sets window.__SHORT_URL_ID
     // and calls history.replaceState so the hash is correct before module scripts run
     const indexHtml = await Deno.readTextFile("./index.html");
+    const canonicalKeysJson = JSON.stringify(CANONICAL_HASH_PARAM_KEYS);
+    const storedJson = JSON.stringify(hashParams);
+    // The IIFE parses stored params into a key→pair map, then overrides with
+    // any non-canonical params from the URL hash (user-defined state from a
+    // previous session).  This avoids duplicate keys when stored params
+    // already contain user-defined values from the time the URL was shortened.
     const injectedScript =
       `<script id="short-url-init">window.__SHORT_URL_ID = ${
         JSON.stringify(
           sha256,
         )
-      };window.__SHORT_URL_HASH_PARAMS = ${
-        JSON.stringify(
-          hashParams,
-        )
-      };history.replaceState(null, '', window.location.pathname + window.location.search + '#' + ${
-        JSON.stringify(
-          hashParams,
-        )
-      });</script>`;
+      };window.__SHORT_URL_HASH_PARAMS = ${storedJson};window.__SHORT_URL_CANONICAL_KEYS = new Set(${canonicalKeysJson});(function(){var stored = ${storedJson};var C = window.__SHORT_URL_CANONICAL_KEYS;var ss = stored.charAt(0)==='?' ? stored.slice(1) : stored;var sp = ss.split('&');var pm = {};var po = [];for(var i=0;i<sp.length;i++){var ei=sp[i].indexOf('=');var ki=ei===-1?sp[i]:sp[i].substring(0,ei);if(ki){pm[ki]=sp[i];po.push(ki);}}var h = window.location.hash;if(h){var s=h.charAt(0)==='#'?h.slice(1):h;if(s.charAt(0)==='?')s=s.slice(1);if(s){var up=s.split('&');for(var j=0;j<up.length;j++){var ej=up[j].indexOf('=');var kj=ej===-1?up[j]:up[j].substring(0,ej);if(kj&&!C.has(kj)){if(!(kj in pm))po.push(kj);pm[kj]=up[j];}}}}var m='?';for(var x=0;x<po.length;x++){if(x>0)m+='&';m+=pm[po[x]];}history.replaceState(null,'',window.location.pathname+window.location.search+'#'+m);})();</script>`;
     const modifiedHtml = indexHtml.replace(
       "</head>",
       injectedScript + "\n</head>",

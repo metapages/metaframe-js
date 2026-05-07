@@ -628,7 +628,7 @@ Available cache utilities (loaded on-demand):
         getUrlHashParamsFromHashString,
         setHashParamInWindow,
         setHashParamValueJsonInHashString,
-      } from "https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.9.12";
+      } from "https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.10.0";
       import {
         isIframe,
         Metaframe,
@@ -1570,8 +1570,48 @@ Available cache utilities (loaded on-demand):
         // In short URL mode, navigate to the full hash URL with edit mode.
         // This exits the short URL path entirely so the editor works normally.
         if (window.__SHORT_URL_ID && window.__SHORT_URL_HASH_PARAMS) {
-          window.location.href = window.location.origin + "/#" +
-            window.__SHORT_URL_HASH_PARAMS + "&edit=true";
+          // Build full URL from stored params, overriding with any changed
+          // user-defined params from the current URL, plus edit=true.
+          var canonicalKeys = window.__SHORT_URL_CANONICAL_KEYS || new Set();
+          var storedStr = window.__SHORT_URL_HASH_PARAMS;
+          var ss = storedStr.charAt(0) === "?" ? storedStr.slice(1) : storedStr;
+          var sp = ss.split("&");
+          var pm = {};
+          var po = [];
+          for (var si = 0; si < sp.length; si++) {
+            var sei = sp[si].indexOf("=");
+            var ski = sei === -1 ? sp[si] : sp[si].substring(0, sei);
+            if (ski) {
+              pm[ski] = sp[si];
+              po.push(ski);
+            }
+          }
+          var currentHash = window.location.hash;
+          if (currentHash) {
+            var s = currentHash.charAt(0) === "#"
+              ? currentHash.slice(1)
+              : currentHash;
+            if (s.charAt(0) === "?") s = s.slice(1);
+            if (s) {
+              var up = s.split("&");
+              for (var j = 0; j < up.length; j++) {
+                var ej = up[j].indexOf("=");
+                var kj = ej === -1 ? up[j] : up[j].substring(0, ej);
+                if (kj && !canonicalKeys.has(kj)) {
+                  if (!(kj in pm)) po.push(kj);
+                  pm[kj] = up[j];
+                }
+              }
+            }
+          }
+          if (!("edit" in pm)) po.push("edit");
+          pm["edit"] = "edit=true";
+          var merged = "?";
+          for (var x = 0; x < po.length; x++) {
+            if (x > 0) merged += "&";
+            merged += pm[po[x]];
+          }
+          window.location.href = window.location.origin + "/#" + merged;
           return;
         }
 
@@ -1674,10 +1714,42 @@ Available cache utilities (loaded on-demand):
       // the hash before getHashParamValueJsonFromWindow("inputs") ran.
       if (window.__SHORT_URL_ID && window.__SHORT_URL_HASH_PARAMS) {
         initialRunPromise.then(function () {
+          // Remove canonical params AND user-defined params that match stored
+          // values (they're loaded from the API, no need to duplicate in URL).
+          // Only keep user-defined params whose value has changed.
+          var canonicalKeys = window.__SHORT_URL_CANONICAL_KEYS || new Set();
+          var storedStr = window.__SHORT_URL_HASH_PARAMS || "";
+          var ss = storedStr.charAt(0) === "?" ? storedStr.slice(1) : storedStr;
+          var sp = ss.split("&");
+          var storedMap = {};
+          for (var si = 0; si < sp.length; si++) {
+            var sei = sp[si].indexOf("=");
+            var ski = sei === -1 ? sp[si] : sp[si].substring(0, sei);
+            if (ski) storedMap[ski] = sp[si];
+          }
+          var hash = window.location.hash;
+          var newHash = "";
+          if (hash) {
+            var s = hash.charAt(0) === "#" ? hash.slice(1) : hash;
+            if (s.charAt(0) === "?") s = s.slice(1);
+            if (s) {
+              var pairs = s.split("&");
+              var changedPairs = [];
+              for (var i = 0; i < pairs.length; i++) {
+                var k = pairs[i].split("=")[0];
+                if (k && !canonicalKeys.has(k) && storedMap[k] !== pairs[i]) {
+                  changedPairs.push(pairs[i]);
+                }
+              }
+              if (changedPairs.length > 0) {
+                newHash = "#?" + changedPairs.join("&");
+              }
+            }
+          }
           history.replaceState(
             null,
             "",
-            window.location.pathname + window.location.search,
+            window.location.pathname + window.location.search + newHash,
           );
         });
       }

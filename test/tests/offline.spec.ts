@@ -60,7 +60,7 @@ test.describe("offline mode (service worker cache)", () => {
     // to be in cache (the page itself imports from it).
     const js = `
       const response = await fetch(
-        "https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.9.12/package.json"
+        "https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.10.0/package.json"
       );
       const pkg = await response.json();
       document.getElementById("root").textContent = "v" + pkg.version;
@@ -73,7 +73,7 @@ test.describe("offline mode (service worker cache)", () => {
     await page.waitForLoadState("networkidle");
 
     // Confirm the user JS ran and the CDN asset was fetched successfully
-    await expect(page.locator("#root")).toContainText("v0.9", {
+    await expect(page.locator("#root")).toContainText("v0.10.0", {
       timeout: 15_000,
     });
 
@@ -92,7 +92,7 @@ test.describe("offline mode (service worker cache)", () => {
       await page.waitForLoadState("domcontentloaded");
 
       // User JS should run again using the SW-cached CDN response
-      await expect(page.locator("#root")).toContainText("v0.9", {
+      await expect(page.locator("#root")).toContainText("v0.10.0", {
         timeout: 15_000,
       });
     } finally {
