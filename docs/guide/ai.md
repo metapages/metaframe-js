@@ -1,12 +1,12 @@
 # AI Usage
 
-Generate and run JavaScript metaframes using AI — from chat interfaces or directly from the terminal.
+Generate and run JavaScript metaframes using AI — from chat interfaces or directly from the Command Line Interface, or via APIs
 
-## From Claude Code (terminal)
+## Command Line: installation into Claude Code
 
 Two ways to use it — paste the URL for one-off use, or install the slash command for repeat use.
 
-### One-off: paste the URL
+### Installation method 1: paste the URL into the terminal
 
 Paste the URL and describe what you want:
 
@@ -14,7 +14,7 @@ Paste the URL and describe what you want:
 >
 > Make a bouncing ball animation
 
-### Install the `/js` slash command
+### Installation method 2: install the `/js` slash command 
 
 For repeat use, install the slash command globally:
 
@@ -23,32 +23,43 @@ mkdir -p ~/.claude/commands
 curl -sL https://js.mtfm.io/llms-claude-code.txt -o ~/.claude/commands/js.md
 ```
 
-Then from any Claude Code session:
+#### `/js`  command prompt variants:
+
+
+**Create a visualization from a prompt:**
 
 ```
 /js make a bouncing ball animation
 ```
 
-### How it works
+**Create a visualization from a file:**
 
-Claude Code will:
+```
+/js visualize ./data.csv
+```
 
-1. Encode the JavaScript in memory using `Buffer.from(encodeURIComponent(code)).toString('base64')`
-2. Open `https://js.mtfm.io/#?js={encoded}&edit=true` in your browser
+**Modify an existing URL:**
 
-No files are written — everything happens in a single `node -e` command. The `&edit=true` parameter opens the editor so you can modify the code. Every update opens a new tab with the latest code.
+Use the short URL (top right `Edit -> Short URL`) to paste into the prompt, the full non-shortened URL is too much context to decode:
+
+```
+/js https://js.mtfm.io/j/<sha256> update the visualization make the background white
+```
 
 
-## From the editor
 
-1. Click the copy button to copy the AI prompt
-2. Paste into Claude, ChatGPT, or any LLM
+## Using an AI chat interface
+
+From the component page:
+
+1. `Edit (top right)->Copy button` to copy the AI prompt
+2. Paste into Claude, ChatGPT, or any LLM chat interface
 3. Describe what you want
 4. Copy the generated JavaScript back into the editor
 
 ![Copy AI prompt](/readme-images/js-copy-ai.gif "Copy prompt for LLM AI")
 
-## From an AI chat (API)
+## From an AI API
 
 Give the LLM the URL [`https://js.mtfm.io/llms.txt`](https://js.mtfm.io/llms.txt) along with your request. The LLM will respond with a JavaScript code block that you can paste into the editor at [js.mtfm.io](https://js.mtfm.io).
 
@@ -67,6 +78,17 @@ In JavaScript:
 const encoded = btoa(encodeURIComponent(code));
 const url = `https://js.mtfm.io/#?js=${encoded}`;
 ```
+
+
+## How it works
+
+Claude Code will:
+
+1. Encode the JavaScript in memory using `Buffer.from(encodeURIComponent(code)).toString('base64')`
+2. Open `https://js.mtfm.io/#?js={encoded}&edit=true` in your browser
+
+No files are written — everything happens in a single `node -e` command. The `&edit=true` parameter opens the editor so you can modify the code. Every update opens a new tab with the latest code.
+
 
 ## LLM integration files
 
