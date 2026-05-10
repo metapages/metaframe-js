@@ -45,6 +45,21 @@ test("GET /api/j/:sha256 returns id and decoded hashParams object", async ({ req
   expect(body.hashParams.js).toBe('console.log("api test")');
 });
 
+test("GET /api/j/:sha256/url returns the full URL as plain text", async ({ request }) => {
+  const { id, fullUrl } = await createShortUrl(request, 'console.log("url test")');
+
+  const response = await request.get(`/api/j/${id}/url`);
+  expect(response.ok()).toBeTruthy();
+  expect(response.headers()["content-type"]).toContain("text/plain");
+
+  const text = await response.text();
+  // Should be a valid URL with hash params containing the js code
+  expect(text).toContain("/#");
+  expect(text).toContain("js=");
+  // Should match the fullUrl from the shorten response
+  expect(text).toBe(fullUrl);
+});
+
 // ---------------------------------------------------------------------------
 // Browser tests – basic short URL serving
 // ---------------------------------------------------------------------------

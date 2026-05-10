@@ -36,7 +36,9 @@ When someone opens the short URL, the page loads with all the original code and 
 
 You can also shorten URLs programmatically.
 
-### Shorten from hash params
+### `POST /api/shorten` — Shorten from hash params
+
+Store raw hash params and get a short URL ID back.
 
 ```bash
 curl -X POST https://js.mtfm.io/api/shorten \
@@ -54,9 +56,9 @@ Response:
 }
 ```
 
-### Shorten from JSON
+### `POST /api/shorten/json` — Shorten from JSON
 
-A convenience endpoint that encodes JavaScript and options into hash params for you:
+A convenience endpoint that encodes JavaScript and options into hash params for you.
 
 ```bash
 curl -X POST https://js.mtfm.io/api/shorten/json \
@@ -75,7 +77,9 @@ Response:
 }
 ```
 
-### Retrieve decoded hash params
+### `GET /api/j/:sha256` — Retrieve decoded hash params
+
+Returns the short URL ID and decoded hash parameters as a JSON object.
 
 ```bash
 curl https://js.mtfm.io/api/j/8a3b1c9f...
@@ -90,6 +94,48 @@ Response:
     "js": "console.log(\"hello\")"
   }
 }
+```
+
+### `GET /api/j/:sha256/url` — Retrieve full URL
+
+Returns the full URL (with hash params) as plain text.
+
+```bash
+curl https://js.mtfm.io/api/j/8a3b1c9f.../url
+```
+
+Response:
+
+```
+https://js.mtfm.io/#?js=Y29uc29sZS5sb2coImhlbGxvIik%3D
+```
+
+### `POST /api/upload/presign` — Get presigned upload URL
+
+Generate a presigned S3 URL for direct browser-to-storage file upload. Files are content-addressed by SHA256.
+
+```bash
+curl -X POST https://js.mtfm.io/api/upload/presign \
+  -H "Content-Type: application/json" \
+  -d '{"contentType": "image/png", "sha256": "abcd1234..."}'
+```
+
+Response:
+
+```json
+{
+  "presignedUrl": "https://s3.../f/abcd1234...?X-Amz-Signature=...",
+  "id": "abcd1234...",
+  "canonicalPath": "/f/abcd1234..."
+}
+```
+
+### `GET /f/:id` — Download a file
+
+Redirects to the public storage URL for a previously uploaded file.
+
+```bash
+curl -L https://js.mtfm.io/f/abcd1234...
 ```
 
 ::: tip

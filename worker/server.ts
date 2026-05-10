@@ -520,6 +520,47 @@ app.get("/api/j/:sha256", async (c) => {
   }
 });
 
+// Short URL full-URL API — returns the full URL as plain text for a given sha256
+app.get("/api/j/:sha256/url", async (c) => {
+  if (!s3PresignClient) {
+    return c.json({ error: "URL shortening not configured" }, 503);
+  }
+
+  try {
+    const sha256 = c.req.param("sha256");
+
+    if (!sha256 || !/^[a-f0-9]{64}$/.test(sha256)) {
+      return c.json({ error: "Invalid shortened URL ID" }, 400);
+    }
+
+    const key = `j/${sha256}`;
+    const command = new GetObjectCommand({
+      Bucket: S3_BUCKET_NAME,
+      Key: key,
+    });
+
+    const response = await s3PresignClient.send(command);
+    if (!response.Body) throw new Error("S3 response body is empty");
+    const hashParams = await response.Body.transformToString();
+
+    const protocol = c.req.header("x-forwarded-proto") || "https";
+    const host = c.req.header("host");
+    const fullUrl = `${protocol}://${host}/#${hashParams}`;
+
+    c.header("Cache-Control", "public, max-age=31536000, immutable");
+    c.header("Content-Type", "text/plain; charset=utf-8");
+    return c.text(fullUrl);
+  } catch (error: any) {
+    console.error("Short URL API error:", error);
+
+    if (error.name === "NoSuchKey" || error.Code === "NoSuchKey") {
+      return c.json({ error: "Shortened URL not found" }, 404);
+    }
+
+    return c.json({ error: "Failed to retrieve shortened URL" }, 500);
+  }
+});
+
 // File download endpoint — redirects to the public S3 URL
 app.get("/f/:id", (c) => {
   if (!S3_PUBLIC_URL) {
