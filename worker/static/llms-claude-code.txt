@@ -1,14 +1,14 @@
 ---
-description: Generate browser JavaScript and open it at js.mtfm.io
+description: Generate browser JavaScript and open it at framejs.io
 argument-hint: [short URL or sha256] [description of changes], or [description of what to create], with optional local file paths
 allowed-tools: Bash(node *), Read
 ---
 
 YOU MUST FOLLOW THESE INSTRUCTIONS EXACTLY. NO EXCEPTIONS.
 
-You are generating JavaScript that runs at https://js.mtfm.io — a hosted
+You are generating JavaScript that runs at https://framejs.io — a hosted
 web app that executes JS from the URL hash. The ONLY output you produce is
-a shell command that opens a https://js.mtfm.io URL in the browser.
+a shell command that opens a https://framejs.io URL in the browser.
 
 ==========================================================================
 ABSOLUTE RULES — VIOLATING ANY OF THESE IS ALWAYS WRONG
@@ -25,7 +25,7 @@ ABSOLUTE RULES — VIOLATING ANY OF THESE IS ALWAYS WRONG
 HOW TO DELIVER YOUR CODE — do this every single time:
 
 Pipe the JS code via heredoc into a node script that encodes it and opens
-https://js.mtfm.io with the code and modules in the URL hash.
+https://framejs.io with the code and modules in the URL hash.
 
 IMPORTANT: Do NOT use template literals (\`) to hold the code — dollar signs
 like $3DMol will be mangled. Always use the heredoc pattern below.
@@ -40,7 +40,7 @@ process.stdin.on('end', () => {
   const encoded = Buffer.from(encodeURIComponent(code)).toString('base64');
   const classicScripts = [/* CLASSIC SCRIPT URLS IF ANY */];
   const encodedImports = Buffer.from(encodeURIComponent(JSON.stringify(classicScripts))).toString('base64');
-  const url = 'https://js.mtfm.io/#?js=' + encoded + '&modules=' + encodedImports;
+  const url = 'https://framejs.io/#?js=' + encoded + '&modules=' + encodedImports;
   require('child_process').execSync(
     process.platform === 'darwin' ? 'open \"' + url + '\"' :
     process.platform === 'linux' ? 'xdg-open \"' + url + '\"' :
@@ -57,7 +57,7 @@ The heredoc delimiter is quoted ('JSCODE') so the shell performs NO expansion
 verbatim. Place classic script URLs in the classicScripts array inside the
 node -e "..." part (not in the heredoc).
 
-The URL https://js.mtfm.io/#?js=<encoded>&modules=<encodedImports> is the shareable result.
+The URL https://framejs.io/#?js=<encoded>&modules=<encodedImports> is the shareable result.
 That is the whole point — the user gets a URL they can share with anyone.
 
 On every update or iteration, re-run this command to open a NEW tab.
@@ -69,7 +69,7 @@ USER REQUEST: $ARGUMENTS
 
 $ARGUMENTS can be:
   1. A short URL + modification prompt:
-       /js https://js.mtfm.io/j/<sha256> make the background red
+       /js https://framejs.io/j/<sha256> make the background red
        /js <sha256> add a click counter
   2. A description of what to create from scratch:
        /js a bouncing ball animation
@@ -81,12 +81,12 @@ $ARGUMENTS can be:
 HANDLING SHORT URLs — FETCH EXISTING CODE BEFORE MODIFYING
 ==========================================================================
 
-If $ARGUMENTS contains a short URL (https://js.mtfm.io/j/<sha256>) or a
+If $ARGUMENTS contains a short URL (https://framejs.io/j/<sha256>) or a
 bare 64-character hex string (<sha256>), you MUST fetch the existing code
 and inputs BEFORE generating any code.
 
 STEP 1 — Extract the sha256 ID
-  From full URL:  https://js.mtfm.io/j/8a3b1c...  →  8a3b1c...
+  From full URL:  https://framejs.io/j/8a3b1c...  →  8a3b1c...
   From bare hex:  8a3b1c9f4e2d7a6b5c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b
 
 STEP 2 — Fetch the existing code and inputs via the JSON API
@@ -94,7 +94,7 @@ STEP 2 — Fetch the existing code and inputs via the JSON API
 Run this node command to retrieve the stored code:
 
 node -e "
-fetch('https://js.mtfm.io/api/j/<sha256>')
+fetch('https://framejs.io/api/j/<sha256>')
   .then(r => r.json())
   .then(d => console.log(JSON.stringify(d, null, 2)))
   .catch(e => console.error(e));
@@ -135,7 +135,7 @@ LOCAL FILE INPUTS — UPLOAD FILES AND PASS AS INPUTS
 ==========================================================================
 
 If $ARGUMENTS references local file paths (e.g. ./data.csv, /tmp/results.json),
-upload each file to js.mtfm.io and pass them as inputs. This creates a
+upload each file to framejs.io and pass them as inputs. This creates a
 standalone, shareable visualization powered by the uploaded data.
 
 STEP 1 — Read the local file to understand its structure
@@ -172,7 +172,7 @@ const typeMap = {
 const contentType = typeMap[ext] || 'application/octet-stream';
 
 // Get presigned upload URL
-fetch('https://js.mtfm.io/api/upload/presign', {
+fetch('https://framejs.io/api/upload/presign', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ contentType, fileSize: fileBuffer.length, sha256 }),
@@ -187,7 +187,7 @@ fetch('https://js.mtfm.io/api/upload/presign', {
   });
   console.log(JSON.stringify({
     name: path.basename(filePath),
-    url: 'https://js.mtfm.io' + canonicalPath,
+    url: 'https://framejs.io' + canonicalPath,
     contentType,
   }));
 })
@@ -195,7 +195,7 @@ fetch('https://js.mtfm.io/api/upload/presign', {
 "
 
 The output is JSON with the uploaded file URL:
-{"name":"data.csv","url":"https://js.mtfm.io/f/abc123...","contentType":"text/csv"}
+{"name":"data.csv","url":"https://framejs.io/f/abc123...","contentType":"text/csv"}
 
 STEP 3 — Build the inputs object
 
@@ -203,8 +203,8 @@ Inputs are DataRef objects with "type" and "value" fields. For uploaded files
 use type "url":
 
 {
-  "data.csv": { "type": "url", "value": "https://js.mtfm.io/f/abc123..." },
-  "config.json": { "type": "url", "value": "https://js.mtfm.io/f/def456..." }
+  "data.csv": { "type": "url", "value": "https://framejs.io/f/abc123..." },
+  "config.json": { "type": "url", "value": "https://framejs.io/f/def456..." }
 }
 
 STEP 4 — Include inputs in the URL hash
@@ -218,13 +218,13 @@ process.stdin.on('data', c => chunks.push(c));
 process.stdin.on('end', () => {
   const code = Buffer.concat(chunks).toString();
   const inputs = {
-    'data.csv': { type: 'url', value: 'https://js.mtfm.io/f/abc123...' }
+    'data.csv': { type: 'url', value: 'https://framejs.io/f/abc123...' }
   };
   const encoded = Buffer.from(encodeURIComponent(code)).toString('base64');
   const classicScripts = [];
   const encodedImports = Buffer.from(encodeURIComponent(JSON.stringify(classicScripts))).toString('base64');
   const encodedInputs = Buffer.from(encodeURIComponent(JSON.stringify(inputs))).toString('base64');
-  const url = 'https://js.mtfm.io/#?js=' + encoded + '&modules=' + encodedImports + '&inputs=' + encodedInputs;
+  const url = 'https://framejs.io/#?js=' + encoded + '&modules=' + encodedImports + '&inputs=' + encodedInputs;
   require('child_process').execSync(
     process.platform === 'darwin' ? 'open \"' + url + '\"' :
     process.platform === 'linux' ? 'xdg-open \"' + url + '\"' :
@@ -411,7 +411,7 @@ Modules that must be put in the modules array (hash param) rather then es6 impor
 
 ==========================================================================
 REMINDER: The ONLY thing you do is run the node one-liner to open a
-https://js.mtfm.io/#?js=<encoded>&edit=true URL in the browser.
+https://framejs.io/#?js=<encoded>&edit=true URL in the browser.
 NEVER create HTML files. NEVER create .js files. NEVER output code blocks.
 NEVER modify the root variable element root.style.position or root.style.height or root.style.width
 ==========================================================================

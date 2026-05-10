@@ -6,10 +6,10 @@ Since all code and state is stored in the URL hash, metaframe URLs can get very 
 
 1. Click the **shorten** button in the editor header ![](./shorten-url-button.png)
 2. The current hash parameters (code, inputs, options) are stored in [R2](https://www.cloudflare.com/developer-platform/products/r2/) 
-4. You get a short URL `js.mtfm.io/j/<SHA256-based short ID>` e.g:
+4. You get a short URL `framejs.io/j/<SHA256-based short ID>` e.g:
 
 ```
-https://js.mtfm.io/j/8a3b1c9f...
+https://framejs.io/j/8a3b1c9f...
 ```
 
 The short URL is automatically copied to your clipboard.
@@ -21,13 +21,13 @@ The content is immutable and we currently have no plans to expire the content. P
 A full URL like this:
 
 ```
-https://js.mtfm.io/#?js=Y29uc3QgZGl2ID0gZG9jdW1lbnQuY3Jl...&options=eyJhdXRvcnVuIjp0cnVlfQ%3D%3D
+https://framejs.io/#?js=Y29uc3QgZGl2ID0gZG9jdW1lbnQuY3Jl...&options=eyJhdXRvcnVuIjp0cnVlfQ%3D%3D
 ```
 
 Becomes:
 
 ```
-https://js.mtfm.io/j/8a3b1c9f4e2d7a6b5c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b
+https://framejs.io/j/8a3b1c9f4e2d7a6b5c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b
 ```
 
 When someone opens the short URL, the page loads with all the original code and state intact — no redirect, the browser stays on the `/j/...` path.
@@ -41,7 +41,7 @@ You can also shorten URLs programmatically.
 Store raw hash params and get a short URL ID back.
 
 ```bash
-curl -X POST https://js.mtfm.io/api/shorten \
+curl -X POST https://framejs.io/api/shorten \
   -H "Content-Type: application/json" \
   -d '{"hashParams": "?js=Y29uc29sZS5sb2coImhlbGxvIik%3D"}'
 ```
@@ -61,7 +61,7 @@ Response:
 A convenience endpoint that encodes JavaScript and options into hash params for you.
 
 ```bash
-curl -X POST https://js.mtfm.io/api/shorten/json \
+curl -X POST https://framejs.io/api/shorten/json \
   -H "Content-Type: application/json" \
   -d '{"js": "console.log(\"hello\")"}'
 ```
@@ -71,8 +71,8 @@ Response:
 ```json
 {
   "id": "8a3b1c9f...",
-  "shortUrl": "https://js.mtfm.io/j/8a3b1c9f...",
-  "fullUrl": "https://js.mtfm.io/#?js=Y29uc29sZS5sb2coImhlbGxvIik%3D",
+  "shortUrl": "https://framejs.io/j/8a3b1c9f...",
+  "fullUrl": "https://framejs.io/#?js=Y29uc29sZS5sb2coImhlbGxvIik%3D",
   "hashParams": "?js=Y29uc29sZS5sb2coImhlbGxvIik%3D"
 }
 ```
@@ -82,7 +82,7 @@ Response:
 Returns the short URL ID and decoded hash parameters as a JSON object.
 
 ```bash
-curl https://js.mtfm.io/api/j/8a3b1c9f...
+curl https://framejs.io/api/j/8a3b1c9f...
 ```
 
 Response:
@@ -101,13 +101,13 @@ Response:
 Returns the full URL (with hash params) as plain text.
 
 ```bash
-curl https://js.mtfm.io/api/j/8a3b1c9f.../url
+curl https://framejs.io/api/j/8a3b1c9f.../url
 ```
 
 Response:
 
 ```
-https://js.mtfm.io/#?js=Y29uc29sZS5sb2coImhlbGxvIik%3D
+https://framejs.io/#?js=Y29uc29sZS5sb2coImhlbGxvIik%3D
 ```
 
 ### `POST /api/upload/presign` — Get presigned upload URL
@@ -115,7 +115,7 @@ https://js.mtfm.io/#?js=Y29uc29sZS5sb2coImhlbGxvIik%3D
 Generate a presigned S3 URL for direct browser-to-storage file upload. Files are content-addressed by SHA256.
 
 ```bash
-curl -X POST https://js.mtfm.io/api/upload/presign \
+curl -X POST https://framejs.io/api/upload/presign \
   -H "Content-Type: application/json" \
   -d '{"contentType": "image/png", "sha256": "abcd1234..."}'
 ```
@@ -135,7 +135,7 @@ Response:
 Redirects to the public storage URL for a previously uploaded file.
 
 ```bash
-curl -L https://js.mtfm.io/f/abcd1234...
+curl -L https://framejs.io/f/abcd1234...
 ```
 
 ::: tip

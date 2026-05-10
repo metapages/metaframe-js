@@ -21,7 +21,7 @@ cyan := "\\e[36m"
 @_help:
     just --list --unsorted
     echo -e ""
-    echo -e "    Production URL 🔗     {{ green }}https://js.mtfm.io/{{ normal }}"
+    echo -e "    Production URL 🔗     {{ green }}https://framejs.io/{{ normal }}"
     echo -e "    Github  URL 🔗        {{ green }}https://github.com/metapages/metaframe-js{{ normal }}"
     echo -e "    Local develop URL 🔗  {{ green }}https://{{ APP_FQDN }}:{{ APP_PORT }}/{{ normal }}"
     echo -e "    Deploy Console URL 🔗 {{ green }}https://console.deno.com/metapage/metaframe-js{{ normal }}"
@@ -55,7 +55,7 @@ fmt:
 open:
     deno run --allow-all https://deno.land/x/metapages@v0.0.17/exec/open_url.ts 'https://metapages.github.io/load-page-when-available/?url=https://{{ APP_FQDN }}:{{ APP_PORT }}'
 
-# deno deploy to js.mtfm.io
+# deno deploy to framejs.io
 deploy:
     #!/usr/bin/env bash
     set -euo pipefail

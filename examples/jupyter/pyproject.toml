@@ -25,5 +25,5 @@ dev = [
 [tool.pytest.ini_options]
 markers = [
     "integration: requires a running JupyterLab server",
-    "network: requires external network access (CDN, js.mtfm.io)",
+    "network: requires external network access (CDN, framejs.io)",
 ]

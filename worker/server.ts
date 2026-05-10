@@ -318,7 +318,7 @@ app.post("/api/shorten/json", async (c) => {
     const supportedKeys = Array.from(supportedKeysSet);
     supportedKeys.sort();
 
-    let url = new URL("https://js.mtfm.io/");
+    let url = new URL("https://framejs.io/");
 
     for (const key of supportedKeys) {
       if (body[key] === undefined) continue;

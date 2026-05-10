@@ -496,7 +496,7 @@
 
       // Only enable the caching service worker on production or when explicitly forced via ?sw=force.
       // In dev, unregister any previously registered SW to avoid stale caches.
-      const PRODUCTION_HOSTS = ["js.mtfm.io"];
+      const PRODUCTION_HOSTS = ["framejs.io", "js.mtfm.io"];
       const forceSW =
         new URLSearchParams(window.location.search).get("sw") === "force";
       const isProduction =

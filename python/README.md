@@ -1,6 +1,6 @@
 # metaframe-widget
 
-An [anywidget](https://anywidget.dev/) for embedding [metaframe](https://js.mtfm.io/docs) and [metapage](https://docs.metapage.io/) URLs in Jupyter and marimo notebooks.
+An [anywidget](https://anywidget.dev/) for embedding [metaframe](https://framejs.io/docs) and [metapage](https://docs.metapage.io/) URLs in Jupyter and marimo notebooks.
 
 ## Install
 
@@ -22,7 +22,7 @@ pip install "metaframe-widget[marimo]"    # includes marimo
 ```python
 from metaframe_widget import MetaframeWidget
 
-w = MetaframeWidget(url="https://js.mtfm.io/#?js=...", height="300px")
+w = MetaframeWidget(url="https://framejs.io/#?js=...", height="300px")
 w
 ```
 
@@ -32,7 +32,7 @@ w
 import marimo as mo
 from metaframe_widget import MetaframeWidget
 
-w = MetaframeWidget(url="https://js.mtfm.io/#?js=...", height="300px")
+w = MetaframeWidget(url="https://framejs.io/#?js=...", height="300px")
 mo.ui.anywidget(w)
 ```
 

@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: js.mtfm.io
+  name: framejs.io
   text: URL with editable javascript embedded
   tagline: Interactive visualizations that live in a URL. Prompt Claude to build them, share by link or immutable hash, embed in Jupyter or anywhere else
   actions:
@@ -14,7 +14,7 @@ hero:
       link: /guide/javascript-api
     - theme: alt
       text: Create new
-      link: https://js.mtfm.io#?edit=true
+      link: https://framejs.io#?edit=true
 
 features:
   - title: Edit with AI

@@ -25,7 +25,7 @@ def __(mo):
 
 @app.cell
 def __(MetaframeWidget, mo):
-    w = mo.ui.anywidget(MetaframeWidget(url="https://js.mtfm.io/"))
+    w = mo.ui.anywidget(MetaframeWidget(url="https://framejs.io/"))
     w
     return (w,)
 

@@ -48,7 +48,7 @@ services:
     command: ["pytest", "--nbmake", "examples/demo.ipynb", "-v"]
 
   # Playwright + JupyterLab – verifies the widget renders in a real browser.
-  # No external network required (CDN/js.mtfm.io tests excluded).
+  # No external network required (CDN/framejs.io tests excluded).
   # shm_size is needed for Chromium's shared-memory use inside Docker.
   test-browser:
     build:
@@ -59,7 +59,7 @@ services:
     command: ["pytest", "tests/test_browser.py", "-m", "integration and not network", "-v"]
 
   # Same as test-browser but also runs @pytest.mark.network tests,
-  # which load the metapage CDN and js.mtfm.io iframe.
+  # which load the metapage CDN and framejs.io iframe.
   test-browser-network:
     build:
       context: ../../

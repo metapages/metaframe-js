@@ -19,7 +19,7 @@ const { setInputs, dispose } = await renderMetaframe({
   onOutputs: (outputs) => {
     console.log("Got outputs", outputs);
   },
-  url: "https://js.mtfm.io/",
+  url: "https://framejs.io/",
   rootDiv: document.getElementById("container"),
 });
 ```
@@ -53,7 +53,7 @@ const { setInputs, dispose } = await renderMetaframe({
       console.log("Got outputs", outputs);
       // Use outputs in your app — update state, call APIs, etc.
     },
-    url: "https://js.mtfm.io/#?hm=disabled&editurl=https://js.mtfm.io/",
+    url: "https://framejs.io/#?hm=disabled&editurl=https://framejs.io/",
     rootDiv: document.getElementById("container"),
   });
 

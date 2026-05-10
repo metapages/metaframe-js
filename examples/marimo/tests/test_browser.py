@@ -3,7 +3,7 @@ Browser integration tests for MetaframeWidget using Playwright + marimo.
 
 Test tiers:
   @pytest.mark.integration  — needs a running marimo server (marimo_url fixture)
-  @pytest.mark.network      — also needs external network (CDN + js.mtfm.io)
+  @pytest.mark.network      — also needs external network (CDN + framejs.io)
 
 Setup (one-time):
     pip install -e ".[dev]"

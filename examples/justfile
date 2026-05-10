@@ -31,7 +31,7 @@ test-jupyter-notebook: _build-jupyter-docker
 test-jupyter-browser: _build-jupyter-docker
     docker compose -f jupyter/docker-compose.yml run --rm test-browser
 
-# Run all Playwright browser tests in Docker, including network-dependent ones (CDN + js.mtfm.io)
+# Run all Playwright browser tests in Docker, including network-dependent ones (CDN + framejs.io)
 test-jupyter-browser-network: _build-jupyter-docker
     docker compose -f jupyter/docker-compose.yml run --rm test-browser-network
 
