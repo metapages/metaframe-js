@@ -1,6 +1,6 @@
 # Javascript embedded in the URL: run and edit with AI tools
 
-[Official Docs](https://js.mtfm.io/docs)
+[Official Docs](https://framejs.io/docs)
 
 <a href="https://github.com/metapages/metaframe-js" target="_top" rel="noopener noreferrer">Github</a>
 
@@ -211,7 +211,7 @@ pip install metaframe-widget
 from metaframe_widget import MetaframeWidget
 
 # From a URL — paste any metaframe URL
-w = MetaframeWidget(url="https://js.mtfm.io/#?js=...")
+w = MetaframeWidget(url="https://framejs.io/#?js=...")
 w  # renders the iframe in the notebook
 ```
 
@@ -266,7 +266,7 @@ In [marimo](https://marimo.io), wrap the widget with `mo.ui.anywidget()` to get 
 import marimo as mo
 from metaframe_widget import MetaframeWidget
 
-w = mo.ui.anywidget(MetaframeWidget(url="https://js.mtfm.io/"))
+w = mo.ui.anywidget(MetaframeWidget(url="https://framejs.io/"))
 w
 ```
 
@@ -304,13 +304,13 @@ This means the shared URL is a frozen point-in-time copy. If inputs change after
 **Full URL** (everything embedded in the hash):
 
 ```
-https://js.mtfm.io/#?js=ZXhwb3J0IGNvbnN0IG9uSW5wdXRzID0gKGlucHV0cykgPT4gew0KICAgIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJyb290IikudGV4dENvbnRlbnQgPSBKU09OLnN0cmluZ2lmeShpbnB1dHMpOwp9&inputs=%7B%22data.json%22%3A%7B%22type%22%3A%22url%22%2C%22value%22%3A%22https%3A%2F%2Fjs.mtfm.io%2Ff%2Fabc123%22%7D%7D
+https://framejs.io/#?js=ZXhwb3J0IGNvbnN0IG9uSW5wdXRzID0gKGlucHV0cykgPT4gew0KICAgIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJyb290IikudGV4dENvbnRlbnQgPSBKU09OLnN0cmluZ2lmeShpbnB1dHMpOwp9&inputs=%7B%22data.json%22%3A%7B%22type%22%3A%22url%22%2C%22value%22%3A%22https%3A%2F%2Fframejs.io%2Ff%2Fabc123%22%7D%7D
 ```
 
 **Short URL** (same content, compact):
 
 ```
-https://js.mtfm.io/j/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+https://framejs.io/j/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 ```
 
 Short URLs are content-addressed: the path is `/j/{sha256}` where the SHA-256 is computed from the hash parameters. Identical content always produces the same short URL.
@@ -320,7 +320,7 @@ Short URLs are content-addressed: the path is `/j/{sha256}` where the SHA-256 is
 **From raw hash params:**
 
 ```bash
-curl -X POST https://js.mtfm.io/api/shorten \
+curl -X POST https://framejs.io/api/shorten \
   -H "Content-Type: application/json" \
   -d '{"hashParams": "?js=ZXhwb3J0IGNvbnN0IG9uSW5wdXRzID0gKGlucHV0cykgPT4ge30%3D"}'
 ```
@@ -328,12 +328,12 @@ curl -X POST https://js.mtfm.io/api/shorten \
 **From structured JSON (preferred):**
 
 ```bash
-curl -X POST https://js.mtfm.io/api/shorten/json \
+curl -X POST https://framejs.io/api/shorten/json \
   -H "Content-Type: application/json" \
   -d '{
     "js": "export const onInputs = (inputs) => { root.textContent = JSON.stringify(inputs); }",
     "inputs": {
-      "data.json": { "type": "url", "value": "https://js.mtfm.io/f/abc123def456..." }
+      "data.json": { "type": "url", "value": "https://framejs.io/f/abc123def456..." }
     }
   }'
 ```
@@ -343,8 +343,8 @@ Response:
 ```json
 {
   "id": "e3b0c44298fc1c14...",
-  "shortUrl": "https://js.mtfm.io/j/e3b0c44298fc1c14...",
-  "fullUrl": "https://js.mtfm.io/#?js=...&inputs=...",
+  "shortUrl": "https://framejs.io/j/e3b0c44298fc1c14...",
+  "fullUrl": "https://framejs.io/#?js=...&inputs=...",
   "hashParams": "?js=...&inputs=..."
 }
 ```
@@ -353,18 +353,18 @@ Supported fields in `/api/shorten/json`: `js`, `inputs`, `definition`, `modules`
 
 ## File system
 
-Files uploaded to js.mtfm.io are stored in a content-addressed file system. Every file is identified by its SHA-256 hash and accessible at a permanent URL.
+Files uploaded to framejs.io are stored in a content-addressed file system. Every file is identified by its SHA-256 hash and accessible at a permanent URL.
 
 ### URL schema
 
 ```
-https://js.mtfm.io/f/{sha256}
+https://framejs.io/f/{sha256}
 ```
 
 For example:
 
 ```
-https://js.mtfm.io/f/a1b2c3d4e5f67890abcdef1234567890abcdef1234567890abcdef1234567890
+https://framejs.io/f/a1b2c3d4e5f67890abcdef1234567890abcdef1234567890abcdef1234567890
 ```
 
 You can access any uploaded file directly by visiting its `/f/{sha256}` URL in a browser or fetching it programmatically. The file is served with its original content type.
@@ -376,7 +376,7 @@ Upload files by **dragging them onto the editor** or by adding file-type inputs 
 1. The client computes a SHA-256 hash of the file content
 2. A presigned upload URL is requested from `POST /api/upload/presign`
 3. The file is uploaded directly to S3 via the presigned URL
-4. The file becomes accessible at `https://js.mtfm.io/f/{sha256}`
+4. The file becomes accessible at `https://framejs.io/f/{sha256}`
 
 ### Accessing files in code
 
@@ -392,7 +392,7 @@ export const onInputs = (inputs) => {
 };
 
 // Option 2: Fetch a file directly by its URL
-const response = await fetch("https://js.mtfm.io/f/a1b2c3d4e5f6...");
+const response = await fetch("https://framejs.io/f/a1b2c3d4e5f6...");
 const data = await response.json(); // or .text(), .blob(), .arrayBuffer()
 ```
 
@@ -405,11 +405,11 @@ Uploaded files are added to the `inputs` hash parameter as DataRef objects with 
   "inputs": {
     "photo.jpg": {
       "type": "url",
-      "value": "https://js.mtfm.io/f/a1b2c3d4e5f6..."
+      "value": "https://framejs.io/f/a1b2c3d4e5f6..."
     },
     "data.csv": {
       "type": "url",
-      "value": "https://js.mtfm.io/f/f6e5d4c3b2a1..."
+      "value": "https://framejs.io/f/f6e5d4c3b2a1..."
     }
   }
 }
@@ -434,7 +434,7 @@ Inputs support several reference types:
 ```bash
 # 1. Upload a file
 SHA=$(shasum -a 256 mydata.json | cut -d' ' -f1)
-PRESIGN=$(curl -s -X POST https://js.mtfm.io/api/upload/presign \
+PRESIGN=$(curl -s -X POST https://framejs.io/api/upload/presign \
   -H "Content-Type: application/json" \
   -d "{\"contentType\": \"application/json\", \"fileSize\": $(stat -f%z mydata.json), \"sha256\": \"$SHA\"}")
 curl -X PUT "$(echo $PRESIGN | jq -r .presignedUrl)" \
@@ -442,12 +442,12 @@ curl -X PUT "$(echo $PRESIGN | jq -r .presignedUrl)" \
   --data-binary @mydata.json
 
 # 2. Create a short URL that references the uploaded file
-curl -X POST https://js.mtfm.io/api/shorten/json \
+curl -X POST https://framejs.io/api/shorten/json \
   -H "Content-Type: application/json" \
   -d "{
     \"js\": \"export const onInputs = (inputs) => { root.textContent = JSON.stringify(inputs); }\",
     \"inputs\": {
-      \"mydata.json\": { \"type\": \"url\", \"value\": \"https://js.mtfm.io/f/$SHA\" }
+      \"mydata.json\": { \"type\": \"url\", \"value\": \"https://framejs.io/f/$SHA\" }
     }
   }"
 ```
@@ -473,7 +473,7 @@ Files uploaded via `/f/{sha256}` are currently stored without expiration, but **
 This gives you plenty of time to transfer blobs to your own storage if you are building on top of this platform. The recommended workflow:
 
 1. Upload files and create short URLs as needed
-2. If you want permanent file hosting, copy the blobs from `https://js.mtfm.io/f/{sha256}` to your own S3/CDN/storage
+2. If you want permanent file hosting, copy the blobs from `https://framejs.io/f/{sha256}` to your own S3/CDN/storage
 3. Update the `inputs` in your short URL (or your own stored URL) to point to your permanent file URLs instead
 
 ### Summary
@@ -501,7 +501,7 @@ If a short URL references uploaded files via `/f/...` URLs and those files expir
 The full URL format is:
 
 ```
-https://js.mtfm.io/#?js={base64}&inputs={json}&modules={json}&definition={json}&options={json}&edit={bool}
+https://framejs.io/#?js={base64}&inputs={json}&modules={json}&definition={json}&options={json}&edit={bool}
 ```
 
 | Parameter     | Encoding                                  | Description                                                        |
@@ -526,7 +526,7 @@ If your embedded code uses the Clipboard API (e.g. copying a URL or text to the 
 
 ```html
 <iframe
-  src="https://js.mtfm.io/#?js=..."
+  src="https://framejs.io/#?js=..."
   allow="clipboard-read *; clipboard-write *"
 ></iframe>
 ```
@@ -541,7 +541,7 @@ Depending on what your code does, you may need additional permissions:
 
 ```html
 <iframe
-  src="https://js.mtfm.io/j/abc123..."
+  src="https://framejs.io/j/abc123..."
   allow="clipboard-read *; clipboard-write *; camera; microphone; geolocation"
 ></iframe>
 ```
@@ -563,7 +563,7 @@ If you use the `sandbox` attribute on your iframe, you must also include `allow-
 
 ```html
 <iframe
-  src="https://js.mtfm.io/#?js=..."
+  src="https://framejs.io/#?js=..."
   sandbox="allow-scripts allow-same-origin allow-popups"
   allow="clipboard-read *; clipboard-write *"
 ></iframe>

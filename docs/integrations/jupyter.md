@@ -14,7 +14,7 @@ pip install metaframe-widget
 from metaframe_widget import MetaframeWidget
 
 # From a URL — paste any metaframe URL
-w = MetaframeWidget(url="https://js.mtfm.io/#?js=...")
+w = MetaframeWidget(url="https://framejs.io/#?js=...")
 w  # renders the iframe in the notebook
 ```
 

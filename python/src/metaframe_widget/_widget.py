@@ -78,7 +78,7 @@ class MetaframeWidget(anywidget.AnyWidget):
     ) -> "MetaframeWidget":
         """Create a MetaframeWidget from raw JavaScript code.
 
-        Encodes the code into a js.mtfm.io URL with the code in the hash.
+        Encodes the code into a framejs.io URL with the code in the hash.
 
         Args:
             js_code: JavaScript source for the metaframe.
@@ -87,7 +87,7 @@ class MetaframeWidget(anywidget.AnyWidget):
             allow: iframe allow attribute string (e.g. "camera; microphone").
         """
         encoded = string_to_base64_string(js_code)
-        url = f"https://js.mtfm.io/#?js={encoded}"
+        url = f"https://framejs.io/#?js={encoded}"
         return cls(url=url, width=width, height=height, allow=allow, **kwargs)
 
     def pipe_to(self, target: "MetaframeWidget", output_key: str, input_key: str = None):

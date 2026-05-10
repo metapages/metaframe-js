@@ -4,13 +4,13 @@
 
 ## What is metaframe-js?
 
-[js.mtfm.io](https://js.mtfm.io) lets you run arbitrary JavaScript modules directly in the browser, with all code embedded in the URL. There is no server-side storage: the URL *is* the program.
+[framejs.io](https://framejs.io) lets you run arbitrary JavaScript modules directly in the browser, with all code embedded in the URL. There is no server-side storage: the URL *is* the program.
 
 It is designed for embedding code safely anywhere, and optionally combining into [metapages](https://metapage.io) so you can connect inputs and outputs to other metaframe URLs or jupyter notebook code. Similar to [CodePen](https://codepen.io/) or [JSFiddle](https://jsfiddle.net/), but completely self-contained, editable, and shareable.
 
 ## How to use it
 
-1. Go to [js.mtfm.io](https://js.mtfm.io)
+1. Go to [framejs.io](https://framejs.io)
 2. Write JavaScript in the editor or [edit with AI](./ai)
 3. The code runs immediately — the URL updates to contain your code
 4. Share the URL with anyone

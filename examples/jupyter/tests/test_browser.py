@@ -3,7 +3,7 @@ Browser integration tests for the MetaframeWidget using Playwright + JupyterLab.
 
 Test tiers:
   @pytest.mark.integration  — needs a running JupyterLab (lab_url fixture)
-  @pytest.mark.network      — also needs external network (CDN + js.mtfm.io)
+  @pytest.mark.network      — also needs external network (CDN + framejs.io)
 
 Setup (one-time):
     pip install -e ".[dev]"
@@ -97,7 +97,7 @@ def test_widget_output_area_renders(page: Page, lab_url: str):
 @pytest.mark.network
 def test_widget_iframe_renders(page: Page, lab_url: str):
     """The metaframe iframe is injected into the widget container by the ESM
-    (requires CDN load of @metapages/metapage and js.mtfm.io)."""
+    (requires CDN load of @metapages/metapage and framejs.io)."""
     _open_notebook(page, lab_url)
     _run_all_cells(page)
 

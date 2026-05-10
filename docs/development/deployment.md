@@ -2,7 +2,7 @@
 
 ## Website (Deno Deploy)
 
-The website at [js.mtfm.io](https://js.mtfm.io) is deployed to [Deno Deploy](https://deno.com/deploy).
+The website at [framejs.io](https://framejs.io) is deployed to [Deno Deploy](https://deno.com/deploy).
 
 ```bash
 just publish

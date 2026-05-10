@@ -6,14 +6,14 @@ Since all code and state is stored in the URL, metaframe-js widgets can be embed
 
 Any tool that lets you embed a URL or iframe works with metaframe-js:
 
-- **Notion** — use the `/embed` block and paste your `js.mtfm.io` URL
-- **Obsidian** — use an iframe in a markdown note: `<iframe src="https://js.mtfm.io/..."></iframe>`
+- **Notion** — use the `/embed` block and paste your `framejs.io` URL
+- **Obsidian** — use an iframe in a markdown note: `<iframe src="https://framejs.io/..."></iframe>`
 - **Confluence**, **Coda**, **Google Docs** — use their respective embed or iframe widgets
 - **Any note-taking or wiki tool** — if it supports URL or iframe embeds, it works
 
 ## How to embed
 
-1. Create your widget at [js.mtfm.io](https://js.mtfm.io)
+1. Create your widget at [framejs.io](https://framejs.io)
 2. Copy the URL from the address bar
 3. Paste it into your platform's embed block or iframe
 

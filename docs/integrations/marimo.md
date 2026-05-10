@@ -16,7 +16,7 @@ Wrap the widget with `mo.ui.anywidget()` to get reactive bindings:
 import marimo as mo
 from metaframe_widget import MetaframeWidget
 
-w = mo.ui.anywidget(MetaframeWidget(url="https://js.mtfm.io/"))
+w = mo.ui.anywidget(MetaframeWidget(url="https://framejs.io/"))
 w
 ```
 

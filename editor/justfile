@@ -12,7 +12,7 @@ export APP_FQDN                    := env_var_or_default("APP_FQDN", "server1.lo
 export APP_PORT                    := env_var_or_default("APP_PORT", "4430")
 export APP_PORT_BROWSER            := env_var_or_default("APP_PORT_BROWSER", "4440")
 # SERVER_ORIGIN allows overriding the target server origin for the browser
-export SERVER_ORIGIN               := env_var_or_default("SERVER_ORIGIN", "js.mtfm.io:443")
+export SERVER_ORIGIN               := env_var_or_default("SERVER_ORIGIN", "framejs.io:443")
 # The NPM_TOKEN is required for publishing to https://www.npmjs.com
 NPM_TOKEN                          := env_var_or_default("NPM_TOKEN", "")
 # Source of deno scripts. When developing we need to switch this
@@ -34,12 +34,12 @@ grey                               := "\\e[90m"
     just --list --unsorted --list-heading $'🌱 Commands:\n\n'
     echo -e ""
     echo -e "    Github  URL 🔗 {{green}}$(cat package.json | jq -r '.repository.url'){{normal}}"
-    echo -e "    Publish URL 🔗 {{green}}https://js.mtfm.io/{{normal}}"
+    echo -e "    Publish URL 🔗 {{green}}https://framejs.io/{{normal}}"
     echo -e "    Develop URL 🔗 {{green}}https://{{APP_FQDN}}:{{APP_PORT}}/{{normal}}"
     echo -e ""
 
-# Run the dev server pointing to the local docker stack. For production: just dev js.mtfm.io
-dev server="js.mtfm.io:443": _css-debug-layer-setup _mkcert _ensure_npm_modules
+# Run the dev server pointing to the local docker stack. For production: just dev framejs.io
+dev server="framejs.io:443": _css-debug-layer-setup _mkcert _ensure_npm_modules
     #!/usr/bin/env bash
     set -euo pipefail
     VITE_SERVER_ORIGIN={{SERVER_ORIGIN}}

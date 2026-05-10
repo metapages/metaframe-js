@@ -5,8 +5,8 @@ from metaframe_widget import MetaframeWidget
 
 
 def test_create_widget():
-    w = MetaframeWidget(url="https://js.mtfm.io/#?js=abc")
-    assert w.url == "https://js.mtfm.io/#?js=abc"
+    w = MetaframeWidget(url="https://framejs.io/#?js=abc")
+    assert w.url == "https://framejs.io/#?js=abc"
     assert w.inputs == {}
     assert w.outputs == {}
     assert w.height == "400px"
@@ -34,14 +34,14 @@ def test_from_code():
     # from_code does: encodeURIComponent(code) then base64
     encoded_uri = urllib.parse.quote(code, safe="-_.!~*'()")
     encoded = base64.b64encode(encoded_uri.encode("ascii")).decode("ascii")
-    expected_url = f"https://js.mtfm.io/#?js={encoded}"
+    expected_url = f"https://framejs.io/#?js={encoded}"
     assert w.url == expected_url
 
 
 def test_from_code_with_kwargs():
     w = MetaframeWidget.from_code("code", height="600px")
     assert w.height == "600px"
-    assert "js.mtfm.io" in w.url
+    assert "framejs.io" in w.url
 
 
 def test_on_outputs_change():
