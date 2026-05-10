@@ -17,6 +17,7 @@ export const DEFAULT_ALLOWED_HASH_PARAMS: readonly string[] = [
   "inputs",
   "js",
   "modules",
+  "og",
   "options",
 ];
 

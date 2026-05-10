@@ -20,6 +20,15 @@ import {
   getAllowedHashParams,
 } from "./src/metaframe-definition.ts";
 
+/** Escape a string for safe use inside an HTML attribute (double-quoted). */
+function escapeHtmlAttr(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
 /**
  * Decodes a raw hash params string (e.g. "?js=abc&inputs=def") into a JSON
  * object with correctly decoded values, using the type metadata from
@@ -116,6 +125,7 @@ const CANONICAL_HASH_PARAM_KEYS = [
   "inputs",
   "js",
   "modules",
+  "og",
   "options",
 ];
 
@@ -123,6 +133,7 @@ const port: number = parseInt(Deno.env.get("PORT") || "3000");
 
 // S3-compatible storage config (works with Cloudflare R2 and MinIO)
 const S3_ENDPOINT = Deno.env.get("S3_ENDPOINT");
+const S3_PRESIGN_ENDPOINT = Deno.env.get("S3_PRESIGN_ENDPOINT");
 const S3_ACCESS_KEY_ID = Deno.env.get("S3_ACCESS_KEY_ID");
 const S3_SECRET_ACCESS_KEY = Deno.env.get("S3_SECRET_ACCESS_KEY");
 const S3_BUCKET_NAME = Deno.env.get("S3_BUCKET_NAME") || "uploads";
@@ -139,25 +150,37 @@ const s3Credentials = S3_ACCESS_KEY_ID && S3_SECRET_ACCESS_KEY
   ? { accessKeyId: S3_ACCESS_KEY_ID, secretAccessKey: S3_SECRET_ACCESS_KEY }
   : undefined;
 
-// Client for generating presigned URLs (uses browser-reachable endpoint)
-// Falls back to the main S3 client if S3_PRESIGN_ENDPOINT is not set (e.g. production R2)
+// Server-side S3 client for actual S3 operations (PutObject, GetObject).
+// Uses the internal Docker network endpoint (e.g. http://minio:9000).
+let s3Client: S3Client | null = null;
+if (s3Credentials && S3_ENDPOINT) {
+  s3Client = new S3Client({
+    endpoint: S3_ENDPOINT,
+    forcePathStyle: true,
+    region: "auto",
+    credentials: s3Credentials,
+    requestChecksumCalculation: "WHEN_REQUIRED",
+    responseChecksumValidation: "WHEN_REQUIRED",
+  });
+  console.log(`S3 client configured: endpoint=${S3_ENDPOINT}`);
+}
+
+// Presign client for generating browser-facing presigned URLs.
+// Uses S3_PRESIGN_ENDPOINT (browser-reachable, e.g. https://s3.localhost) if set,
+// otherwise falls back to S3_ENDPOINT (e.g. production R2 where the endpoint is
+// directly reachable from the browser).
 let s3PresignClient: S3Client | null = null;
-if (s3Credentials) {
-  const presignEndpoint = S3_ENDPOINT;
-  if (presignEndpoint) {
-    s3PresignClient = new S3Client({
-      endpoint: presignEndpoint,
-      forcePathStyle: true,
-      region: "auto",
-      credentials: s3Credentials,
-      // Disable flexible checksums to avoid Deno CRC32 compatibility issues
-      requestChecksumCalculation: "WHEN_REQUIRED",
-      responseChecksumValidation: "WHEN_REQUIRED",
-    });
-    if (S3_ENDPOINT) {
-      console.log(`S3 presign client configured: endpoint=${S3_ENDPOINT}`);
-    }
-  }
+const presignEndpoint = S3_PRESIGN_ENDPOINT || S3_ENDPOINT;
+if (s3Credentials && presignEndpoint) {
+  s3PresignClient = new S3Client({
+    endpoint: presignEndpoint,
+    forcePathStyle: true,
+    region: "auto",
+    credentials: s3Credentials,
+    requestChecksumCalculation: "WHEN_REQUIRED",
+    responseChecksumValidation: "WHEN_REQUIRED",
+  });
+  console.log(`S3 presign client configured: endpoint=${presignEndpoint}`);
 }
 
 const app = new Hono();
@@ -262,7 +285,7 @@ app.post("/api/upload/presign", async (c) => {
 
 // URL shortening endpoint — stores hash params in S3
 app.post("/api/shorten", async (c) => {
-  if (!s3PresignClient) {
+  if (!s3Client) {
     return c.json({ error: "URL shortening not configured" }, 503);
   }
 
@@ -291,7 +314,7 @@ app.post("/api/shorten", async (c) => {
       ContentType: "text/plain; charset=utf-8",
     });
 
-    await s3PresignClient.send(command);
+    await s3Client.send(command);
 
     return c.json({
       success: true,
@@ -306,7 +329,7 @@ app.post("/api/shorten", async (c) => {
 
 // URL shortening from JSON body — encodes each field to hash-param format
 app.post("/api/shorten/json", async (c) => {
-  if (!s3PresignClient) {
+  if (!s3Client) {
     return c.json({ error: "URL shortening not configured" }, 503);
   }
 
@@ -362,7 +385,7 @@ app.post("/api/shorten/json", async (c) => {
       Body: hashParams,
       ContentType: "text/plain; charset=utf-8",
     });
-    await s3PresignClient.send(command);
+    await s3Client.send(command);
 
     const protocol = c.req.header("x-forwarded-proto") || "https";
     const host = c.req.header("host");
@@ -382,7 +405,7 @@ app.post("/api/shorten/json", async (c) => {
 
 // Shortened URL — fetches hash params from S3 and serves index.html with injected init script
 app.get("/j/:sha256", async (c) => {
-  if (!s3PresignClient) {
+  if (!s3Client) {
     return c.json({ error: "URL shortening not configured" }, 503);
   }
 
@@ -402,28 +425,57 @@ app.get("/j/:sha256", async (c) => {
       Key: key,
     });
 
-    const response = await s3PresignClient.send(command);
+    const response = await s3Client.send(command);
     if (!response.Body) throw new Error("S3 response body is empty");
     const hashParams = await response.Body.transformToString();
 
-    // Serve index.html with injected script that sets window.__SHORT_URL_ID
-    // and calls history.replaceState so the hash is correct before module scripts run
     const indexHtml = await Deno.readTextFile("./index.html");
     const canonicalKeysJson = JSON.stringify(CANONICAL_HASH_PARAM_KEYS);
-    const storedJson = JSON.stringify(hashParams);
-    // The IIFE parses stored params into a key→pair map, then overrides with
-    // any non-canonical params from the URL hash (user-defined state from a
-    // previous session).  This avoids duplicate keys when stored params
-    // already contain user-defined values from the time the URL was shortened.
+
+    // Extract OG metadata from hash params and inject meta tags
+    const decoded = decodeHashParamsToJson(hashParams);
+    const og = decoded.og as
+      | { title?: string; description?: string; image?: string }
+      | undefined;
+    let ogMetaTags = "";
+    if (og) {
+      if (og.title) {
+        ogMetaTags += `<meta property="og:title" content="${
+          escapeHtmlAttr(
+            og.title,
+          )
+        }" />\n`;
+      }
+      if (og.description) {
+        ogMetaTags += `<meta property="og:description" content="${
+          escapeHtmlAttr(
+            og.description,
+          )
+        }" />\n`;
+      }
+      if (og.image) {
+        ogMetaTags += `<meta property="og:image" content="${
+          escapeHtmlAttr(
+            og.image,
+          )
+        }" />\n`;
+      }
+    }
+
+    // Inject a lightweight script that sets the short URL ID and starts an
+    // async fetch for the hash params.  The full hash-param blob is NOT
+    // embedded in the HTML — crawlers only see OG meta tags without paying
+    // for the large JS/definition payload.  The module scripts in index.html
+    // await __SHORT_URL_READY before reading hash params.
     const injectedScript =
       `<script id="short-url-init">window.__SHORT_URL_ID = ${
-        JSON.stringify(
-          sha256,
-        )
-      };window.__SHORT_URL_HASH_PARAMS = ${storedJson};window.__SHORT_URL_CANONICAL_KEYS = new Set(${canonicalKeysJson});(function(){var stored = ${storedJson};var C = window.__SHORT_URL_CANONICAL_KEYS;var ss = stored.charAt(0)==='?' ? stored.slice(1) : stored;var sp = ss.split('&');var pm = {};var po = [];for(var i=0;i<sp.length;i++){var ei=sp[i].indexOf('=');var ki=ei===-1?sp[i]:sp[i].substring(0,ei);if(ki){pm[ki]=sp[i];po.push(ki);}}var h = window.location.hash;if(h){var s=h.charAt(0)==='#'?h.slice(1):h;if(s.charAt(0)==='?')s=s.slice(1);if(s){var up=s.split('&');for(var j=0;j<up.length;j++){var ej=up[j].indexOf('=');var kj=ej===-1?up[j]:up[j].substring(0,ej);if(kj&&!C.has(kj)){if(!(kj in pm))po.push(kj);pm[kj]=up[j];}}}}var m='?';for(var x=0;x<po.length;x++){if(x>0)m+='&';m+=pm[po[x]];}history.replaceState(null,'',window.location.pathname+window.location.search+'#'+m);})();</script>`;
+        JSON.stringify(sha256)
+      };window.__SHORT_URL_CANONICAL_KEYS = new Set(${canonicalKeysJson});window.__SHORT_URL_READY = fetch("/api/j/" + ${
+        JSON.stringify(sha256)
+      } + "/url").then(function(r){return r.text()}).then(function(fullUrl){var idx=fullUrl.indexOf("#");var stored=idx===-1?"":fullUrl.slice(idx+1);window.__SHORT_URL_HASH_PARAMS=stored;var C=window.__SHORT_URL_CANONICAL_KEYS;var ss=stored.charAt(0)==="?"?stored.slice(1):stored;var sp=ss.split("&");var pm={};var po=[];for(var i=0;i<sp.length;i++){var ei=sp[i].indexOf("=");var ki=ei===-1?sp[i]:sp[i].substring(0,ei);if(ki){pm[ki]=sp[i];po.push(ki)}}var h=window.location.hash;if(h){var s=h.charAt(0)==="#"?h.slice(1):h;if(s.charAt(0)==="?")s=s.slice(1);if(s){var up=s.split("&");for(var j=0;j<up.length;j++){var ej=up[j].indexOf("=");var kj=ej===-1?up[j]:up[j].substring(0,ej);if(kj&&!C.has(kj)){if(!(kj in pm))po.push(kj);pm[kj]=up[j]}}}}var m="?";for(var x=0;x<po.length;x++){if(x>0)m+="&";m+=pm[po[x]]}history.replaceState(null,"",window.location.pathname+window.location.search+"#"+m)});</script>`;
     const modifiedHtml = indexHtml.replace(
       "</head>",
-      injectedScript + "\n</head>",
+      ogMetaTags + injectedScript + "\n</head>",
     );
 
     return new Response(modifiedHtml, {
@@ -446,7 +498,7 @@ app.get("/j/:sha256", async (c) => {
 
 // Short URL metaframe.json — computes effective definition from stored hash params
 app.get("/j/:sha256/metaframe.json", async (c) => {
-  if (!s3PresignClient) {
+  if (!s3Client) {
     return c.json({ error: "URL shortening not configured" }, 503);
   }
 
@@ -463,7 +515,7 @@ app.get("/j/:sha256/metaframe.json", async (c) => {
       Key: key,
     });
 
-    const response = await s3PresignClient.send(command);
+    const response = await s3Client.send(command);
     if (!response.Body) throw new Error("S3 response body is empty");
     const hashParams = await response.Body.transformToString();
 
@@ -483,7 +535,7 @@ app.get("/j/:sha256/metaframe.json", async (c) => {
 
 // Short URL JSON API — returns id and hashParams for a given sha256
 app.get("/api/j/:sha256", async (c) => {
-  if (!s3PresignClient) {
+  if (!s3Client) {
     return c.json({ error: "URL shortening not configured" }, 503);
   }
 
@@ -500,7 +552,7 @@ app.get("/api/j/:sha256", async (c) => {
       Key: key,
     });
 
-    const response = await s3PresignClient.send(command);
+    const response = await s3Client.send(command);
     if (!response.Body) throw new Error("S3 response body is empty");
     const hashParams = await response.Body.transformToString();
 
@@ -522,7 +574,7 @@ app.get("/api/j/:sha256", async (c) => {
 
 // Short URL full-URL API — returns the full URL as plain text for a given sha256
 app.get("/api/j/:sha256/url", async (c) => {
-  if (!s3PresignClient) {
+  if (!s3Client) {
     return c.json({ error: "URL shortening not configured" }, 503);
   }
 
@@ -539,7 +591,7 @@ app.get("/api/j/:sha256/url", async (c) => {
       Key: key,
     });
 
-    const response = await s3PresignClient.send(command);
+    const response = await s3Client.send(command);
     if (!response.Body) throw new Error("S3 response body is empty");
     const hashParams = await response.Body.transformToString();
 
@@ -580,6 +632,13 @@ app.get("/f/:id", (c) => {
     console.error("File download error:", error);
     return c.json({ error: "Failed to redirect to file" }, 500);
   }
+});
+
+// Shortened URL — fetches hash params from S3 and serves index.html with injected init script
+app.get("/command-js.md", async (c) => {
+  const content = await Deno.readTextFile("./static/command-js.md");
+  c.header("Content-Type", "text/plain; charset=utf-8");
+  return c.text(content);
 });
 
 // Static file serving

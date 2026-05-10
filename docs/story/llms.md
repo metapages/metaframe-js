@@ -1,0 +1,1 @@
+../../worker/static/llms.txt

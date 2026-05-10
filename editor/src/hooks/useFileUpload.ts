@@ -48,6 +48,23 @@ async function uploadFile(file: File): Promise<UploadedFileInfo> {
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
 
+  const canonicalPath = `/f/${sha256}`;
+  const url = `${window.location.origin}${canonicalPath}`;
+
+  // Check if the file already exists (HEAD follows the redirect to S3)
+  try {
+    const headRes = await fetch(url, { method: "HEAD" });
+    if (headRes.ok) {
+      return {
+        name: file.name,
+        url,
+        contentType: file.type || "application/octet-stream",
+      };
+    }
+  } catch {
+    // ignore — fall through to upload
+  }
+
   // Get presigned URL
   const presignRes = await fetch("/api/upload/presign", {
     method: "POST",
@@ -66,7 +83,7 @@ async function uploadFile(file: File): Promise<UploadedFileInfo> {
     throw new Error(err.error || `Presign failed: ${presignRes.status}`);
   }
 
-  const { presignedUrl, canonicalPath } = await presignRes.json();
+  const { presignedUrl } = await presignRes.json();
 
   // Upload directly to S3 via presigned URL
   const uploadRes = await fetch(presignedUrl, {
@@ -81,7 +98,7 @@ async function uploadFile(file: File): Promise<UploadedFileInfo> {
 
   return {
     name: file.name,
-    url: `${window.location.origin}${canonicalPath}`,
+    url,
     contentType: file.type || "application/octet-stream",
   };
 }

@@ -1,0 +1,314 @@
+---
+description: Generate browser JavaScript and open it at framejs.io
+argument-hint: [short URL or sha256] [description of changes], or [description of what to create], with optional local file paths
+allowed-tools: Bash(node *), Read
+---
+
+YOU MUST FOLLOW THESE INSTRUCTIONS EXACTLY. NO EXCEPTIONS.
+
+You are generating JavaScript that runs at https://framejs.io — a hosted web app
+that executes JS from the URL hash. The ONLY output you produce is a shell
+command that opens a https://framejs.io URL in the browser.
+
+# ========================================================================== ABSOLUTE RULES — VIOLATING ANY OF THESE IS ALWAYS WRONG
+
+- NEVER create HTML files
+- NEVER create local .js files
+- NEVER output code blocks for the user to copy
+- NEVER use your own visualization/rendering/widget tools
+- NEVER tell the user to refresh — always open a NEW browser tab
+- NEVER change the root.style.position or root.style.height or root.style.width
+- # The ONLY acceptable action is running the node command below
+
+HOW TO DELIVER YOUR CODE — do this every single time:
+
+Pipe the JS code via heredoc into a node script that encodes it and opens
+https://framejs.io with the code and modules in the URL hash.
+
+IMPORTANT: Do NOT use template literals (\`) to hold the code — dollar signs
+like $3DMol will be mangled. Always use the heredoc pattern below.
+
+Use this exact pattern:
+
+cat << 'JSCODE' | node -e " const chunks = []; process.stdin.on('data', c =>
+chunks.push(c)); process.stdin.on('end', () => { const code =
+Buffer.concat(chunks).toString(); const encoded =
+Buffer.from(encodeURIComponent(code)).toString('base64'); const classicScripts =
+[/* CLASSIC SCRIPT URLS IF ANY */]; const encodedImports =
+Buffer.from(encodeURIComponent(JSON.stringify(classicScripts))).toString('base64');
+const url = 'https://framejs.io/#?js=' + encoded + '&modules=' + encodedImports;
+require('child_process').execSync( process.platform === 'darwin' ? 'open \"' +
+url + '\"' : process.platform === 'linux' ? 'xdg-open \"' + url + '\"' : 'cmd /c
+start \"\" \"' + url + '\"' ); }); " // YOUR GENERATED BROWSER JS CODE HERE //
+$variables, backticks, and all special characters are safe inside the heredoc
+JSCODE
+
+The heredoc delimiter is quoted ('JSCODE') so the shell performs NO expansion —
+dollar signs, backticks, and backslashes in the code are passed through
+verbatim. Place classic script URLs in the classicScripts array inside the node
+-e "..." part (not in the heredoc).
+
+The URL https://framejs.io/#?js=<encoded>&modules=<encodedImports> is the
+shareable result. That is the whole point — the user gets a URL they can share
+with anyone.
+
+On every update or iteration, re-run this command to open a NEW tab. The code is
+in the URL hash, so refreshing an old tab won't show changes.
+
+# ========================================================================== USER REQUEST: $ARGUMENTS
+
+$ARGUMENTS can be:
+
+1. A short URL + modification prompt: /js https://framejs.io/j/<sha256> make the
+   background red /js <sha256> add a click counter
+2. A description of what to create from scratch: /js a bouncing ball animation
+3. A description referencing local files as data inputs: /js visualize
+   ./data/sales.csv as a bar chart /js plot the data in /tmp/results.json using
+   d3
+
+# ========================================================================== HANDLING SHORT URLs — FETCH EXISTING CODE BEFORE MODIFYING
+
+If $ARGUMENTS contains a short URL (https://framejs.io/j/<sha256>) or a bare
+64-character hex string (<sha256>), you MUST fetch the existing code and inputs
+BEFORE generating any code.
+
+STEP 1 — Extract the sha256 ID From full URL: https://framejs.io/j/8a3b1c... →
+8a3b1c... From bare hex:
+8a3b1c9f4e2d7a6b5c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b
+
+STEP 2 — Fetch the existing code and inputs via the JSON API
+
+Run this node command to retrieve the stored code:
+
+node -e " fetch('https://framejs.io/api/j/<sha256>') .then(r => r.json())
+.then(d => console.log(JSON.stringify(d, null, 2))) .catch(e =>
+console.error(e)); "
+
+The response is JSON: { "id": "<sha256>", "hashParams": { "js": "// the existing
+JavaScript source code", "inputs": { "input-name": <value>, ... }, "modules": [
+"https://cdn.example.com/lib.js", ... ], ... } }
+
+Key fields in hashParams: js — the existing JavaScript source code (decoded,
+plain text) inputs — (optional) JSON object of input name → value pairs modules
+— (optional) array of classic script URLs to import
+
+STEP 3 — Use the fetched code as the starting point
+
+- The "js" field is the EXISTING code. Modify it according to the user's prompt
+  (the remaining text in $ARGUMENTS after the URL/sha256).
+- If "inputs" exist, the code already expects those inputs in onInputs().
+  Preserve input handling unless the user asks to change it.
+- If "modules" exist, keep them in the classicScripts array unless the user asks
+  to remove or replace them.
+- Apply the user's requested changes to the existing code, then deliver the
+  modified version using the standard node command (see above).
+
+IMPORTANT: Do NOT discard or rewrite the existing code from scratch. The user
+wants their existing code MODIFIED, not replaced.
+
+# ========================================================================== LOCAL FILE INPUTS — UPLOAD FILES AND PASS AS INPUTS
+
+If $ARGUMENTS references local file paths (e.g. ./data.csv, /tmp/results.json),
+upload each file to framejs.io and pass them as inputs. This creates a
+standalone, shareable visualization powered by the uploaded data.
+
+STEP 1 — Read the local file to understand its structure
+
+Use the Read tool to inspect the file contents so you can generate appropriate
+visualization code.
+
+STEP 2 — Upload each file and collect the URLs
+
+Run this node command for EACH local file:
+
+node -e " const fs = require('fs'); const crypto = require('crypto'); const path
+= require('path');
+
+const filePath = '<LOCAL_FILE_PATH>'; const fileBuffer =
+fs.readFileSync(filePath);
+
+// Compute SHA256 const sha256 =
+crypto.createHash('sha256').update(fileBuffer).digest('hex');
+
+// Detect content type from extension const ext =
+path.extname(filePath).toLowerCase(); const typeMap = { '.json':
+'application/json', '.csv': 'text/csv', '.tsv': 'text/tab-separated-values',
+'.txt': 'text/plain', '.xml': 'text/xml', '.html': 'text/html', '.png':
+'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif',
+'.svg': 'image/svg+xml', '.webp': 'image/webp', '.mp3': 'audio/mpeg', '.wav':
+'audio/wav', '.mp4': 'video/mp4', '.pdf': 'application/pdf', }; const
+contentType = typeMap[ext] || 'application/octet-stream';
+
+// Get presigned upload URL fetch('https://framejs.io/api/upload/presign', {
+method: 'POST', headers: { 'Content-Type': 'application/json' }, body:
+JSON.stringify({ contentType, fileSize: fileBuffer.length, sha256 }), }) .then(r
+=> r.json()) .then(async ({ presignedUrl, canonicalPath }) => { // Upload file
+to S3 await fetch(presignedUrl, { method: 'PUT', headers: { 'Content-Type':
+contentType }, body: fileBuffer, }); console.log(JSON.stringify({ name:
+path.basename(filePath), url: 'https://framejs.io' + canonicalPath, contentType,
+})); }) .catch(e => console.error(e)); "
+
+The output is JSON with the uploaded file URL:
+{"name":"data.csv","url":"https://framejs.io/f/abc123...","contentType":"text/csv"}
+
+STEP 3 — Build the inputs object
+
+Inputs are DataRef objects with "type" and "value" fields. For uploaded files
+use type "url":
+
+{ "data.csv": { "type": "url", "value": "https://framejs.io/f/abc123..." },
+"config.json": { "type": "url", "value": "https://framejs.io/f/def456..." } }
+
+STEP 4 — Include inputs in the URL hash
+
+When building the final URL, encode the inputs and add them as a hash param. Use
+the same heredoc pattern to avoid mangling $ characters in the code:
+
+cat << 'JSCODE' | node -e " const chunks = []; process.stdin.on('data', c =>
+chunks.push(c)); process.stdin.on('end', () => { const code =
+Buffer.concat(chunks).toString(); const inputs = { 'data.csv': { type: 'url',
+value: 'https://framejs.io/f/abc123...' } }; const encoded =
+Buffer.from(encodeURIComponent(code)).toString('base64'); const classicScripts =
+[]; const encodedImports =
+Buffer.from(encodeURIComponent(JSON.stringify(classicScripts))).toString('base64');
+const encodedInputs =
+Buffer.from(encodeURIComponent(JSON.stringify(inputs))).toString('base64');
+const url = 'https://framejs.io/#?js=' + encoded + '&modules=' +
+encodedImports + '&inputs=' + encodedInputs; require('child_process').execSync(
+process.platform === 'darwin' ? 'open \"' + url + '\"' : process.platform ===
+'linux' ? 'xdg-open \"' + url + '\"' : 'cmd /c start \"\" \"' + url + '\"' );
+}); " // YOUR GENERATED BROWSER JS CODE HERE JSCODE
+
+STEP 5 — Write code that handles the inputs
+
+The runtime automatically resolves URL DataRefs before calling onInputs(). Based
+on Content-Type:
+
+- application/json → parsed JSON object
+- text/* → plain string (CSV, TSV, XML, etc.)
+- image/* → Blob
+- other → Blob
+
+Your generated code receives the RESOLVED data (not the URL):
+
+export function onInputs(inputs) { const csvText = inputs["data.csv"]; // string
+(text/csv) const jsonData = inputs["config.json"]; // parsed object
+(application/json) // Use the data to render your visualization }
+
+IMPORTANT:
+
+- Upload files BEFORE building the final URL — you need the upload URLs.
+- The input name in onInputs() must match the key in the inputs object.
+- Uploaded files are content-addressed (same file = same URL) and persist.
+- The resulting URL is fully standalone and shareable — anyone can open it and
+  see the visualization with the uploaded data, no local files needed.
+
+# ========================================================================== BROWSER JAVASCRIPT CODING GUIDE
+
+The code you write is an ES6 module that runs in the browser inside an iframe.
+It is NOT Node.js. Use browser APIs only.
+
+CRITICAL: MUST USE ES6 MODULE SYNTAX export function onInputs(inputs) {} export
+const onInputs = (inputs) => {} WRONG: function onInputs(inputs) {} // missing
+export!
+
+Top-level await is supported. "use strict" is added automatically — don't
+include it.
+
+# ========================================================================== CLASSIC VS ES6 imports
+
+Prefer es6 imports at the top of the code. If the code is not an es6 import then
+add to the classicScripts array of strings
+
+# ========================================================================== PRE-DEFINED GLOBALS (no import needed)
+
+setOutput("outputName", value) — send an output setOutputs({ out1: "val", out2:
+42 }) — send multiple outputs log("message") — visual log (writes to display)
+logStdout("message") — stdout log logStderr("error") — stderr log root — the
+display div, already exists root.innerHTML = '<h1>Hello</h1>'
+root.getBoundingClientRect().width
+
+Output types: strings, numbers, booleans, objects, arrays, ArrayBuffers,
+Uint8Array, other typed arrays.
+
+# ========================================================================== REQUIRED EXPORTS
+
+// Handle inputs (required) export function onInputs(inputs) { const data =
+inputs["input.json"]; render(data); }
+
+// Handle resize (optional but recommended) export function onResize(width,
+height) { // Update visualization for new dimensions }
+
+// Cleanup (optional, for dev iterations) export function cleanup() { // Remove
+listeners, clear intervals }
+
+# ========================================================================== COMMON PATTERNS
+
+PATTERN 1: Visualization root.innerHTML =
+'<div style="width:100%;height:100%"><h1 id="title">Title</h1></div>';
+IMPORTANT: avoid styling the root div directly — create a child div instead
+export function onInputs(inputs) { document.getElementById("title").innerHTML =
+inputs["data"].title; }
+
+PATTERN 2: Process and output export async function onInputs(inputs) { const
+processed = inputs["raw"].map(x => x * 2); setOutput("result.json", processed);
+}
+
+PATTERN 3: External libraries (use CDN with /+esm) import * as d3 from
+'https://cdn.jsdelivr.net/npm/d3@7/+esm';
+d3.select(root).append('svg').attr('width', 500);
+
+# ========================================================================== KEY DETAILS
+
+- No need to wait for DOMContentLoaded — code runs after page loads
+- ALWAYS clear root before creating DOM: root.innerHTML = ''
+- setOutput is fire-and-forget (async, no return value)
+- For graphical apps, use console.log() instead of log() (log writes to display)
+
+// Prevent scroll propagation to parent window.addEventListener('wheel', (e) =>
+{ if (myDiv.contains(e.target)) e.preventDefault(); }, {passive: false});
+
+// Save state in URL hash import { setHashParamValueJsonInWindow,
+getHashParamValueJsonFromWindow } from
+'https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.10.0/+esm';
+setHashParamValueJsonInWindow("state", {zoom: 2}); const state =
+getHashParamValueJsonFromWindow("state");
+
+# ========================================================================== COMMON MISTAKES
+
+WRONG: creating an HTML file — NEVER create HTML files WRONG: creating a local
+.js file — NEVER write files WRONG: outputting a code block — NEVER output code
+blocks WRONG: function onInputs(inputs) {} — not exported WRONG:
+root.appendChild(el) — forgot to clear root first WRONG: including "use strict"
+— added automatically WRONG: writing a Node.js script — this runs in the BROWSER
+
+RIGHT: export const onInputs = (inputs) => { // update dom elements, do not
+recreate dom in onInputs // create dom in main script, then get and update
+elements };
+
+# ========================================================================== AVAILABLE CDN LIBRARIES
+
+3D or 2D plots: import "https://cdn.plot.ly/plotly-3.3.0.min.js" import * as d3
+from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+
+2D plots: import * as echarts from
+'https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.esm.min.js';
+
+2D animations: import gsap from 'https://cdn.jsdelivr.net/npm/gsap@3.13.0/+esm';
+
+Sound: import howler from 'https://cdn.jsdelivr.net/npm/howler@2.2.4/+esm'
+import * as Tone from 'https://cdn.jsdelivr.net/npm/tone@15.1.22/+esm';
+
+Creative visualizations: import
+'https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js';
+
+2D physics: import Matter from
+"https://cdn.jsdelivr.net/npm/matter-js@0.20.0/+esm";
+
+3D rendering: import "https://cdn.babylonjs.com/babylon.js"
+
+# ========================================================================== Modules that must be put in the modules array (hash param) rather then es6 imports:
+
+- 3dmol.js: https://3dmol.org/build/3Dmol-min.js
+
+# ========================================================================== REMINDER: The ONLY thing you do is run the node one-liner to open a https://framejs.io/#?js=<encoded>&edit=true URL in the browser. NEVER create HTML files. NEVER create .js files. NEVER output code blocks. NEVER modify the root variable element root.style.position or root.style.height or root.style.width
