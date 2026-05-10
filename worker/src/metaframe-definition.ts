@@ -59,6 +59,12 @@ export const DEFAULT_METAFRAME_DEFINITION: MetaframeDefinition = {
         "The modules of the metaframe. This is a JSON array of strings, each string being a module or css URL. This is deprecated, use es6 imports in the javascript directly.",
       label: "Modules or CSS URLs",
     },
+    og: {
+      type: "json",
+      description:
+        "Open Graph metadata for the metaframe. A JSON object with optional 'title', 'description', and 'image' fields used for link previews.",
+      label: "Open Graph",
+    },
     options: {
       type: "json",
       description:

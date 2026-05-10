@@ -22,6 +22,12 @@ services:
       - traefik.http.routers.minio-s3.tls=true
       - traefik.http.routers.minio-s3.rule=Host(`s3.localhost`)
       - traefik.http.services.minio-s3.loadbalancer.server.port=9000
+      - traefik.http.routers.minio-s3.middlewares=minio-cors
+      - traefik.http.middlewares.minio-cors.headers.accesscontrolalloworiginlist=*
+      - traefik.http.middlewares.minio-cors.headers.accesscontrolallowmethods=GET,PUT,POST,DELETE,OPTIONS,HEAD
+      - traefik.http.middlewares.minio-cors.headers.accesscontrolallowheaders=Content-Type,Content-Length,Accept,Authorization,X-Amz-Date,X-Amz-Security-Token,X-Amz-Content-Sha256,X-Amz-User-Agent,x-amz-acl
+      - traefik.http.middlewares.minio-cors.headers.accesscontrolmaxage=86400
+      - traefik.http.middlewares.minio-cors.headers.accesscontrolexposeheaders=ETag,x-amz-request-id
 
   minio-init:
     image: minio/mc

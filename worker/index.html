@@ -635,6 +635,12 @@ Available cache utilities (loaded on-demand):
         Metapage,
       } from "https://cdn.jsdelivr.net/npm/@metapages/metapage@1.10.8";
 
+      // In short URL mode, wait for the async hash-params fetch to complete
+      // and populate the URL hash before any code reads from it.
+      if (window.__SHORT_URL_READY) {
+        await window.__SHORT_URL_READY;
+      }
+
       globalThis.logStdout = (s) => {
         const root = document.getElementById("root");
         const pre = document.createElement("pre");
