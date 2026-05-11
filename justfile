@@ -55,14 +55,17 @@ fmt:
 open:
     deno run --allow-all https://deno.land/x/metapages@v0.0.17/exec/open_url.ts 'https://metapages.github.io/load-page-when-available/?url=https://{{ APP_FQDN }}:{{ APP_PORT }}'
 
-# deno deploy to framejs.io
-deploy:
-    #!/usr/bin/env bash
-    set -euo pipefail
+#
+build:
     just docs/build
-    deploy=$(mktemp -d)
     # build the client in editor/dist
     just editor/build
+
+# deno deploy to framejs.io
+deploy: build
+    #!/usr/bin/env bash
+    set -euo pipefail
+    deploy=$(mktemp -d)
     cp -r editor/dist $deploy/editor
     cp -r docs/.vitepress/dist $deploy/docs
     cp -r worker/server.ts $deploy/

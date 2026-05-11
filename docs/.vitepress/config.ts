@@ -36,11 +36,11 @@ export default withMermaid(
             { text: "Guide", link: "/ai/guide" },
             {
               text: "command-js.md",
-              link: "https://server1.localhost:4470/command-js.md",
+              link: "https://framejs.io/command-js.md",
             },
             {
               text: "llms.txt",
-              link: "https://server1.localhost:4470/llms.txt",
+              link: "https://framejs.io/llms.txt",
             },
           ],
         },

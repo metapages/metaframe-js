@@ -18,7 +18,7 @@ If you just want to test this command before installing: paste the URL into the 
 
 ```bash
 mkdir -p ~/.claude/commands
-curl -sL https://framejs.io/command-js.txt -o ~/.claude/commands/js.md
+curl -sL https://framejs.io/command-js.md -o ~/.claude/commands/js.md
 ```
 
 #### `/js`  command prompt variants:
@@ -93,6 +93,6 @@ No files are written — everything happens in a single `node -e` command. The `
 | File | Purpose |
 |------|---------|
 | [`/llms.txt`](https://framejs.io/llms.txt) | For AI chat / API — outputs a JavaScript code block |
-| [`/command-js.txt`](https://framejs.io/command-js.txt) | For Claude Code terminal — encodes and opens browser directly |
+| [`/command-js.md`](https://framejs.io/command-js.md) | For Claude Code terminal — encodes and opens browser directly |
 
 Both files contain the same JavaScript coding guidance (ES6 modules, globals, patterns, available libraries). They differ only in how the output is delivered.
