@@ -22,12 +22,12 @@ import {
 } from "@metapages/hash-query/react-hooks";
 import { MetaframeDefinition } from "@metapages/metapage";
 import { useMetaframe } from "@metapages/metapage-react/hooks";
-import { ArrowsInLineHorizontalIcon } from "@phosphor-icons/react";
+import { UploadIcon } from "@phosphor-icons/react";
 
 export const ButtonShortenUrl: React.FC<{
   iconSize?: string;
   iconPadding?: string;
-}> = ({ iconSize = "7", iconPadding = "3px" }) => {
+}> = ({ iconSize = "28px", iconPadding = "3px" }) => {
   const [loading, setLoading] = useState(false);
   const [shortenedUrl, setShortenedUrl] = useState("");
   const { onCopy } = useClipboard(shortenedUrl);
@@ -136,21 +136,26 @@ export const ButtonShortenUrl: React.FC<{
   };
 
   return (
-    <Box position="relative" display="inline-block">
-      <Tooltip label="Shorten URL">
+    <Tooltip label="Save and Shorten URL">
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        h="40px"
+        onClick={handleShorten}
+        cursor={loading ? "not-allowed" : "pointer"}
+      >
         <Icon
           aria-label="shorten url"
           _hover={{ bg: "gray.300" }}
           bg={"none"}
           p={iconPadding}
           borderRadius={5}
-          as={ArrowsInLineHorizontalIcon}
+          as={UploadIcon}
           boxSize={iconSize}
-          onClick={handleShorten}
           opacity={loading ? 0.5 : 1}
-          cursor={loading ? "not-allowed" : "pointer"}
         />
-      </Tooltip>
-    </Box>
+      </Box>
+    </Tooltip>
   );
 };

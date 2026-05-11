@@ -4,7 +4,7 @@ Since all code and state is stored in the URL hash, metaframe URLs can get very 
 
 ## How it works
 
-1. Click the **shorten** button in the editor header ![](./shorten-url-button.png)
+1. Click the **Save and Shorten** button in the editor header ![](./shorten-url-button.png)
 2. The current hash parameters (code, inputs, options) are stored in [R2](https://www.cloudflare.com/developer-platform/products/r2/) 
 4. You get a short URL `framejs.io/j/<SHA256-based short ID>` e.g:
 

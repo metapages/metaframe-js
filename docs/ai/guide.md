@@ -55,7 +55,7 @@ From the component page:
 3. Describe what you want
 4. Copy the generated JavaScript back into the editor
 
-![Copy AI prompt](/readme-images/js-copy-ai.gif "Copy prompt for LLM AI")
+![Copy AI prompt](/readme-images/js-copy-ai.gif "Copy prompt and code for AI")
 
 ## From an AI API
 
