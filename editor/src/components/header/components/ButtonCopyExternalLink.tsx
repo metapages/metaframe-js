@@ -51,7 +51,7 @@ async function buildExternalShareUrl(
 export const ButtonCopyExternalLink: React.FC<{
   iconSize?: string;
   iconPadding?: string;
-}> = ({ iconSize = "7", iconPadding = "3px" }) => {
+}> = ({ iconSize = "28px", iconPadding = "3px" }) => {
   const { url } = useMetaframeUrl();
   const metaframeBlob = useMetaframe();
   const [metaframeInputs, setMetaframeInputs] = useState<
@@ -69,8 +69,36 @@ export const ButtonCopyExternalLink: React.FC<{
   const toast = useToast();
 
   return (
-    <Box position="relative" display="inline-block">
-      <Tooltip label={"Copy URL"}>
+    <Tooltip label={"Copy URL"}>
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        h="40px"
+        onClick={async () => {
+          try {
+            const urlForCopy = await buildExternalShareUrl(
+              url,
+              metaframeInputs,
+            );
+            await navigator.clipboard.writeText(urlForCopy);
+            toast({
+              title: "Copied URL to clipboard",
+              status: "success",
+              duration: 5000,
+              isClosable: true,
+            });
+          } catch {
+            toast({
+              title: "Could not copy URL",
+              status: "error",
+              duration: 5000,
+              isClosable: true,
+            });
+          }
+        }}
+        cursor="pointer"
+      >
         <Icon
           aria-label="copy url"
           _hover={{ bg: "gray.300" }}
@@ -79,30 +107,8 @@ export const ButtonCopyExternalLink: React.FC<{
           borderRadius={5}
           as={CopyIcon}
           boxSize={iconSize}
-          onClick={async () => {
-            try {
-              const urlForCopy = await buildExternalShareUrl(
-                url,
-                metaframeInputs,
-              );
-              await navigator.clipboard.writeText(urlForCopy);
-              toast({
-                title: "Copied URL to clipboard",
-                status: "success",
-                duration: 5000,
-                isClosable: true,
-              });
-            } catch {
-              toast({
-                title: "Could not copy URL",
-                status: "error",
-                duration: 5000,
-                isClosable: true,
-              });
-            }
-          }}
         />
-      </Tooltip>
-    </Box>
+      </Box>
+    </Tooltip>
   );
 };

@@ -3,20 +3,13 @@ import React from "react";
 import { useAiText } from "/@/hooks/useAiText";
 import { useStore } from "/@/store";
 
-import {
-  Box,
-  Button,
-  HStack,
-  Icon,
-  Tooltip,
-  useMediaQuery,
-} from "@chakra-ui/react";
+import { Box, Button, HStack, Icon, Tooltip } from "@chakra-ui/react";
 import { useHashParamBoolean } from "@metapages/hash-query/react-hooks";
 import {
+  FilePlusIcon,
   GearIcon,
   MagicWandIcon,
   QuestionMarkIcon,
-  UploadSimpleIcon,
   XIcon,
 } from "@phosphor-icons/react";
 
@@ -30,7 +23,6 @@ export const capitalize = (str: string): string => {
 
 export const MainHeader: React.FC = () => {
   const [_edit, setEdit] = useHashParamBoolean("edit");
-  const [isDesktop] = useMediaQuery("(min-width: 768px)");
   const { copyToClipboard } = useAiText();
 
   // only show the edit button if the command points to a script in the inputs
@@ -38,8 +30,8 @@ export const MainHeader: React.FC = () => {
   const shownPanel = useStore((state) => state.shownPanel);
   const triggerFileUpload = useStore((state) => state.triggerFileUpload);
 
-  const iconSize = isDesktop ? "7" : "48px";
-  const iconPadding = isDesktop ? "3px" : "4px";
+  const iconSize = "28px";
+  const iconPadding = "3px";
 
   const icon = (
     svg: React.ElementType,
@@ -49,8 +41,16 @@ export const MainHeader: React.FC = () => {
     testId?: string,
   ) => {
     return (
-      <Box position="relative" display="inline-block" data-testid={testId}>
-        <Tooltip label={`${capitalize(tooltipText)}`}>
+      <Tooltip label={`${capitalize(tooltipText)}`} key={tooltipText}>
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          h="40px"
+          data-testid={testId}
+          onClick={callback}
+          cursor="pointer"
+        >
           <Icon
             _hover={{ bg: hover ? "gray.300" : "none" }}
             bg={tooltipText === shownPanel ? "gray.300" : "none"}
@@ -58,66 +58,64 @@ export const MainHeader: React.FC = () => {
             borderRadius={5}
             as={svg}
             boxSize={iconSize}
-            onClick={callback}
           />
-        </Tooltip>
-      </Box>
+        </Box>
+      </Tooltip>
     );
   };
 
   return (
     <HStack
-      px={isDesktop ? 0 : "8px"}
-      py={isDesktop ? 0 : "4px"}
+      px={0}
+      py={0}
       justify={"space-between"}
+      alignItems={"center"}
       minWidth={"100%"}
-      h={isDesktop ? "headerHeight" : "auto"}
+      h={"40px"}
       bg={"gray.100"}
       borderBottom={"1px"}
       flexShrink={0}
     >
       <Button
-        mx={isDesktop ? 5 : 0}
+        mx={3}
         onClick={() => setShownPanel(null)}
         variant={"ghost"}
         _hover={{ bg: "gray.300" }}
-        fontWeight={isDesktop ? 400 : 500}
+        fontWeight={400}
         color={"gray.600"}
-        fontSize={isDesktop ? "md" : "24px"}
-        px={isDesktop ? undefined : "8px"}
-        h={isDesktop ? undefined : "44px"}
-        minW={isDesktop ? undefined : "44px"}
+        fontSize={"sm"}
+        h={"40px"}
+        minH={0}
         flexShrink={0}
       >
-        {isDesktop ? "Javascript" : "JS"}
+        Javascript
       </Button>
       <HStack
-        borderLeft={isDesktop ? "1px" : "none"}
+        borderLeft={"1px"}
         right={0}
-        px={isDesktop ? 4 : 0}
-        bg={isDesktop ? "gray.100" : "transparent"}
-        justifyContent={isDesktop ? "space-around" : "flex-end"}
-        h={isDesktop ? "headerHeight" : "auto"}
+        px={3}
+        bg={"gray.100"}
+        justifyContent={"space-around"}
+        alignItems={"center"}
+        h={"40px"}
         w={"auto"}
-        spacing={isDesktop ? undefined : "12px"}
-        flexWrap={isDesktop ? "nowrap" : "wrap"}
       >
-        {icon(
-          MagicWandIcon,
-          "AI",
-          () => copyToClipboard(),
-          true,
-          "ai-copy-button",
-        )}
-        {icon(UploadSimpleIcon, "upload", () => triggerFileUpload(), true)}
         {icon(
           GearIcon,
           "settings",
           () => setShownPanel(shownPanel === "settings" ? null : "settings"),
           true,
         )}
-        <ButtonCopyExternalLink iconSize={iconSize} iconPadding={iconPadding} />
         <ButtonShortenUrl iconSize={iconSize} iconPadding={iconPadding} />
+        {icon(FilePlusIcon, "Embed File", () => triggerFileUpload(), true)}
+        {icon(
+          MagicWandIcon,
+          "Copy Code to Clipboard for AI",
+          () => copyToClipboard(),
+          true,
+          "ai-copy-button",
+        )}
+        <ButtonCopyExternalLink iconSize={iconSize} iconPadding={iconPadding} />
         {icon(
           QuestionMarkIcon,
           "docs",

@@ -45,48 +45,28 @@ export const PanelSettings: React.FC = () => {
           flexDirection="column"
           flex={1}
           minH={0}
-          variant="line"
-          colorScheme="blue"
+          variant="unstyled"
           size="sm"
         >
-          <TabList
-            px={2}
-            bg="gray.100"
-            borderBottom="1px solid"
-            borderBottomColor="gray.300"
-          >
-            <Tab
-              fontSize="xs"
-              py={1.5}
-              mb="-1px"
-              _selected={{ color: "blue.600", borderBottomColor: "blue.600" }}
-            >
-              Runtime
-            </Tab>
-            <Tab
-              fontSize="xs"
-              py={1.5}
-              mb="-1px"
-              _selected={{ color: "blue.600", borderBottomColor: "blue.600" }}
-            >
-              Appearance
-            </Tab>
-            <Tab
-              fontSize="xs"
-              py={1.5}
-              mb="-1px"
-              _selected={{ color: "blue.600", borderBottomColor: "blue.600" }}
-            >
-              Open Graph
-            </Tab>
-            <Tab
-              fontSize="xs"
-              py={1.5}
-              mb="-1px"
-              _selected={{ color: "blue.600", borderBottomColor: "blue.600" }}
-            >
-              Advanced
-            </Tab>
+          <TabList pl="6px">
+            {["Runtime", "Appearance", "Open Graph", "Advanced"].map(
+              (label) => (
+                <Tab
+                  key={label}
+                  fontSize="xs"
+                  py={1.5}
+                  px="12px"
+                  bg="#EEEEEE"
+                  color="gray.500"
+                  _selected={{
+                    color: "gray.800",
+                    bg: "#F7F7F7",
+                  }}
+                >
+                  {label}
+                </Tab>
+              ),
+            )}
           </TabList>
           <TabPanels flex={1} minH={0} overflowY="auto">
             <TabPanel p={0}>

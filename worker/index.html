@@ -50,6 +50,7 @@
         border-radius: 3px;
         color: #818382;
         font-family: monospace;
+        font-size: 13px;
         padding: 8px;
       }
 
@@ -1531,6 +1532,31 @@ Available cache utilities (loaded on-demand):
         });
       }
 
+      // Hash params that do NOT require JS re-execution (metadata-only)
+      const NON_EXECUTION_PARAMS = new Set(["og"]);
+
+      // Snapshot execution-relevant hash params for change detection
+      const getExecutionParamSnapshot = () => {
+        const [_, params] = getUrlHashParamsFromHashString(
+          window.location.hash,
+        );
+        const filtered = {};
+        for (const key in params) {
+          if (!NON_EXECUTION_PARAMS.has(key)) filtered[key] = params[key];
+        }
+        return JSON.stringify(filtered);
+      };
+
+      let lastExecutionSnapshot = getExecutionParamSnapshot();
+
+      // Returns true (and updates snapshot) when execution-relevant params changed
+      const hasExecutionParamsChanged = () => {
+        const current = getExecutionParamSnapshot();
+        if (current === lastExecutionSnapshot) return false;
+        lastExecutionSnapshot = current;
+        return true;
+      };
+
       // reload on hash changes and refresh service worker config
       globalThis.addEventListener("hashchange", () => {
         // Refresh service worker config when hash changes
@@ -1539,7 +1565,9 @@ Available cache utilities (loaded on-demand):
         if (globalThis.serviceWorkerManager.registration) {
           globalThis.serviceWorkerManager.updateConfig(newConfig);
         }
-        runJsFromUrl();
+        if (hasExecutionParamsChanged()) {
+          runJsFromUrl();
+        }
       }, false);
 
       const metapageDef = {
