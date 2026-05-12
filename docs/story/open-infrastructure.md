@@ -1,4 +1,4 @@
 ---
 
 ---
-# open-infrastructure
+# Open Infrastructure

@@ -1,5 +1,6 @@
 <script setup>
-import DefaultTheme from "vitepress/theme";
+import DefaultTheme from 'vitepress/theme';
+
 const { Layout } = DefaultTheme;
 </script>
 
@@ -8,13 +9,13 @@ const { Layout } = DefaultTheme;
     <template #home-hero-image>
       <div class="hero-iframe-container">
         <iframe
-          src="https://framejs.io/j/5808e75401125427c90cada4daea9f9648e5f11fee7f07bf5cf852d7217b194e"
+          src="https://framejs.io/j/8e5d5eed5c3fda9c5094b186169feadecde2bf007fcd58b7fa0df52e3e3c34be"
           class="hero-iframe"
           frameborder="0"
           allow="clipboard-read; clipboard-write"
         ></iframe>
         <p class="hero-tagline-line">
-          URL: <a href="https://framejs.io/j/5808e75401125427c90cada4daea9f9648e5f11fee7f07bf5cf852d7217b194e"><span class="highlight">https://framejs.io/j/5808e75401125...</span></a>
+          URL: <a href="https://framejs.io/j/8e5d5eed5c3fda9c5094b186169feadecde2bf007fcd58b7fa0df52e3e3c34be"><span class="highlight">https://framejs.io/j/8e5d5eed5c...</span></a>
         </p>
         <p class="hero-tagline-line">
           The URL shareable and editable <span class="highlight"><a href="/docs/guide/ai">(with AI)</a></span> 

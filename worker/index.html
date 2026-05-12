@@ -598,21 +598,23 @@ Available cache utilities (loaded on-demand):
       const originalFetch = window.fetch;
       window.fetch = async function (...args) {
         const response = await originalFetch.apply(this, args);
-        const cacheStatus = response
-          .headers
-          .get("sw-cache-status");
-        const url = typeof args[0] === "string" ? args[0] : args[0].url;
 
-        if (cacheStatus && globalThis.serviceWorkerConfig.enableLogging) {
-          const statusEmoji = {
-            "fresh": "✅",
-            "stale": "📡",
-            "miss": "🌐",
-          };
-          console.log(
-            `${statusEmoji[cacheStatus] || "❓"} Cache ${cacheStatus}:`,
-            url,
-          );
+        if (globalThis.serviceWorkerConfig?.enableLogging) {
+          const cacheStatus = response
+            .headers
+            .get("sw-cache-status");
+          if (cacheStatus) {
+            const url = typeof args[0] === "string" ? args[0] : args[0].url;
+            const statusEmoji = {
+              "fresh": "✅",
+              "stale": "📡",
+              "miss": "🌐",
+            };
+            console.log(
+              `${statusEmoji[cacheStatus] || "❓"} Cache ${cacheStatus}:`,
+              url,
+            );
+          }
         }
 
         return response;
@@ -642,13 +644,27 @@ Available cache utilities (loaded on-demand):
         await window.__SHORT_URL_READY;
       }
 
+      const MAX_LOG_ELEMENTS = 1000;
+      let logScrollRafPending = false;
+      const scheduleLogScroll = (el) => {
+        if (logScrollRafPending) return;
+        logScrollRafPending = true;
+        requestAnimationFrame(() => {
+          logScrollRafPending = false;
+          el.scrollTop = el.scrollHeight;
+        });
+      };
+
       globalThis.logStdout = (s) => {
         const root = document.getElementById("root");
         const pre = document.createElement("pre");
         pre.textContent = s;
         pre.className = "pre-stdout";
         root.appendChild(pre);
-        root.scrollTop = root.scrollHeight;
+        while (root.children.length > MAX_LOG_ELEMENTS) {
+          root.removeChild(root.firstChild);
+        }
+        scheduleLogScroll(root);
       };
       globalThis.log = logStdout;
 
@@ -726,18 +742,33 @@ Available cache utilities (loaded on-demand):
         },
       };
 
-      globalThis.log = logStdout;
-
       globalThis.logStderr = (s) => {
         const root = document.getElementById("root");
         const pre = document.createElement("pre");
         pre.textContent = s;
         pre.className = "pre-stderr";
         root.appendChild(pre);
-        root.scrollTop = root.scrollHeight;
+        while (root.children.length > MAX_LOG_ELEMENTS) {
+          root.removeChild(root.firstChild);
+        }
+        scheduleLogScroll(root);
       };
 
       globalThis.foundImportMap = false;
+
+      // Static cacheable URL patterns (created once, reused across config updates)
+      const CACHEABLE_URL_PATTERNS = [
+        // Static assets by file extension
+        /^https?:\/\/.*\.(js|css|html|json|png|jpg|jpeg|gif|svg|woff|woff2|ttf|mp4|webm|ogg|mp3|wav|flac)(\?.*)?$/i,
+        // Known CDNs and package registries
+        /^https?:\/\/cdn\.jsdelivr\.net\/.*$/i,
+        /^https?:\/\/esm\.sh\/.*$/i,
+        /^https?:\/\/deno\.land\/.*$/i,
+        /^https?:\/\/unpkg\.com\/.*$/i,
+        // Metapage assets
+        /^https?:\/\/.*\.metapage\.io\/.*\.(png|jpg|jpeg|gif|svg|mp4|webm)$/i,
+      ];
+      const MAX_CACHE_AGE = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
       // Service Worker Configuration - based on hash params
       const getServiceWorkerConfig = () => {
@@ -747,18 +778,8 @@ Available cache utilities (loaded on-demand):
         return {
           enableLogging: options.debug || false,
           staleWhileRevalidateEnabled: !options.disableCache,
-          cacheableUrlPatterns: [
-            // Static assets by file extension
-            /^https?:\/\/.*\.(js|css|html|json|png|jpg|jpeg|gif|svg|woff|woff2|ttf|mp4|webm|ogg|mp3|wav|flac)(\?.*)?$/i,
-            // Known CDNs and package registries
-            /^https?:\/\/cdn\.jsdelivr\.net\/.*$/i,
-            /^https?:\/\/esm\.sh\/.*$/i,
-            /^https?:\/\/deno\.land\/.*$/i,
-            /^https?:\/\/unpkg\.com\/.*$/i,
-            // Metapage assets
-            /^https?:\/\/.*\.metapage\.io\/.*\.(png|jpg|jpeg|gif|svg|mp4|webm)$/i,
-          ],
-          maxCacheAge: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
+          cacheableUrlPatterns: CACHEABLE_URL_PATTERNS,
+          maxCacheAge: MAX_CACHE_AGE,
         };
       };
 
@@ -937,6 +958,22 @@ Available cache utilities (loaded on-demand):
         );
       };
 
+      // Fast check: returns true if the value tree contains any Blob instances
+      const containsBlob = (obj) => {
+        if (!obj || typeof obj !== "object") return false;
+        if (obj instanceof Blob) return true;
+        if (Array.isArray(obj)) {
+          for (let i = 0; i < obj.length; i++) {
+            if (containsBlob(obj[i])) return true;
+          }
+          return false;
+        }
+        for (const key of Object.keys(obj)) {
+          if (containsBlob(obj[key])) return true;
+        }
+        return false;
+      };
+
       /**
        * Smart input unpacking: converts Blobs with content-type: application/json to JSON objects.
        * Recursively walks through an object and converts Blob leaves to JSON
@@ -944,6 +981,11 @@ Available cache utilities (loaded on-demand):
        */
       const smartUnpackInputs = async (inputs, parentKey = "") => {
         if (!inputs || typeof inputs !== "object") {
+          return inputs;
+        }
+
+        // Fast path: if no Blobs anywhere in the tree, return as-is (no deep copy)
+        if (!parentKey && !containsBlob(inputs)) {
           return inputs;
         }
 
@@ -1229,11 +1271,12 @@ Available cache utilities (loaded on-demand):
         };
 
         if (modules) {
-          for (let scriptOrCss of modules) {
-            try {
-              await loadModuleOrCss(scriptOrCss);
-            } catch (error) {
-              console.error(error);
+          const results = await Promise.allSettled(
+            modules.map((scriptOrCss) => loadModuleOrCss(scriptOrCss)),
+          );
+          for (const result of results) {
+            if (result.status === "rejected") {
+              console.error(result.reason);
             }
           }
         }
@@ -1349,9 +1392,7 @@ Available cache utilities (loaded on-demand):
             const userCleanup = globalThis.scriptUnload;
             globalThis.scriptUnload = null;
 
-            const ourHandleResize = (e) => {
-              const width = root.getBoundingClientRect().width;
-              const height = root.getBoundingClientRect().height;
+            const ourHandleResize = (width, height) => {
               if (module.onResize) {
                 try {
                   module.onResize(width, height);
@@ -1369,13 +1410,11 @@ Available cache utilities (loaded on-demand):
               }
             };
 
-            // Theoretically we can not use this but keep this here
-            // just in case
-            // globalThis.addEventListener("resize", ourHandleResize, false);
-
-            const resizeObserver = new ResizeObserver(
-              (entries) => ourHandleResize(),
-            );
+            const resizeObserver = new ResizeObserver((entries) => {
+              const entry = entries[entries.length - 1];
+              const { width, height } = entry.contentRect;
+              ourHandleResize(width, height);
+            });
             resizeObserver.observe(root);
 
             const options = getHashParamValueJsonFromWindow("options");
@@ -1395,8 +1434,11 @@ Available cache utilities (loaded on-demand):
                       )
                       : null;
                     if (datarefKeys && datarefKeys.length > 0) {
-                      for (const key of datarefKeys) {
-                        inputs[key] = await resolveDataRef(inputs[key]);
+                      const resolved = await Promise.all(
+                        datarefKeys.map((key) => resolveDataRef(inputs[key])),
+                      );
+                      for (let i = 0; i < datarefKeys.length; i++) {
+                        inputs[datarefKeys[i]] = resolved[i];
                       }
                     }
                   }
@@ -1418,12 +1460,12 @@ Available cache utilities (loaded on-demand):
                   globalThis.metapageEditor &&
                   !globalThis.metapageEditor.isDisposed()
                 ) {
-                  // If they haven't been unpacked, definitely unpack them for the editor
-                  if (disableSmartInputUnpacking) {
-                    inputs = await getInputsSmartUnpacked();
-                  }
+                  // If user disabled smart unpacking, unpack just for the editor
+                  const editorInputs = disableSmartInputUnpacking
+                    ? await smartUnpackInputs(inputs)
+                    : inputs;
                   globalThis.metapageEditor.setInputs({
-                    editor: inputs,
+                    editor: editorInputs,
                   });
                 }
               } catch (err) {
@@ -1439,23 +1481,6 @@ Available cache utilities (loaded on-demand):
             );
 
             handleInputs(metaframe.getInputs());
-
-            if (
-              globalThis.metapageEditor &&
-              !globalThis.metapageEditor.isDisposed()
-            ) {
-              try {
-                const unpackedInputs = await getInputsSmartUnpacked();
-                globalThis.metapageEditor.setInputs({
-                  editor: unpackedInputs,
-                });
-              } catch (err) {
-                console.error(
-                  "Error setting metapage editor inputs on load",
-                  err,
-                );
-              }
-            }
 
             // Handle inputs from hash parameter
             const hashInputs = getHashParamValueJsonFromWindow(
@@ -1535,16 +1560,26 @@ Available cache utilities (loaded on-demand):
       // Hash params that do NOT require JS re-execution (metadata-only)
       const NON_EXECUTION_PARAMS = new Set(["og"]);
 
-      // Snapshot execution-relevant hash params for change detection
+      // Build a lightweight snapshot from the raw hash string by filtering
+      // out non-execution params. Avoids full parse + JSON.stringify of
+      // potentially large base64-encoded values on every hashchange.
       const getExecutionParamSnapshot = () => {
-        const [_, params] = getUrlHashParamsFromHashString(
-          window.location.hash,
-        );
-        const filtered = {};
-        for (const key in params) {
-          if (!NON_EXECUTION_PARAMS.has(key)) filtered[key] = params[key];
+        let raw = window.location.hash;
+        if (!raw) return "";
+        if (raw.charAt(0) === "#") raw = raw.slice(1);
+        if (raw.charAt(0) === "?") raw = raw.slice(1);
+        if (!raw) return "";
+        const pairs = raw.split("&");
+        let result = "";
+        for (let i = 0; i < pairs.length; i++) {
+          const eqIdx = pairs[i].indexOf("=");
+          const key = eqIdx === -1 ? pairs[i] : pairs[i].substring(0, eqIdx);
+          if (key && !NON_EXECUTION_PARAMS.has(key)) {
+            if (result) result += "&";
+            result += pairs[i];
+          }
         }
-        return JSON.stringify(filtered);
+        return result;
       };
 
       let lastExecutionSnapshot = getExecutionParamSnapshot();

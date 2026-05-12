@@ -10,6 +10,18 @@ pip install metaframe-widget
 
 ## Basic usage
 
+For urls: best to use the [short url](../guide/short-urls) form
+
+```python
+from metaframe_widget import MetaframeWidget
+
+# From a URL — short url form
+w = MetaframeWidget(url="https://framejs.io/j/xxx")
+w  # renders the iframe in the notebook
+```
+
+Regular long form urls are possible, just very unwieldy:
+
 ```python
 from metaframe_widget import MetaframeWidget
 
@@ -17,6 +29,8 @@ from metaframe_widget import MetaframeWidget
 w = MetaframeWidget(url="https://framejs.io/#?js=...")
 w  # renders the iframe in the notebook
 ```
+
+Better to just use inline code:
 
 ## Create from inline code
 

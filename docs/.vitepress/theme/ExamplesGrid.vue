@@ -1,9 +1,58 @@
 <script setup>
-defineProps({
+import {
+  onMounted,
+  ref,
+} from 'vue';
+
+const props = defineProps({
   examples: {
     type: Array,
     required: true,
   },
+});
+
+const ogData = ref({});
+
+async function fetchOgData(url) {
+  try {
+    const response = await fetch(url);
+    const html = await response.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    const getMetaContent = (property) => {
+      const meta = doc.querySelector(`meta[property="${property}"]`);
+      return meta ? meta.getAttribute('content') : null;
+    };
+
+    return {
+      title: getMetaContent('og:title'),
+      description: getMetaContent('og:description'),
+      image: getMetaContent('og:image'),
+    };
+  } catch {
+    return null;
+  }
+}
+
+onMounted(async () => {
+  const seen = new Set();
+  const unique = props.examples.filter((e) => {
+    if (seen.has(e.embedUrl)) return false;
+    seen.add(e.embedUrl);
+    return true;
+  });
+
+  const results = {};
+  await Promise.all(
+    unique.map(async (example) => {
+      const data = await fetchOgData(example.embedUrl);
+      if (data) {
+        results[example.embedUrl] = data;
+      }
+    })
+  );
+  ogData.value = results;
 });
 </script>
 
@@ -16,16 +65,16 @@ defineProps({
       class="example-card"
     >
       <div class="example-thumbnail">
-        <iframe
-          :src="example.embedUrl"
-          frameborder="0"
-          loading="lazy"
-          sandbox="allow-scripts allow-same-origin"
-        ></iframe>
+        <img
+          v-if="ogData[example.embedUrl]?.image"
+          :src="ogData[example.embedUrl].image"
+          :alt="ogData[example.embedUrl]?.title"
+        />
+        <div v-else class="thumbnail-placeholder" />
       </div>
       <div class="example-info">
-        <h3>{{ example.title }}</h3>
-        <p>{{ example.description }}</p>
+        <h3>{{ ogData[example.embedUrl]?.title }}</h3>
+        <p>{{ ogData[example.embedUrl]?.description }}</p>
       </div>
     </a>
   </div>
@@ -42,12 +91,6 @@ defineProps({
 @media (min-width: 640px) {
   .examples-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 960px) {
-  .examples-grid {
-    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -74,13 +117,15 @@ defineProps({
   background: var(--vp-c-bg-soft);
 }
 
-.example-thumbnail iframe {
-  width: 200%;
-  height: 200%;
-  transform: scale(0.5);
-  transform-origin: top left;
-  pointer-events: none;
-  border: none;
+.example-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumbnail-placeholder {
+  width: 100%;
+  height: 100%;
 }
 
 .example-info {
@@ -90,7 +135,7 @@ defineProps({
 
 .example-info h3 {
   margin: 0;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   line-height: 1.4;
 }

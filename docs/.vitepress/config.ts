@@ -1,9 +1,9 @@
-import { defineConfig } from "vitepress";
-import { withMermaid } from "vitepress-plugin-mermaid";
+import { defineConfig } from 'vitepress';
+import { withMermaid } from 'vitepress-plugin-mermaid';
 
 export default withMermaid(
   defineConfig({
-    title: "framejs.io/docs",
+    title: "framejs.io",
     description: "Run and edit JavaScript in the browser, embedded in the URL",
     base: "/docs/",
 
@@ -11,10 +11,11 @@ export default withMermaid(
 
     themeConfig: {
       nav: [
-        { text: "Guide", link: "/guide/getting-started" },
+        { text: "Docs", link: "/guide/getting-started" },
         { text: "Examples", link: "/examples/" },
         { text: "Integrations", link: "/integrations/jupyter" },
         { text: "Development", link: "/development/local-setup" },
+        { text: "Create", link: "framejs.io" },
       ],
 
       sidebar: [
@@ -27,7 +28,6 @@ export default withMermaid(
             { text: "Short URLs", link: "/guide/short-urls" },
             { text: "Embedding", link: "/guide/embedding" },
             { text: "Rendering in a Website", link: "/guide/rendering" },
-            { text: "Examples", link: "/examples/" },
           ],
         },
         {
@@ -48,8 +48,10 @@ export default withMermaid(
           text: "Examples",
           items: [
             { text: "Gallery", link: "/examples/" },
-            { text: "Bouncing Ball", link: "/examples/bouncing-ball" },
+            { text: "Multi Demo", link: "/examples/multi-demo" },
             { text: "Data Dashboard", link: "/examples/data-dashboard" },
+            { text: "Plot Data", link: "/examples/plot-data" },
+            { text: "Scientific Visualization", link: "/examples/scientific-visualization" },
           ],
         },
         {
