@@ -16,7 +16,15 @@ Browse examples built with framejs.io. Each one includes the AI prompt used to c
     link: '/docs/examples/plot-data'
   },
   {
-    embedUrl: 'https://js.mtfm.io/j/8c6a0119bddd831cf4d87d252d56144ceb33a3a133b78151de9cabe4481cb75e',
+    embedUrl: 'https://framejs.io/j/8c6a0119bddd831cf4d87d252d56144ceb33a3a133b78151de9cabe4481cb75e',
     link: '/docs/examples/scientific-visualization'
+  },
+  {
+    embedUrl: 'https://framejs.io/j/69a1461a7ec981c3d215b8c7ce69ae7037012677c3257be4a904ecb503ddba77',
+    link: '/docs/examples/cytoscape'
+  },
+  {
+    embedUrl: 'https://framejs.io/j/6a549a9e3b64e73a2ed6481b36c25b1f694c436275e698366a29b7e47c8b4dd8',
+    link: '/docs/examples/nglviewer'
   }
 ]" />

@@ -20,7 +20,7 @@ date,region,sales,units
 2024-03-15,South,11200,140
 ```
 
-## Result
+## Result <a href="https://framejs.io/j/9af8d1c7cbca86767a901b2968ccf06d458e177127984a4c9321f0a65dc626c8" target="_blank" rel="noopener noreferrer">↗</a>
 
 <iframe
   src="https://framejs.io/j/9af8d1c7cbca86767a901b2968ccf06d458e177127984a4c9321f0a65dc626c8"

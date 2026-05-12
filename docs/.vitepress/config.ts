@@ -52,6 +52,8 @@ export default withMermaid(
             { text: "Data Dashboard", link: "/examples/data-dashboard" },
             { text: "Plot Data", link: "/examples/plot-data" },
             { text: "Scientific Visualization", link: "/examples/scientific-visualization" },
+            { text: "Cytoscape", link: "/examples/cytoscape" },
+            { text: "NGLViewer", link: "/examples/nglviewer" },
           ],
         },
         {

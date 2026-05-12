@@ -10,7 +10,7 @@ A colorful bouncing ball animation with trails and gravity simulation.
 
 _No local files — created entirely from the prompt._
 
-## Result
+## Result <a href="https://framejs.io/j/8e5d5eed5c3fda9c5094b186169feadecde2bf007fcd58b7fa0df52e3e3c34be" target="_blank" rel="noopener noreferrer">↗</a>
 
 <iframe
   src="https://framejs.io/j/8e5d5eed5c3fda9c5094b186169feadecde2bf007fcd58b7fa0df52e3e3c34be"
