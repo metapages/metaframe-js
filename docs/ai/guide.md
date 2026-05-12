@@ -14,14 +14,14 @@ If you just want to test this command before installing: paste the URL into the 
 >
 > Make a bouncing ball animation
 
-### Install the `/js` slash command 
+### Install the `/js` slash command {#install-js-command}
 
 ```bash
 mkdir -p ~/.claude/commands
 curl -sL https://framejs.io/command-js.md -o ~/.claude/commands/js.md
 ```
 
-#### `/js`  command prompt variants:
+#### `/js`  command prompts: {#js-command-prompts}
 
 
 **Create a visualization from a prompt:**

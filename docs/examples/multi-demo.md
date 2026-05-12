@@ -1,10 +1,10 @@
-# Bouncing Ball
+# Demonstrate multiple visualization patterns
 
 A colorful bouncing ball animation with trails and gravity simulation.
 
-## Prompt
+## [Prompt](../ai/guide#install-js-command)
 
-> Make a bouncing ball animation with colorful trails. The ball should respond to gravity, bounce off the walls, and leave a fading trail as it moves.
+> /js show a range of ways of visualization using this platform with a slider 
 
 ## Files
 
@@ -13,7 +13,7 @@ _No local files — created entirely from the prompt._
 ## Result
 
 <iframe
-  src="https://framejs.io/j/5808e75401125427c90cada4daea9f9648e5f11fee7f07bf5cf852d7217b194e"
+  src="https://framejs.io/j/8e5d5eed5c3fda9c5094b186169feadecde2bf007fcd58b7fa0df52e3e3c34be"
   width="100%"
   height="500"
   frameborder="0"

@@ -2,11 +2,13 @@
 
 
 
-## What is metaframe-js?
+## What is framejs.io?
 
 [framejs.io](https://framejs.io) lets you run arbitrary JavaScript modules directly in the browser, with all code embedded in the URL. There is no server-side storage: the URL *is* the program.
 
-It is designed for embedding code safely anywhere, and optionally combining into [metapages](https://metapage.io) so you can connect inputs and outputs to other metaframe URLs or jupyter notebook code. Similar to [CodePen](https://codepen.io/) or [JSFiddle](https://jsfiddle.net/), but completely self-contained, editable, and shareable.
+It is designed for embedding code safely anywhere, creating custom, editable dashboards, user code.
+
+They can combine and connect into [metapages](https://metapage.io), so inputs and outputs can flow between, or embed in [jupyter notebook](../integrations/jupyter) code. Similar to [CodePen](https://codepen.io/) or [JSFiddle](https://jsfiddle.net/), but completely self-contained, editable, and shareable.
 
 ## How to use it
 
@@ -25,13 +27,3 @@ It is designed for embedding code safely anywhere, and optionally combining into
 - Use ES6 module imports, or add CSS / npm modules — everything is embedded in the URL
 
 See the full [JavaScript API](./javascript-api) for details.
-
-## Python widget
-
-Install the `metaframe-widget` package to use any metaframe as an interactive widget in Jupyter or marimo:
-
-```bash
-pip install metaframe-widget
-```
-
-See [Jupyter integration](../integrations/jupyter) and [marimo integration](../integrations/marimo) for usage.
