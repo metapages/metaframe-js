@@ -21,7 +21,9 @@ The embedded widget is fully interactive — users can see and interact with the
 
 ## Open Graph (link previews)
 
-When you paste a link, many apps (chat, social, docs) fetch the page and read metadata defined by the [Open Graph protocol](https://ogp.me/) (specification: https://ogp.me/) to show a title, description, and image.
+When you paste a link, many apps (chat, social, docs) fetch the page and read metadata defined by the [Open Graph protocol](https://ogp.me/) (specification: https://ogp.me/) to show a title, description, and image nicely formatted. `framejs.io` supports this:
+
+[![](./open-graph-embed.png)](https://framejs.io/j/69a1461a7ec981c3d215b8c7ce69ae7037012677c3257be4a904ecb503ddba77)
 
 In the editor, open **Settings** and use the **Open Graph** section to set an optional **title**, **description**, and **preview image** (upload an image file; its URL is stored with the widget). That data is saved in the `og` hash parameter with the rest of the state.
 
