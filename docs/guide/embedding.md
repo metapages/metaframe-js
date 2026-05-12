@@ -19,6 +19,14 @@ Any tool that lets you embed a URL or iframe works with metaframe-js:
 
 The embedded widget is fully interactive — users can see and interact with the output. The URL contains all the code, so there is nothing else to configure.
 
+## Open Graph (link previews)
+
+When you paste a link, many apps (chat, social, docs) fetch the page and read metadata defined by the [Open Graph protocol](https://ogp.me/) (specification: https://ogp.me/) to show a title, description, and image.
+
+In the editor, open **Settings** and use the **Open Graph** section to set an optional **title**, **description**, and **preview image** (upload an image file; its URL is stored with the widget). That data is saved in the `og` hash parameter with the rest of the state.
+
+For **short URLs** (`/j/...` from [short URLs](./short-urls)), the server injects `og:title`, `og:description`, and `og:image` into the HTML response, so crawlers can render a rich preview without running JavaScript. Long URLs that keep everything in the hash are less predictable for previews, because fragments are often not sent to the server. If you care how the link looks when shared, shorten the URL and fill in Open Graph fields first.
+
 ::: tip
 Use [short URLs](./short-urls) if the full URL is too long for your platform's embed input.
 :::

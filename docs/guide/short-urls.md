@@ -1,4 +1,4 @@
-# Short URLs
+# Saving and Short URLs
 
 Since all code and state is stored in the URL hash, metaframe URLs can get very long. The built-in URL shortener compresses these into compact, shareable links.
 
@@ -6,11 +6,8 @@ Since all code and state is stored in the URL hash, metaframe URLs can get very 
 
 1. Click the **Save and Shorten** button in the editor header ![](./shorten-url-button.png)
 2. The current hash parameters (code, inputs, options) are stored in [R2](https://www.cloudflare.com/developer-platform/products/r2/) 
-4. You get a short URL `framejs.io/j/<SHA256-based short ID>` e.g:
-
-```
-https://framejs.io/j/8a3b1c9f...
-```
+4. You get a short URL `framejs.io/j/<SHA256-based short ID>` e.g `https://framejs.io/j/8a3b1c9f...`
+5. Open Graph title, description, and image are supported for nice bookmarks and previews
 
 The short URL is automatically copied to your clipboard.
 
