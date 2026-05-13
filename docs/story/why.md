@@ -6,17 +6,17 @@
 
 I kept building the same thing.
 
-For the AI researchers, they needed dynamic yet editable dashboards. Another team needed workflows with visualization. Notebook components that needed to be simple yet portable. Every time I would be circling the same primitive: run some JavaScript, some visualization, that can be edited in place, that always just **works**. Reliably. Every time someone else opens it. No login, no broken database link, no gating. And when someone opens it, they have *everything*.
+For the AI researchers, they needed dynamic yet editable dashboards. Another team needed workflows with visualization. Notebook components that needed to be simple yet portable. Every time I would be circling the same primitive: run some JavaScript, some visualization, that can be embedded, edited in place, that always just **works**. Reliably. Every time someone else opens it. No login, or broken database link, no gating. And when someone opens it, they have *everything*.
 
 The primitive I needed didn't exist, but the patterns needed to build it where all around me.
 
 ## The Mermaid moment
 
-The ah-ha moment for me was discovering and creating diagrams with the [Mermaid live editor](https://mermaid.live/edit#pako:eNpVjbFugzAQhl_FuqmVSEQJDsZDpYa0WSK1Q6ZCBiscGDXYyBilKfDuNURV25vu9H3_fz2cdI7AoTjry0kKY8lhmyni5ilNpKlaW4v2SBaLx2GHltRa4XUgm7udJq3UTVOp8v7mbyaJJP1-0pBYWamP8YaSOf-qcCDbdC8aq5vjX3K46IE8p9WbdPX_iTToUi9pIXghFidhSCLMrIAHpaly4NZ06EGNphbTCf1EM7ASa8yAuzXHQnRnm0GmRhdrhHrXuv5JGt2VElz9uXVX1-TC4rYSpRG_CqocTaI7ZYHTuQF4D5_AVyu2jFkYsFUYRsGarj24Ag_pMgjjmDFKaeyzYPTga_7oL1lEfTcPfhTEjkXjN-ESdl8). You type a few lines of markup, you get a diagram, and the *entire* state of your diagram is encoded in the URL. Specifically, in the hash, the part after the `#`, which the browser never sends to the server.
+The ah-ha moment for me was discovering and creating diagrams with the [Mermaid live editor](https://mermaid.live/edit#pako:eNpVjbFugzAQhl_FuqmVSEQJDsZDpYa0WSK1Q6ZCBiscGDXYyBilKfDuNURV25vu9H3_fz2cdI7AoTjry0kKY8lhmyni5ilNpKlaW4v2SBaLx2GHltRa4XUgm7udJq3UTVOp8v7mbyaJJP1-0pBYWamP8YaSOf-qcCDbdC8aq5vjX3K46IE8p9WbdPX_iTToUi9pIXghFidhSCLMrIAHpaly4NZ06EGNphbTCf1EM7ASa8yAuzXHQnRnm0GmRhdrhHrXuv5JGt2VElz9uXVX1-TC4rYSpRG_CqocTaI7ZYHTuQF4D5_AVyu2jFkYsFUYRsGarj24Ag_pMgjjmDFKaeyzYPTga_7oL1lEfTcPfhTEjkXjN-ESdl8). You type a few lines of markup, you get a diagram, and the *entire* state of your diagram is encoded in the URL. Specifically, in the hash, the part after the `#`, which the browser never sends to the server. The idea that the core part of a web app was encoded in the URL took me a bit to appreciate.
 
-That `#` detail is doing a lot of work:
+The hash (`#`) content of the url does a lot of work:
 
-- There's no backend processing the diagram. The site is just static assets.
+- There's no backend processing the diagram. The frontend site is just static assets.
 - There's no database holding your diagram. *You* are holding it, in the link.
 - If you share the link, the recipient has everything they need. Nothing to look up, nothing to fetch, nothing that can go missing.
 - The recipient can directly edit your diagram
