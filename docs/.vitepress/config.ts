@@ -73,7 +73,6 @@ export default withMermaid(
               text: "What problems is this solving",
               link: "/story/why",
             },
-            { text: "Open Infrastructure", link: "/story/open-infrastructure" },
           ],
         },
         {
