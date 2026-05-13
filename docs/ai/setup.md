@@ -4,7 +4,7 @@ Create self contained editable websites, running a single chuck of javascript co
 
 Create using AI — via chat interfaces, directly from the terminal, or via APIs.
 
-framejs.io/#?js=< will always run this javascript, forever>
+`framejs.io/#?js=< will always run this javascript, forever>`
 
 ## Command Line: installation into Claude Code
 
@@ -14,14 +14,17 @@ If you just want to test this command before installing: paste the URL into the 
 >
 > Make a bouncing ball animation
 
-### Install the `/js` slash command 
+
+But for easier usage install the command:
+
+### Claude Code: install the `/js` slash command {#install-js-command}
 
 ```bash
 mkdir -p ~/.claude/commands
-curl -sL https://framejs.io/command-js.txt -o ~/.claude/commands/js.md
+curl -sL https://framejs.io/command-js.md -o ~/.claude/commands/js.md
 ```
 
-#### `/js`  command prompt variants:
+#### `/js`  command prompts: {#js-command-prompts}
 
 
 **Create a visualization from a prompt:**
@@ -55,7 +58,7 @@ From the component page:
 3. Describe what you want
 4. Copy the generated JavaScript back into the editor
 
-![Copy AI prompt](/readme-images/js-copy-ai.gif "Copy prompt for LLM AI")
+![Copy AI prompt](/readme-images/js-copy-ai.gif "Copy prompt and code for AI")
 
 ## From an AI API
 
@@ -93,6 +96,6 @@ No files are written — everything happens in a single `node -e` command. The `
 | File | Purpose |
 |------|---------|
 | [`/llms.txt`](https://framejs.io/llms.txt) | For AI chat / API — outputs a JavaScript code block |
-| [`/command-js.txt`](https://framejs.io/command-js.txt) | For Claude Code terminal — encodes and opens browser directly |
+| [`/command-js.md`](https://framejs.io/command-js.md) | For Claude Code terminal — encodes and opens browser directly |
 
 Both files contain the same JavaScript coding guidance (ES6 modules, globals, patterns, available libraries). They differ only in how the output is delivered.

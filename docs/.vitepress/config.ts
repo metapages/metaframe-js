@@ -33,7 +33,7 @@ export default withMermaid(
         {
           text: "AI",
           items: [
-            { text: "Guide", link: "/ai/guide" },
+            { text: "Setup", link: "/ai/setup" },
             {
               text: "command-js.md",
               link: "https://framejs.io/command-js.md",

@@ -1,19 +1,21 @@
 # Getting Started
 
-
-
 ## What is framejs.io?
 
-[framejs.io](https://framejs.io) lets you run arbitrary JavaScript modules directly in the browser, with all code embedded in the URL. There is no server-side storage: the URL *is* the program.
+[framejs.io](https://framejs.io) aims to be a user-centric web primitive.
 
-It is designed for embedding code safely anywhere, creating custom, editable dashboards, user code.
+Run arbitrary javascript directly in the browser, with all code embedded in the URL. There is no server-side storage: the URL *is* the program.
 
-They can combine and connect into [metapages](https://metapage.io), so inputs and outputs can flow between, or embed in [jupyter notebook](../integrations/jupyter) code. Similar to [CodePen](https://codepen.io/) or [JSFiddle](https://jsfiddle.net/), but completely self-contained, editable, and shareable.
+It is designed for embedding code safely anywhere, creating custom, editable dashboards, widgets, notebook components, shareable visualizations, editable apps, and more.
 
-## How to use it
+`framejs.io` pages can combine and connect into [metapages](https://metapage.io), where inputs and outputs can flow between, or be embedded in [jupyter notebook](../integrations/jupyter) code. 
+
+See [examples](../examples)
+
+## Quickstart
 
 1. Go to [framejs.io](https://framejs.io)
-2. Write JavaScript in the editor or [edit with AI](./ai)
+2. Write JavaScript in the editor or [edit with AI](../ai/setup)
 3. The code runs immediately — the URL updates to contain your code
 4. Share the URL with anyone
 

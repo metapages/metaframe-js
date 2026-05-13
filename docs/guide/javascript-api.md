@@ -1,5 +1,12 @@
 # JavaScript API
 
+- Code is an ES6 module
+- Top-level `await` is supported
+- Export `onInputs` to listen to inputs from connected metaframes
+- Send outputs with `setOutput` / `setOutputs`
+- Export `onResize` to handle window/div resizes
+- Use ES6 module imports, or add CSS / npm modules — everything is embedded in the URL
+  
 ## Inputs and Outputs
 
 Export a function called `onInputs` to receive inputs from connected metaframes:

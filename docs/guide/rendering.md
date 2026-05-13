@@ -1,6 +1,19 @@
 # Rendering in a Website
 
-You can render any metaframe-js widget directly in your own website using the `@metapages/metapage` npm package. This gives you full I/O control — send inputs into the metaframe and receive outputs from it — along with lifecycle management, no manual iframe wiring needed.
+You can render any metaframe-js widget directly in your own website simply as an iframe:
+
+```html
+<iframe
+  src="https://framejs.io/j/9af8d1c7cbca86767a901b2968ccf06d458e177127984a4c9321f0a65dc626c8"
+  width="100%"
+  height="500"
+  frameborder="0"
+  style="border: 1px solid var(--vp-c-border); border-radius: 8px;"
+  allow="clipboard-read; clipboard-write"
+></iframe>
+```
+
+If you want to send or access inputs/ouputs: use the `@metapages/metapage` npm package. This gives you full I/O control — send inputs into the metaframe and receive outputs from it — along with lifecycle management, no manual iframe wiring needed.
 
 This is the key advantage over a plain iframe embed: you get a programmatic interface to **send data in** and **get data out** of the running metaframe.
 
