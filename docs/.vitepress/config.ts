@@ -70,8 +70,8 @@ export default withMermaid(
           items: [
             { text: "About", link: "/story/about" },
             {
-              text: "What problem is this solving",
-              link: "/story/what-problem-is-this-solving",
+              text: "What problems is this solving",
+              link: "/story/why",
             },
             { text: "Open Infrastructure", link: "/story/open-infrastructure" },
           ],

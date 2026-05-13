@@ -2,7 +2,7 @@
 
 An interactive dashboard with charts and filters, built from a CSV file.
 
-## [Prompt](../ai/guide#install-js-command)
+## [Prompt](../ai/setup#install-js-command)
 
 > /js Visualize sales-data.csv data as an interactive dashboard. Show a bar chart of sales by region, a line chart of monthly trends, and a summary table. Add filters for date range and region.
 

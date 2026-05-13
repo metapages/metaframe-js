@@ -2,7 +2,7 @@
 
 A colorful bouncing ball animation with trails and gravity simulation.
 
-## [Prompt](../ai/guide#install-js-command)
+## [Prompt](../ai/setup#install-js-command)
 
 > /js show a range of ways of visualization using this platform with a slider 
 

@@ -1,6 +1,6 @@
 # NGL Protein Viewer
 
-## [Prompt](../ai/guide#install-js-command)
+## [Prompt](../ai/setup#install-js-command)
 
 > /js visualize a protein using NGL Viewer
 

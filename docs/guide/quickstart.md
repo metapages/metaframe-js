@@ -1,8 +1,15 @@
-# Plot any data
+# Quickstart
 
-## [Prompt](../ai/setup#install-js-command)
+## 1. Install the `/js` slash command in Claude Code:
 
-> Create an interactive visualization of world population and individual country population over time
+```bash
+mkdir -p ~/.claude/commands
+curl -sL https://framejs.io/command-js.md -o ~/.claude/commands/js.md
+```
+
+## In Claude Code:
+
+> /js Create an interactive visualization of world population and individual country population over time
 
 ## Result <a href="https://framejs.io/j/f78d4225732a192149f431d01d256d076af35dfff71966cc33defe13c2a0cf64" target="_blank" rel="noopener noreferrer">↗</a>
 

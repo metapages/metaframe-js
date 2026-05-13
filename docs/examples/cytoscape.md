@@ -1,6 +1,6 @@
 # Cytoscape: network visualization
 
-## [Prompt](../ai/guide#install-js-command)
+## [Prompt](../ai/setup#install-js-command)
 
 > /js make an example using cytoscape
 
