@@ -56,7 +56,8 @@
       "Bash(wc:*)",
       "Bash(find:*)",
       "Bash(magick identify:*)",
-      "Bash(magick:*)"
+      "Bash(magick:*)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []
