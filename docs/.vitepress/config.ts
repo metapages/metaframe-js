@@ -15,7 +15,7 @@ export default withMermaid(
         { text: "Examples", link: "/examples/" },
         { text: "Integrations", link: "/integrations/jupyter" },
         { text: "Development", link: "/development/local-setup" },
-        { text: "Create", link: "framejs.io" },
+        { text: "Create", link: "https://framejs.io" },
       ],
 
       sidebar: [
