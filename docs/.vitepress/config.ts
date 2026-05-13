@@ -11,7 +11,7 @@ export default withMermaid(
 
     themeConfig: {
       nav: [
-        { text: "Docs", link: "/guide/getting-started" },
+        { text: "Docs", link: "/guide/overview" },
         { text: "Examples", link: "/examples/" },
         { text: "Integrations", link: "/integrations/jupyter" },
         { text: "Development", link: "/development/local-setup" },
@@ -22,7 +22,8 @@ export default withMermaid(
         {
           text: "Guide",
           items: [
-            { text: "Getting Started", link: "/guide/getting-started" },
+            { text: "Quickstart", link: "/guide/quickstart" },
+            { text: "Overview", link: "/guide/overview" },
             { text: "JavaScript API", link: "/guide/javascript-api" },
             { text: "URL State", link: "/guide/url-state" },
             { text: "Short URLs", link: "/guide/short-urls" },

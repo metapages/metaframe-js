@@ -8,7 +8,7 @@ hero:
   actions:
     - theme: brand
       text: Get Started
-      link: /guide/getting-started
+      link: /guide/overview
     - theme: alt
       text: JavaScript API
       link: /guide/javascript-api
@@ -29,5 +29,5 @@ features:
     link: /integrations/jupyter
   - title: Connect Metaframes
     details: Wire inputs and outputs between metaframes to build apps, workflows, and dashboards.
-    link: /guide/getting-started
+    link: /guide/overview
 ---
