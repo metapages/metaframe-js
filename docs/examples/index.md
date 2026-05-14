@@ -26,5 +26,9 @@ Browse examples built with framejs.io. Each one includes the AI prompt used to c
   {
     embedUrl: 'https://framejs.io/j/6a549a9e3b64e73a2ed6481b36c25b1f694c436275e698366a29b7e47c8b4dd8',
     link: '/docs/examples/nglviewer'
+  },
+  {
+    embedUrl: 'https://framejs.io/j/7c1e117a54b91ed8ab19e2502d2130d33da3d986c88142848958e25110c30eef',
+    link: '/docs/examples/globe'
   }
 ]" />

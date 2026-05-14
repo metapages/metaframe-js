@@ -51,6 +51,7 @@ export default withMermaid(
           items: [
             { text: "Gallery", link: "/examples/" },
             { text: "Multi Demo", link: "/examples/multi-demo" },
+            { text: "Interactive 3D Globe", link: "/examples/globe" },
             { text: "Data Dashboard", link: "/examples/data-dashboard" },
             { text: "Plot Data", link: "/examples/plot-data" },
             {
