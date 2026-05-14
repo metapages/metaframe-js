@@ -6,12 +6,12 @@ hero:
   text: URL with editable javascript embedded
   tagline: Interactive visualizations that live in a URL. Prompt Claude to build them, share by link or immutable hash, embed in Jupyter or anywhere else
   actions:
+    - theme: alt
+      text: Intro
+      link: /intro
     - theme: brand
       text: Get Started
       link: /guide/overview
-    - theme: alt
-      text: JavaScript API
-      link: /guide/javascript-api
     - theme: alt
       text: Create new
       link: https://framejs.io#?edit=true

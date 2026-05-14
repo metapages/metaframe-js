@@ -1,5 +1,5 @@
-import { defineConfig } from 'vitepress';
-import { withMermaid } from 'vitepress-plugin-mermaid';
+import { defineConfig } from "vitepress";
+import { withMermaid } from "vitepress-plugin-mermaid";
 
 export default withMermaid(
   defineConfig({
@@ -11,7 +11,7 @@ export default withMermaid(
 
     themeConfig: {
       nav: [
-        { text: "Docs", link: "/guide/overview" },
+        { text: "Docs", link: "/intro" },
         { text: "Examples", link: "/examples/" },
         { text: "Integrations", link: "/integrations/jupyter" },
         { text: "Development", link: "/development/local-setup" },
@@ -19,6 +19,7 @@ export default withMermaid(
       ],
 
       sidebar: [
+        { text: "Intro", link: "/intro" },
         {
           text: "Guide",
           items: [
@@ -52,7 +53,10 @@ export default withMermaid(
             { text: "Multi Demo", link: "/examples/multi-demo" },
             { text: "Data Dashboard", link: "/examples/data-dashboard" },
             { text: "Plot Data", link: "/examples/plot-data" },
-            { text: "Scientific Visualization", link: "/examples/scientific-visualization" },
+            {
+              text: "Scientific Visualization",
+              link: "/examples/scientific-visualization",
+            },
             { text: "Cytoscape", link: "/examples/cytoscape" },
             { text: "NGLViewer", link: "/examples/nglviewer" },
           ],
