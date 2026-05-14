@@ -1,3 +1,7 @@
+---
+aside: false
+---
+
 # Examples
 
 Browse examples built with framejs.io. Each one includes the AI prompt used to create it, any source files, and a live embedded result.
