@@ -5,6 +5,8 @@
 
 It is designed for embedding code safely anywhere, creating custom, editable dashboards, widgets, notebook components, shareable visualizations, editable apps, and more. It is open-source, and aims to be a user-centric web primitive.
 
+<p class="feature-link"><a href="/docs/examples/">Examples &rarr;</a></p>
+
 # Features
 
 <div class="features-page">
