@@ -32,7 +32,7 @@ Browse examples built with framejs.io. Each one includes the AI prompt used to c
     link: '/docs/examples/nglviewer'
   },
   {
-    embedUrl: 'https://framejs.io/j/b99376e67a091b3f303b19b9d007083fc3a872ed192b7c4bf0f20e369e1f2af5',
+    embedUrl: 'https://framejs.io/j/f8f6bc83ce98c2acf6190a6b53396057379ab1bd6140e5498c90786e4016cf8e',
     link: '/docs/examples/globe'
   }
 ]" />
