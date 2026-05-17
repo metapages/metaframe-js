@@ -438,7 +438,7 @@ app.get("/j/:sha256", async (c) => {
       | { title?: string; description?: string; image?: string }
       | undefined;
     let ogMetaTags = "";
-    if (og) {
+    if (og && (og.title || og.description || og.image)) {
       if (og.title) {
         ogMetaTags += `<meta property="og:title" content="${
           escapeHtmlAttr(
@@ -460,6 +460,9 @@ app.get("/j/:sha256", async (c) => {
           )
         }" />\n`;
       }
+    } else {
+      ogMetaTags =
+        `<meta property="og:title" content="framejs.io" />\n<meta property="og:description" content="" />\n`;
     }
 
     // Inject a lightweight script that sets the short URL ID and starts an
@@ -473,7 +476,12 @@ app.get("/j/:sha256", async (c) => {
       };window.__SHORT_URL_CANONICAL_KEYS = new Set(${canonicalKeysJson});window.__SHORT_URL_READY = fetch("/api/j/" + ${
         JSON.stringify(sha256)
       } + "/url").then(function(r){return r.text()}).then(function(fullUrl){var idx=fullUrl.indexOf("#");var stored=idx===-1?"":fullUrl.slice(idx+1);window.__SHORT_URL_HASH_PARAMS=stored;var C=window.__SHORT_URL_CANONICAL_KEYS;var ss=stored.charAt(0)==="?"?stored.slice(1):stored;var sp=ss.split("&");var pm={};var po=[];for(var i=0;i<sp.length;i++){var ei=sp[i].indexOf("=");var ki=ei===-1?sp[i]:sp[i].substring(0,ei);if(ki){pm[ki]=sp[i];po.push(ki)}}var h=window.location.hash;if(h){var s=h.charAt(0)==="#"?h.slice(1):h;if(s.charAt(0)==="?")s=s.slice(1);if(s){var up=s.split("&");for(var j=0;j<up.length;j++){var ej=up[j].indexOf("=");var kj=ej===-1?up[j]:up[j].substring(0,ej);if(kj&&!C.has(kj)){if(!(kj in pm))po.push(kj);pm[kj]=up[j]}}}}var m="?";for(var x=0;x<po.length;x++){if(x>0)m+="&";m+=pm[po[x]]}history.replaceState(null,"",window.location.pathname+window.location.search+"#"+m)});</script>`;
-    const modifiedHtml = indexHtml.replace(
+    // Strip the default OG block (between OG_START and OG_END comments) and inject short-URL-specific OG tags
+    const ogStripped = indexHtml.replace(
+      /<!-- OG_START -->[\s\S]*?<!-- OG_END -->/,
+      "",
+    );
+    const modifiedHtml = ogStripped.replace(
       "</head>",
       ogMetaTags + injectedScript + "\n</head>",
     );

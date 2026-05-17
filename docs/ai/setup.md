@@ -62,7 +62,7 @@ From the component page:
 
 ## From an AI API
 
-Give the LLM the URL [`https://framejs.io/llms.txt`](https://framejs.io/llms.txt) along with your request. The LLM will respond with a JavaScript code block that you can paste into the editor at [framejs.io](https://framejs.io).
+Give the LLM the URL [`https://framejs.io/llms-prompt.md`](https://framejs.io/llms-prompt.md) along with your request. The LLM will respond with a JavaScript code block that you can paste into the editor at [framejs.io](https://framejs.io).
 
 
 ## URL encoding format
@@ -95,7 +95,7 @@ No files are written — everything happens in a single `node -e` command. The `
 
 | File | Purpose |
 |------|---------|
-| [`/llms.txt`](https://framejs.io/llms.txt) | For AI chat / API — outputs a JavaScript code block |
+| [`/llms-prompt.md`](https://framejs.io/llms-prompt.md) | For AI chat / API — outputs a JavaScript code block |
 | [`/command-js.md`](https://framejs.io/command-js.md) | For Claude Code terminal — encodes and opens browser directly |
 
 Both files contain the same JavaScript coding guidance (ES6 modules, globals, patterns, available libraries). They differ only in how the output is delivered.

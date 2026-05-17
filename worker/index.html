@@ -3,7 +3,51 @@
   <head>
     <meta charset="utf-8" />
     <base target="_parent" />
-    <title>Metaframe Javascript</title>
+    <title>framejs.io — Run JavaScript in the browser, embedded in a URL</title>
+    <meta
+      name="description"
+      content="framejs.io lets you write, share, and embed JavaScript apps in a single URL. Create visualizations, dashboards, and interactive tools with AI or by hand. No server, no login — the URL is the program."
+    >
+    <!-- OG_START -->
+    <meta property="og:type" content="website">
+    <meta
+      property="og:title"
+      content="framejs.io — Run JavaScript in the browser, embedded in a URL"
+    >
+    <meta
+      property="og:description"
+      content="Write, share, and embed JavaScript apps in a single URL. Create visualizations, dashboards, and tools with AI or by hand."
+    >
+    <meta property="og:url" content="https://framejs.io/">
+    <meta property="og:site_name" content="framejs.io">
+    <meta name="twitter:card" content="summary">
+    <meta
+      name="twitter:title"
+      content="framejs.io — Run JavaScript in the browser, embedded in a URL"
+    >
+    <meta
+      name="twitter:description"
+      content="Write, share, and embed JavaScript apps in a single URL."
+    >
+    <!-- OG_END -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "framejs.io",
+      "url": "https://framejs.io",
+      "description": "Run, share, and embed JavaScript apps in a single URL. Create visualizations, dashboards, and interactive tools with AI or by hand.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires a modern web browser with ES6 module support",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "author": {
+        "@type": "Organization",
+        "name": "Metapages",
+        "url": "https://github.com/metapages"
+      }
+    }
+    </script>
     <style>
       body,
       html {
@@ -104,6 +148,7 @@
         width: 100%;
         max-width: 100%;
         height: 100%;
+        overflow: auto;
       }
 
       .root-with-editor {
@@ -209,6 +254,15 @@
   </head>
 
   <body>
+    <!--
+      framejs.io — What is this?
+      A browser-based JavaScript runtime where code lives in the URL.
+      No server, no account, no build step. Write ES6 modules, share via link.
+      Docs: https://framejs.io/docs/
+      GitHub: https://github.com/metapages/metaframe-js
+      AI prompt: https://framejs.io/llms-prompt.md
+    -->
+
     <button id="menu-button" class="invisible-until-hover">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -225,7 +279,135 @@
       <span>Edit</span>
     </button>
 
-    <div id="root" class="root borderFatSolidGreen transparent"></div>
+    <div id="root" class="root borderFatSolidGreen transparent">
+      <div
+        style="max-width: 740px; margin: 48px auto; padding: 0 24px; font-family: 'Inter', system-ui, -apple-system, sans-serif; color: #1c1c1c; line-height: 1.6"
+      >
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        >
+        <h1
+          style="font-size: 2.8rem; font-weight: 800; letter-spacing: -0.03em; margin: 0 0 8px; color: #2563eb"
+        >
+          framejs.io
+        </h1>
+        <p style="font-size: 1.25rem; color: #555; margin: 0 0 32px">
+          Run JavaScript in the browser, embedded in a URL.<br>No server, no
+          login — the URL <em>is</em> the program.
+        </p>
+
+        <div
+          style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 36px"
+        >
+          <a
+            href="/docs/guide/quickstart"
+            style="background: #f8f9fa; border: 1px solid #e2e5e9; border-radius: 8px; padding: 16px 18px; text-decoration: none; color: inherit; transition: border-color 0.2s"
+            onmouseover='this.style.borderColor = "#93a3b8"'
+            onmouseout='this.style.borderColor = "#e2e5e9"'
+          ><strong style="color: #333">Instant</strong><br><span
+              style="font-size: 0.9rem; color: #555"
+            >Write code, get a shareable URL. No build step.</span></a>
+          <a
+            href="/docs/ai/setup"
+            style="background: #f8f9fa; border: 1px solid #e2e5e9; border-radius: 8px; padding: 16px 18px; text-decoration: none; color: inherit; transition: border-color 0.2s"
+            onmouseover='this.style.borderColor = "#93a3b8"'
+            onmouseout='this.style.borderColor = "#e2e5e9"'
+          ><strong style="color: #333">AI-native</strong><br><span
+              style="font-size: 0.9rem; color: #555"
+            >Generate apps from prompts. Paste &amp; run.</span></a>
+          <a
+            href="/docs/guide/embedding"
+            style="background: #f8f9fa; border: 1px solid #e2e5e9; border-radius: 8px; padding: 16px 18px; text-decoration: none; color: inherit; transition: border-color 0.2s"
+            onmouseover='this.style.borderColor = "#93a3b8"'
+            onmouseout='this.style.borderColor = "#e2e5e9"'
+          ><strong style="color: #333">Embeddable</strong><br><span
+              style="font-size: 0.9rem; color: #555"
+            >Drop into Notion, Jupyter, Confluence, anywhere.</span></a>
+        </div>
+
+        <h2
+          style="font-size: 1.1rem; font-weight: 600; margin: 0 0 12px; color: #333"
+        >
+          Example — real-time animated particles
+        </h2>
+        <div style="position: relative; margin: 0 0 32px">
+          <button
+            onclick='navigator.clipboard.writeText(
+  this.parentElement.querySelector("code").textContent,
+).then(() => {
+  this.textContent = "Copied!";
+  setTimeout(() => {
+    this.textContent = "Copy";
+  }, 1500);
+})'
+            style="position: absolute; top: 10px; right: 10px; background: #3a3a3a; color: #ddd; border: none; border-radius: 5px; padding: 5px 12px; font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; cursor: pointer; z-index: 1; transition: background 0.2s"
+            onmouseover='this.style.background = "#555"'
+            onmouseout='this.style.background = "#3a3a3a"'
+          >
+            Copy
+          </button>
+          <pre
+            style="background: #1a1a1a; color: #d4d4d4; border-radius: 8px; padding: 18px 20px; overflow: auto; max-height: 280px; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; line-height: 1.5; margin: 0"
+          ><code>const canvas = document.createElement("canvas");
+canvas.width = root.getBoundingClientRect().width;
+canvas.height = root.getBoundingClientRect().height;
+root.appendChild(canvas);
+const ctx = canvas.getContext("2d");
+
+let particles = Array.from({length: 80}, () => ({
+  x: Math.random() * root.getBoundingClientRect().width, y: Math.random() * root.getBoundingClientRect().height,
+  vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2,
+  r: Math.random() * 3 + 1
+}));
+
+function frame() {
+  ctx.fillStyle = "rgba(0,0,0,0.08)";
+  ctx.fillRect(0, 0, root.getBoundingClientRect().width, root.getBoundingClientRect().height);
+  for (const p of particles) {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0 || p.x > root.getBoundingClientRect().width) p.vx *= -1;
+    if (p.y < 0 || p.y > root.getBoundingClientRect().height) p.vy *= -1;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `hsl(210, 40%, ${50 + p.r * 10}%)`;
+    ctx.fill();
+  }
+  requestAnimationFrame(frame);
+}
+frame();</code></pre>
+        </div>
+
+        <div
+          style="display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.9rem; margin-bottom: 24px"
+        >
+          <a
+            href="/docs/"
+            style="color: #4b7be5; text-decoration: none; font-weight: 500"
+            onmouseover='this.style.textDecoration = "underline"'
+            onmouseout='this.style.textDecoration = "none"'
+          >Docs</a>
+          <a
+            href="/docs/examples/"
+            style="color: #4b7be5; text-decoration: none; font-weight: 500"
+            onmouseover='this.style.textDecoration = "underline"'
+            onmouseout='this.style.textDecoration = "none"'
+          >Examples</a>
+          <a
+            href="/docs/ai/setup"
+            style="color: #4b7be5; text-decoration: none; font-weight: 500"
+            onmouseover='this.style.textDecoration = "underline"'
+            onmouseout='this.style.textDecoration = "none"'
+          >AI setup</a>
+          <a
+            href="https://github.com/metapages/metaframe-js"
+            style="color: #4b7be5; text-decoration: none; font-weight: 500"
+            onmouseover='this.style.textDecoration = "underline"'
+            onmouseout='this.style.textDecoration = "none"'
+          >GitHub</a>
+        </div>
+      </div>
+    </div>
     <div
       id="editor-root"
       class="editor-container-hidden borderDashedPurple transparent"
@@ -643,6 +825,9 @@ Available cache utilities (loaded on-demand):
       if (window.__SHORT_URL_READY) {
         await window.__SHORT_URL_READY;
       }
+
+      // Save the initial landing content so it can be restored when code is cleared
+      const __landingHtml = document.getElementById("root").innerHTML;
 
       const MAX_LOG_ELEMENTS = 1000;
       let logScrollRafPending = false;
@@ -1320,8 +1505,6 @@ Available cache utilities (loaded on-demand):
         // Older user scripts set this themselves. To handle those old metaframes
         // make sure we clear it out here to detect if the user set it
         globalThis.scriptUnload = null;
-        // clear all children of root (only can be there from user js code)
-        document.getElementById("root").textContent = "";
 
         let js = getJsFromUrl();
 
@@ -1354,6 +1537,8 @@ Available cache utilities (loaded on-demand):
         editor.style.width = inEditMode ? `${editorWidth}` : "0%";
 
         if (js) {
+          // clear all children of root (landing content or previous user code)
+          root.textContent = "";
           try {
             globalThis.root = root;
             globalThis.setOutput = (key, value) => {
@@ -1528,6 +1713,9 @@ Available cache utilities (loaded on-demand):
           } catch (err) {
             console.error(err);
           }
+        } else {
+          // No code — restore the landing content
+          root.innerHTML = __landingHtml;
         }
       };
 

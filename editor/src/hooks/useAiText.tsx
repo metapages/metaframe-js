@@ -67,9 +67,9 @@ export const useAiText = (): {
       try {
         setIsLoading(true);
         setError(null);
-        const response = await fetch("/llms.txt");
+        const response = await fetch("/llms-prompt.md");
         if (!response.ok) {
-          throw new Error("Failed to fetch llms.txt");
+          throw new Error("Failed to fetch llms-prompt.md");
         }
         const text = await response.text();
         // setAiBaseContent(text.replace(llmsCode, ""));
