@@ -283,7 +283,8 @@
 
     <div id="root" class="root borderFatSolidGreen transparent">
       <div
-        style="max-width: 740px; margin: 48px auto; padding: 0 24px; font-family: 'Inter', system-ui, -apple-system, sans-serif; color: #1c1c1c; line-height: 1.6"
+        id="landing-content"
+        style="display: none; max-width: 740px; margin: 48px auto; padding: 0 24px; font-family: 'Inter', system-ui, -apple-system, sans-serif; color: #1c1c1c; line-height: 1.6"
       >
         <link
           rel="stylesheet"
@@ -414,6 +415,18 @@ frame();</code></pre>
         </div>
       </div>
     </div>
+    <!-- Show landing content only if no JS is pending (no short URL, no js hash param) -->
+    <script>
+      (function() {
+        var hash = window.location.hash || "";
+        var hasJsParam = hash.indexOf("js=") > -1;
+        var hasShortUrl = !!window.__SHORT_URL_READY;
+        if (!hasJsParam && !hasShortUrl) {
+          var el = document.getElementById("landing-content");
+          if (el) el.style.display = "";
+        }
+      })();
+    </script>
     <div
       id="editor-root"
       class="editor-container-hidden borderDashedPurple transparent"
@@ -1720,8 +1733,10 @@ Available cache utilities (loaded on-demand):
             console.error(err);
           }
         } else {
-          // No code — restore the landing content
+          // No code — restore and show the landing content
           root.innerHTML = __landingHtml;
+          const landing = document.getElementById("landing-content");
+          if (landing) landing.style.display = "";
         }
       };
 
