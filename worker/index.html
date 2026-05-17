@@ -3,31 +3,33 @@
   <head>
     <meta charset="utf-8" />
     <base target="_parent" />
-    <title>framejs.io — Run JavaScript in the browser, embedded in a URL</title>
+    <title>
+      framejs.io — Create and share JavaScript visualizations and apps instantly
+    </title>
     <meta
       name="description"
-      content="framejs.io lets you write, share, and embed JavaScript apps in a single URL. Create visualizations, dashboards, and interactive tools with AI or by hand. No server, no login — the URL is the program."
+      content="framejs.io lets you create interactive visualizations, dashboards, and apps with AI or by hand. Share via URL — no server, no login, no build step. Just write JavaScript and share the link."
     >
     <!-- OG_START -->
     <meta property="og:type" content="website">
     <meta
       property="og:title"
-      content="framejs.io — Run JavaScript in the browser, embedded in a URL"
+      content="framejs.io — Create and share JavaScript visualizations and apps instantly"
     >
     <meta
       property="og:description"
-      content="Write, share, and embed JavaScript apps in a single URL. Create visualizations, dashboards, and tools with AI or by hand."
+      content="Create interactive visualizations, dashboards, and apps with AI or by hand. Share via URL — no server, no login, no build step."
     >
     <meta property="og:url" content="https://framejs.io/">
     <meta property="og:site_name" content="framejs.io">
     <meta name="twitter:card" content="summary">
     <meta
       name="twitter:title"
-      content="framejs.io — Run JavaScript in the browser, embedded in a URL"
+      content="framejs.io — Create and share JavaScript visualizations and apps instantly"
     >
     <meta
       name="twitter:description"
-      content="Write, share, and embed JavaScript apps in a single URL."
+      content="Create interactive visualizations, dashboards, and apps with AI or by hand. Share via URL."
     >
     <!-- OG_END -->
     <script type="application/ld+json">
@@ -36,7 +38,7 @@
       "@type": "WebApplication",
       "name": "framejs.io",
       "url": "https://framejs.io",
-      "description": "Run, share, and embed JavaScript apps in a single URL. Create visualizations, dashboards, and interactive tools with AI or by hand.",
+      "description": "Create and share interactive JavaScript visualizations, dashboards, and apps instantly. Use AI or write code by hand. Everything lives in a shareable URL — no server, no login, no build step.",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "Any",
       "browserRequirements": "Requires a modern web browser with ES6 module support",
@@ -255,12 +257,12 @@
 
   <body>
     <!--
-      framejs.io — What is this?
-      A browser-based JavaScript runtime where code lives in the URL.
-      No server, no account, no build step. Write ES6 modules, share via link.
+      framejs.io — Create and share interactive JavaScript apps instantly.
+      Write code (or use AI), get a shareable URL. No server, no login, no build step.
       Docs: https://framejs.io/docs/
       GitHub: https://github.com/metapages/metaframe-js
-      AI prompt: https://framejs.io/llms-prompt.md
+      AI code generation prompt: https://framejs.io/llms-prompt.md
+      Site info for LLMs: https://framejs.io/llms.txt
     -->
 
     <button id="menu-button" class="invisible-until-hover">
@@ -292,38 +294,42 @@
         >
           framejs.io
         </h1>
-        <p style="font-size: 1.25rem; color: #555; margin: 0 0 32px">
-          Run JavaScript in the browser, embedded in a URL.<br>No server, no
-          login — the URL <em>is</em> the program.
+        <p style="font-size: 1.25rem; color: #444; margin: 0 0 12px">
+          Create and share interactive visualizations, dashboards, and apps —
+          with AI or by hand.
+        </p>
+        <p style="font-size: 0.95rem; color: #666; margin: 0 0 32px">
+          Write JavaScript, get a shareable URL. No server, no login, no build
+          step. The entire app lives in the link.
         </p>
 
         <div
           style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 36px"
         >
           <a
-            href="/docs/guide/quickstart"
-            style="background: #f8f9fa; border: 1px solid #e2e5e9; border-radius: 8px; padding: 16px 18px; text-decoration: none; color: inherit; transition: border-color 0.2s"
-            onmouseover='this.style.borderColor = "#93a3b8"'
-            onmouseout='this.style.borderColor = "#e2e5e9"'
-          ><strong style="color: #333">Instant</strong><br><span
-              style="font-size: 0.9rem; color: #555"
-            >Write code, get a shareable URL. No build step.</span></a>
-          <a
             href="/docs/ai/setup"
             style="background: #f8f9fa; border: 1px solid #e2e5e9; border-radius: 8px; padding: 16px 18px; text-decoration: none; color: inherit; transition: border-color 0.2s"
             onmouseover='this.style.borderColor = "#93a3b8"'
             onmouseout='this.style.borderColor = "#e2e5e9"'
-          ><strong style="color: #333">AI-native</strong><br><span
+          ><strong style="color: #333">Ask AI to build it</strong><br><span
               style="font-size: 0.9rem; color: #555"
-            >Generate apps from prompts. Paste &amp; run.</span></a>
+            >Describe what you want, paste the code, share the link.</span></a>
+          <a
+            href="/docs/guide/quickstart"
+            style="background: #f8f9fa; border: 1px solid #e2e5e9; border-radius: 8px; padding: 16px 18px; text-decoration: none; color: inherit; transition: border-color 0.2s"
+            onmouseover='this.style.borderColor = "#93a3b8"'
+            onmouseout='this.style.borderColor = "#e2e5e9"'
+          ><strong style="color: #333">Share via URL</strong><br><span
+              style="font-size: 0.9rem; color: #555"
+            >The link is the app. No deploy, no hosting, no accounts.</span></a>
           <a
             href="/docs/guide/embedding"
             style="background: #f8f9fa; border: 1px solid #e2e5e9; border-radius: 8px; padding: 16px 18px; text-decoration: none; color: inherit; transition: border-color 0.2s"
             onmouseover='this.style.borderColor = "#93a3b8"'
             onmouseout='this.style.borderColor = "#e2e5e9"'
-          ><strong style="color: #333">Embeddable</strong><br><span
+          ><strong style="color: #333">Embed anywhere</strong><br><span
               style="font-size: 0.9rem; color: #555"
-            >Drop into Notion, Jupyter, Confluence, anywhere.</span></a>
+            >Notion, Jupyter, Confluence, blogs — just paste the URL.</span></a>
         </div>
 
         <h2

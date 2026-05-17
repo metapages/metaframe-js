@@ -1,20 +1,26 @@
 # framejs.io
 
-> Run, share, and embed JavaScript apps in a single URL.
+> Create and share interactive JavaScript visualizations, dashboards, and apps —
+> with AI or by hand.
 
 ## What is framejs.io?
 
-framejs.io is an open-source browser-based JavaScript runtime. Code is encoded
-directly into the URL — no server, no account, no build step. Write ES6 modules
-with top-level await, import npm packages from CDN, connect inputs/outputs
-between components, and share via a single link.
+framejs.io is a free, open-source tool for creating shareable interactive apps.
+You write JavaScript (or ask an AI to generate it), and framejs.io gives you a
+URL that IS the app — anyone with the link can see and use it immediately. No
+server to deploy, no account to create, no build step.
+
+Use cases: data visualizations, interactive charts, dashboards, creative
+animations, utility tools, educational demos, prototypes — anything you can
+build with JavaScript in a browser.
 
 ## Who is it for?
 
-- Developers wanting instant shareable JavaScript apps
+- Anyone who wants to create and share interactive web apps instantly
+- AI/LLM users generating visualizations and tools from natural language prompts
 - Data scientists embedding interactive visualizations in Jupyter or marimo
   notebooks
-- AI/LLM users generating code from natural language prompts
+- Developers wanting instant shareable JavaScript without deployment
 - Teams building embeddable dashboards and internal tools
 
 ## Key links
@@ -30,11 +36,11 @@ between components, and share via a single link.
 
 ## How it works
 
-1. JavaScript is encoded into the URL hash: `https://framejs.io/#?js=<base64>`
-2. The browser loads and executes the code as an ES6 module
-3. Short URLs (`/j/<sha256>`) store the hash params in S3 for cleaner sharing
-4. The editor opens in-browser — no external tools needed
-5. Metaframes can be connected together via inputs/outputs in a metapage
+1. Write JavaScript in the built-in editor, or paste AI-generated code
+2. The code runs immediately in the browser as an ES6 module
+3. The app is encoded directly into the URL — share the link, share the app
+4. Short URLs (`/j/<sha256>`) provide clean links for sharing
+5. Embed anywhere: Notion, Jupyter, Confluence, blogs, or any webpage via iframe
 
 ## Technical details
 
@@ -45,3 +51,11 @@ between components, and share via a single link.
 - CDN imports: Use jsdelivr (+esm), esm.sh, unpkg, etc.
 - State persistence: Encoded in URL hash — fully portable
 - No cookies, no tracking, no login required
+
+## Advanced: metapage ecosystem
+
+framejs.io apps can also function as "metaframes" — independent components that
+connect together via inputs and outputs in a metapage. This allows building
+larger workflows by wiring multiple framejs.io apps together, each handling a
+different part of a data pipeline or visualization. This is an advanced feature;
+most users simply create standalone apps.
