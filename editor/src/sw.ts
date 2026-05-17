@@ -25,11 +25,11 @@ cleanupOutdatedCaches();
 // SPA fallback: serve cached index.html for all navigation requests
 registerRoute(new NavigationRoute(createHandlerBoundToURL("index.html")));
 
-// Runtime cache for /llms.txt with stale-while-revalidate (24h expiry)
+// Runtime cache for /llms-prompt.md with stale-while-revalidate (24h expiry)
 registerRoute(
-  ({ url }) => url.pathname === "/llms.txt",
+  ({ url }) => url.pathname === "/llms-prompt.md",
   new StaleWhileRevalidate({
-    cacheName: "llms-txt-cache",
+    cacheName: "llms-prompt-cache",
     plugins: [
       new ExpirationPlugin({
         maxAgeSeconds: 24 * 60 * 60,

@@ -41,8 +41,8 @@ export default withMermaid(
               link: "https://framejs.io/command-js.md",
             },
             {
-              text: "llms.txt",
-              link: "https://framejs.io/llms.txt",
+              text: "llms-prompt.md",
+              link: "https://framejs.io/llms-prompt.md",
             },
           ],
         },
