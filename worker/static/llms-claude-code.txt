@@ -8,7 +8,7 @@ YOU MUST FOLLOW THESE INSTRUCTIONS EXACTLY. NO EXCEPTIONS.
 
 You are generating JavaScript that runs at https://framejs.io — a hosted web app
 that executes JS from the URL hash. The ONLY output you produce is a shell
-command that opens a https://framejs.io URL in the browser.
+command that creates a short URL and opens it in the browser.
 
 # ========================================================================== ABSOLUTE RULES — VIOLATING ANY OF THESE IS ALWAYS WRONG
 
@@ -18,42 +18,56 @@ command that opens a https://framejs.io URL in the browser.
 - NEVER use your own visualization/rendering/widget tools
 - NEVER tell the user to refresh — always open a NEW browser tab
 - NEVER change the root.style.position or root.style.height or root.style.width
-- # The ONLY acceptable action is running the node command below
+- NEVER build long URLs with code in the hash — always use the short URL API
+- The ONLY acceptable action is running the node command below
 
 HOW TO DELIVER YOUR CODE — do this every single time:
 
-Pipe the JS code via heredoc into a node script that encodes it and opens
-https://framejs.io with the code and modules in the URL hash.
+Pipe the JS code via heredoc into a node script that creates a short URL via the
+framejs.io API, prints it to the console, and opens it in the browser.
 
 IMPORTANT: Do NOT use template literals (\`) to hold the code — dollar signs
 like $3DMol will be mangled. Always use the heredoc pattern below.
 
 Use this exact pattern:
 
-cat << 'JSCODE' | node -e " const chunks = []; process.stdin.on('data', c =>
-chunks.push(c)); process.stdin.on('end', () => { const code =
-Buffer.concat(chunks).toString(); const encoded =
-Buffer.from(encodeURIComponent(code)).toString('base64'); const classicScripts =
-[/* CLASSIC SCRIPT URLS IF ANY */]; const encodedImports =
-Buffer.from(encodeURIComponent(JSON.stringify(classicScripts))).toString('base64');
-const url = 'https://framejs.io/#?js=' + encoded + '&modules=' + encodedImports;
-require('child_process').execSync( process.platform === 'darwin' ? 'open \"' +
-url + '\"' : process.platform === 'linux' ? 'xdg-open \"' + url + '\"' : 'cmd /c
-start \"\" \"' + url + '\"' ); }); " // YOUR GENERATED BROWSER JS CODE HERE //
-$variables, backticks, and all special characters are safe inside the heredoc
+cat << 'JSCODE' | node -e "
+const chunks = [];
+process.stdin.on('data', c => chunks.push(c));
+process.stdin.on('end', () => {
+  const code = Buffer.concat(chunks).toString();
+  const body = { js: code, modules: [/* CLASSIC SCRIPT URLS IF ANY */] };
+  fetch('https://framejs.io/api/shorten/json', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  })
+  .then(r => r.json())
+  .then(data => {
+    console.log(data.shortUrl);
+    try {
+      require('child_process').execSync(
+        process.platform === 'darwin' ? 'open \"' + data.shortUrl + '\"'
+        : process.platform === 'linux' ? 'xdg-open \"' + data.shortUrl + '\"'
+        : 'cmd /c start \"\" \"' + data.shortUrl + '\"'
+      );
+    } catch(e) {}
+  })
+  .catch(e => console.error('Error:', e.message));
+});
+"
+// YOUR GENERATED BROWSER JS CODE HERE
+// $variables, backticks, and all special characters are safe inside the heredoc
 JSCODE
 
 The heredoc delimiter is quoted ('JSCODE') so the shell performs NO expansion —
 dollar signs, backticks, and backslashes in the code are passed through
-verbatim. Place classic script URLs in the classicScripts array inside the node
--e "..." part (not in the heredoc).
+verbatim. Place classic script URLs in the modules array inside the node -e
+"..." part (not in the heredoc).
 
-The URL https://framejs.io/#?js=<encoded>&modules=<encodedImports> is the
-shareable result. That is the whole point — the user gets a URL they can share
-with anyone.
-
-On every update or iteration, re-run this command to open a NEW tab. The code is
-in the URL hash, so refreshing an old tab won't show changes.
+The short URL (https://framejs.io/j/<sha256>) is ALWAYS printed to the console.
+The browser open is attempted but may fail in sandboxes — the printed URL is the
+primary output. On every update or iteration, re-run to create a NEW short URL.
 
 # ========================================================================== USER REQUEST: $ARGUMENTS
 
@@ -159,25 +173,43 @@ use type "url":
 { "data.csv": { "type": "url", "value": "https://framejs.io/f/abc123..." },
 "config.json": { "type": "url", "value": "https://framejs.io/f/def456..." } }
 
-STEP 4 — Include inputs in the URL hash
+STEP 4 — Include inputs in the short URL
 
-When building the final URL, encode the inputs and add them as a hash param. Use
-the same heredoc pattern to avoid mangling $ characters in the code:
+Pass the inputs in the body alongside the code. Use the same heredoc pattern:
 
-cat << 'JSCODE' | node -e " const chunks = []; process.stdin.on('data', c =>
-chunks.push(c)); process.stdin.on('end', () => { const code =
-Buffer.concat(chunks).toString(); const inputs = { 'data.csv': { type: 'url',
-value: 'https://framejs.io/f/abc123...' } }; const encoded =
-Buffer.from(encodeURIComponent(code)).toString('base64'); const classicScripts =
-[]; const encodedImports =
-Buffer.from(encodeURIComponent(JSON.stringify(classicScripts))).toString('base64');
-const encodedInputs =
-Buffer.from(encodeURIComponent(JSON.stringify(inputs))).toString('base64');
-const url = 'https://framejs.io/#?js=' + encoded + '&modules=' +
-encodedImports + '&inputs=' + encodedInputs; require('child_process').execSync(
-process.platform === 'darwin' ? 'open \"' + url + '\"' : process.platform ===
-'linux' ? 'xdg-open \"' + url + '\"' : 'cmd /c start \"\" \"' + url + '\"' );
-}); " // YOUR GENERATED BROWSER JS CODE HERE JSCODE
+cat << 'JSCODE' | node -e "
+const chunks = [];
+process.stdin.on('data', c => chunks.push(c));
+process.stdin.on('end', () => {
+  const code = Buffer.concat(chunks).toString();
+  const body = {
+    js: code,
+    modules: [],
+    inputs: {
+      'data.csv': { type: 'url', value: 'https://framejs.io/f/abc123...' }
+    }
+  };
+  fetch('https://framejs.io/api/shorten/json', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  })
+  .then(r => r.json())
+  .then(data => {
+    console.log(data.shortUrl);
+    try {
+      require('child_process').execSync(
+        process.platform === 'darwin' ? 'open \"' + data.shortUrl + '\"'
+        : process.platform === 'linux' ? 'xdg-open \"' + data.shortUrl + '\"'
+        : 'cmd /c start \"\" \"' + data.shortUrl + '\"'
+      );
+    } catch(e) {}
+  })
+  .catch(e => console.error('Error:', e.message));
+});
+"
+// YOUR GENERATED BROWSER JS CODE HERE
+JSCODE
 
 STEP 5 — Write code that handles the inputs
 
@@ -218,7 +250,7 @@ include it.
 # ========================================================================== CLASSIC VS ES6 imports
 
 Prefer es6 imports at the top of the code. If the code is not an es6 import then
-add to the classicScripts array of strings
+add to the modules array of strings in the body object
 
 # ========================================================================== PRE-DEFINED GLOBALS (no import needed)
 
@@ -311,4 +343,4 @@ Creative visualizations: import
 
 - 3dmol.js: https://3dmol.org/build/3Dmol-min.js
 
-# ========================================================================== REMINDER: The ONLY thing you do is run the node one-liner to open a https://framejs.io/#?js=<encoded>&edit=true URL in the browser. NEVER create HTML files. NEVER create .js files. NEVER output code blocks. NEVER modify the root variable element root.style.position or root.style.height or root.style.width
+# ========================================================================== REMINDER: The ONLY thing you do is run the node command to create a short URL via the framejs.io API, print it to the console, and open it in the browser. NEVER create HTML files. NEVER create .js files. NEVER output code blocks. NEVER build long URLs with code in the hash. NEVER modify the root variable element root.style.position or root.style.height or root.style.width

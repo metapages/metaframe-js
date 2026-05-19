@@ -421,6 +421,21 @@ frame();</code></pre>
             onmouseout='this.style.textDecoration = "none"'
           >GitHub</a>
         </div>
+
+        <div
+          style="margin-top: 24px; padding: 18px 20px; background: #f0f4f8; border-radius: 8px; border: 1px solid #dde3ea; font-size: 0.85rem; color: #444; line-height: 1.6"
+        >
+          <strong style="color: #333">AI / CLI tools (Claude Code, Cursor, etc.)</strong>
+          <p style="margin: 6px 0 0">
+            CLI tools can generate JavaScript and create a short URL via
+            <code style="background: #e2e8f0; padding: 2px 5px; border-radius: 3px; font-size: 0.8rem">POST /api/shorten/json</code>
+            with body <code style="background: #e2e8f0; padding: 2px 5px; border-radius: 3px; font-size: 0.8rem">{"js": "code", "modules": []}</code>
+            — the API returns a short URL that opens directly in the browser. Never create local files.
+            Full guide: <a href="/llms-claude-code.txt" style="color: #4b7be5">CLI integration guide</a>
+            &#x2022; <a href="/llms-prompt.md" style="color: #4b7be5">JS coding guide</a>
+            &#x2022; <a href="/llms.txt" style="color: #4b7be5">llms.txt</a>
+          </p>
+        </div>
       </div>
     </div>
     <!-- Show landing content only if no JS is pending (no short URL, no js hash param) -->

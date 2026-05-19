@@ -65,51 +65,58 @@ https://framejs.io/llms-claude-code.txt
 JavaScript coding guide (ES6 module constraints, globals, patterns):
 https://framejs.io/llms-prompt.md
 
-### URL encoding scheme
+### Creating and opening a short URL from the command line
 
-JavaScript code is encoded in the URL hash:
-
-    https://framejs.io/#?js={encoded_js}&modules={encoded_modules}&edit=true
-
-- `js` param: `Buffer.from(encodeURIComponent(code)).toString('base64')`
-- `modules` param: `Buffer.from(encodeURIComponent(JSON.stringify(classicScriptUrls))).toString('base64')`
-- `edit=true`: shows the editor panel (optional)
-
-### Opening in the browser from the command line
-
-Use a heredoc to safely pass JavaScript (preserves $variables, backticks, etc.):
+Use the `/api/shorten/json` API to create a short URL. Pipe JS code via heredoc
+into a node script that POSTs to the API, prints the short URL, and opens it:
 
     cat << 'JSCODE' | node -e "
     const chunks = [];
     process.stdin.on('data', c => chunks.push(c));
     process.stdin.on('end', () => {
       const code = Buffer.concat(chunks).toString();
-      const encoded = Buffer.from(encodeURIComponent(code)).toString('base64');
-      const classicScripts = [/* NON-ES6 SCRIPT URLS IF ANY */];
-      const encodedImports = Buffer.from(encodeURIComponent(JSON.stringify(classicScripts))).toString('base64');
-      const url = 'https://framejs.io/#?js=' + encoded + '&modules=' + encodedImports;
-      require('child_process').execSync(
-        process.platform === 'darwin' ? 'open \"' + url + '\"'
-        : process.platform === 'linux' ? 'xdg-open \"' + url + '\"'
-        : 'cmd /c start \"\" \"' + url + '\"'
-      );
+      const body = { js: code, modules: [/* NON-ES6 SCRIPT URLS IF ANY */] };
+      fetch('https://framejs.io/api/shorten/json', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      })
+      .then(r => r.json())
+      .then(data => {
+        console.log(data.shortUrl);
+        try {
+          require('child_process').execSync(
+            process.platform === 'darwin' ? 'open \"' + data.shortUrl + '\"'
+            : process.platform === 'linux' ? 'xdg-open \"' + data.shortUrl + '\"'
+            : 'cmd /c start \"\" \"' + data.shortUrl + '\"'
+          );
+        } catch(e) {}
+      })
+      .catch(e => console.error('Error:', e.message));
     });
     "
     // YOUR GENERATED BROWSER JS CODE HERE
     JSCODE
 
-IMPORTANT: The heredoc delimiter is quoted ('JSCODE') so the shell performs NO
-expansion. Never create local .js or .html files — always encode into the URL.
+The heredoc delimiter is quoted ('JSCODE') so the shell performs NO expansion.
+The short URL is ALWAYS printed to the console. Browser open is attempted but
+may fail in sandboxes. Never create local .js or .html files.
+
+### Short URL API details
+
+POST https://framejs.io/api/shorten/json with JSON body:
+`{ "js": "raw JS code", "modules": ["url1", ...], "inputs": {...} }`
+
+The server handles encoding. Response:
+`{ "shortUrl": "https://framejs.io/j/<sha256>", "id": "<sha256>" }`
 
 ### Modifying existing short URLs
 
-If given a short URL (https://framejs.io/j/<sha256>), fetch the existing code first:
-
-    node -e "fetch('https://framejs.io/api/j/<sha256>').then(r=>r.json()).then(d=>console.log(JSON.stringify(d,null,2)))"
+Fetch existing code: `GET https://framejs.io/api/j/<sha256>`
 
 Response: `{ "id": "<sha256>", "hashParams": { "js": "...", "inputs": {...}, "modules": [...] } }`
 
-Modify the `js` field, then re-encode and open using the command above.
+Modify the `js` field, then POST back to `/api/shorten/json` with the updated body.
 
 ## Advanced: metapage ecosystem
 
