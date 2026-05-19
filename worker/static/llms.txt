@@ -30,7 +30,8 @@ build with JavaScript in a browser.
 - Examples: https://framejs.io/docs/examples/
 - AI / LLM setup: https://framejs.io/docs/ai/setup
 - LLM code prompt (for generating code): https://framejs.io/llms-prompt.md
-- CLI integration guide (for AI coding assistants): https://framejs.io/llms-claude-code.txt
+- CLI integration guide (for AI coding assistants):
+  https://framejs.io/llms-claude-code.txt
 - GitHub: https://github.com/metapages/metaframe-js
 - Jupyter integration: https://framejs.io/docs/integrations/jupyter
 - marimo integration: https://framejs.io/docs/integrations/marimo
@@ -114,9 +115,11 @@ The server handles encoding. Response:
 
 Fetch existing code: `GET https://framejs.io/api/j/<sha256>`
 
-Response: `{ "id": "<sha256>", "hashParams": { "js": "...", "inputs": {...}, "modules": [...] } }`
+Response:
+`{ "id": "<sha256>", "hashParams": { "js": "...", "inputs": {...}, "modules": [...] } }`
 
-Modify the `js` field, then POST back to `/api/shorten/json` with the updated body.
+Modify the `js` field, then POST back to `/api/shorten/json` with the updated
+body.
 
 ## Advanced: metapage ecosystem
 

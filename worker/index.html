@@ -10,9 +10,21 @@
       name="description"
       content="framejs.io lets you create interactive visualizations, dashboards, and apps with AI or by hand. Share via URL — no server, no login, no build step. Just write JavaScript and share the link."
     >
-    <link rel="help" href="/llms.txt" title="LLM site overview and URL encoding scheme" />
-    <link rel="help" href="/llms-claude-code.txt" title="Full CLI integration guide for AI coding assistants" />
-    <link rel="help" href="/llms-prompt.md" title="JavaScript coding guide for LLMs" />
+    <link
+      rel="help"
+      href="/llms.txt"
+      title="LLM site overview and URL encoding scheme"
+    />
+    <link
+      rel="help"
+      href="/llms-claude-code.txt"
+      title="Full CLI integration guide for AI coding assistants"
+    />
+    <link
+      rel="help"
+      href="/llms-prompt.md"
+      title="JavaScript coding guide for LLMs"
+    />
     <!-- OG_START -->
     <meta property="og:type" content="website">
     <meta
@@ -425,14 +437,23 @@ frame();</code></pre>
         <div
           style="margin-top: 24px; padding: 18px 20px; background: #f0f4f8; border-radius: 8px; border: 1px solid #dde3ea; font-size: 0.85rem; color: #444; line-height: 1.6"
         >
-          <strong style="color: #333">AI / CLI tools (Claude Code, Cursor, etc.)</strong>
+          <strong style="color: #333"
+          >AI / CLI tools (Claude Code, Cursor, etc.)</strong>
           <p style="margin: 6px 0 0">
             CLI tools can generate JavaScript and create a short URL via
-            <code style="background: #e2e8f0; padding: 2px 5px; border-radius: 3px; font-size: 0.8rem">POST /api/shorten/json</code>
-            with body <code style="background: #e2e8f0; padding: 2px 5px; border-radius: 3px; font-size: 0.8rem">{"js": "code", "modules": []}</code>
-            — the API returns a short URL that opens directly in the browser. Never create local files.
-            Full guide: <a href="/llms-claude-code.txt" style="color: #4b7be5">CLI integration guide</a>
-            &#x2022; <a href="/llms-prompt.md" style="color: #4b7be5">JS coding guide</a>
+            <code
+              style="background: #e2e8f0; padding: 2px 5px; border-radius: 3px; font-size: 0.8rem"
+            >POST /api/shorten/json</code>
+            with body <code
+              style="background: #e2e8f0; padding: 2px 5px; border-radius: 3px; font-size: 0.8rem"
+            >{"js": "code", "modules": []}</code>
+            — the API returns a short URL that opens directly in the browser.
+            Never create local files. Full guide: <a
+              href="/llms-claude-code.txt"
+              style="color: #4b7be5"
+            >CLI integration guide</a>
+            &#x2022; <a href="/llms-prompt.md" style="color: #4b7be5"
+            >JS coding guide</a>
             &#x2022; <a href="/llms.txt" style="color: #4b7be5">llms.txt</a>
           </p>
         </div>
@@ -440,7 +461,7 @@ frame();</code></pre>
     </div>
     <!-- Show landing content only if no JS is pending (no short URL, no js hash param) -->
     <script>
-      (function() {
+      (function () {
         var hash = window.location.hash || "";
         var hasJsParam = hash.indexOf("js=") > -1;
         var hasShortUrl = !!window.__SHORT_URL_READY;

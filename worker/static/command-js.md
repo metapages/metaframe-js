@@ -31,34 +31,19 @@ like $3DMol will be mangled. Always use the heredoc pattern below.
 
 Use this exact pattern:
 
-cat << 'JSCODE' | node -e "
-const chunks = [];
-process.stdin.on('data', c => chunks.push(c));
-process.stdin.on('end', () => {
-  const code = Buffer.concat(chunks).toString();
-  const body = { js: code, modules: [/* CLASSIC SCRIPT URLS IF ANY */] };
-  fetch('https://framejs.io/api/shorten/json', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  })
-  .then(r => r.json())
-  .then(data => {
-    console.log(data.shortUrl);
-    try {
-      require('child_process').execSync(
-        process.platform === 'darwin' ? 'open \"' + data.shortUrl + '\"'
-        : process.platform === 'linux' ? 'xdg-open \"' + data.shortUrl + '\"'
-        : 'cmd /c start \"\" \"' + data.shortUrl + '\"'
-      );
-    } catch(e) {}
-  })
-  .catch(e => console.error('Error:', e.message));
-});
-"
-// YOUR GENERATED BROWSER JS CODE HERE
-// $variables, backticks, and all special characters are safe inside the heredoc
-JSCODE
+cat << 'JSCODE' | node -e " const chunks = []; process.stdin.on('data', c =>
+chunks.push(c)); process.stdin.on('end', () => { const code =
+Buffer.concat(chunks).toString(); const body = { js: code, modules: [/* CLASSIC
+SCRIPT URLS IF ANY */] }; fetch('https://framejs.io/api/shorten/json', { method:
+'POST', headers: { 'Content-Type': 'application/json' }, body:
+JSON.stringify(body) }) .then(r => r.json()) .then(data => {
+console.log(data.shortUrl); try { require('child_process').execSync(
+process.platform === 'darwin' ? 'open \"' + data.shortUrl + '\"' :
+process.platform === 'linux' ? 'xdg-open \"' + data.shortUrl + '\"' : 'cmd /c
+start \"\" \"' + data.shortUrl + '\"' ); } catch(e) {} }) .catch(e =>
+console.error('Error:', e.message)); }); " // YOUR GENERATED BROWSER JS CODE
+HERE // $variables, backticks, and all special characters are safe inside the
+heredoc JSCODE
 
 The heredoc delimiter is quoted ('JSCODE') so the shell performs NO expansion —
 dollar signs, backticks, and backslashes in the code are passed through
@@ -112,8 +97,8 @@ STEP 3 — Use the fetched code as the starting point
   (the remaining text in $ARGUMENTS after the URL/sha256).
 - If "inputs" exist, the code already expects those inputs in onInputs().
   Preserve input handling unless the user asks to change it.
-- If "modules" exist, keep them in the modules array unless the user asks
-  to remove or replace them.
+- If "modules" exist, keep them in the modules array unless the user asks to
+  remove or replace them.
 - Apply the user's requested changes to the existing code, then deliver the
   modified version using the standard node command (see above).
 
@@ -177,39 +162,18 @@ STEP 4 — Include inputs in the short URL
 
 Pass the inputs in the body alongside the code. Use the same heredoc pattern:
 
-cat << 'JSCODE' | node -e "
-const chunks = [];
-process.stdin.on('data', c => chunks.push(c));
-process.stdin.on('end', () => {
-  const code = Buffer.concat(chunks).toString();
-  const body = {
-    js: code,
-    modules: [],
-    inputs: {
-      'data.csv': { type: 'url', value: 'https://framejs.io/f/abc123...' }
-    }
-  };
-  fetch('https://framejs.io/api/shorten/json', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  })
-  .then(r => r.json())
-  .then(data => {
-    console.log(data.shortUrl);
-    try {
-      require('child_process').execSync(
-        process.platform === 'darwin' ? 'open \"' + data.shortUrl + '\"'
-        : process.platform === 'linux' ? 'xdg-open \"' + data.shortUrl + '\"'
-        : 'cmd /c start \"\" \"' + data.shortUrl + '\"'
-      );
-    } catch(e) {}
-  })
-  .catch(e => console.error('Error:', e.message));
-});
-"
-// YOUR GENERATED BROWSER JS CODE HERE
-JSCODE
+cat << 'JSCODE' | node -e " const chunks = []; process.stdin.on('data', c =>
+chunks.push(c)); process.stdin.on('end', () => { const code =
+Buffer.concat(chunks).toString(); const body = { js: code, modules: [], inputs:
+{ 'data.csv': { type: 'url', value: 'https://framejs.io/f/abc123...' } } };
+fetch('https://framejs.io/api/shorten/json', { method: 'POST', headers: {
+'Content-Type': 'application/json' }, body: JSON.stringify(body) }) .then(r =>
+r.json()) .then(data => { console.log(data.shortUrl); try {
+require('child_process').execSync( process.platform === 'darwin' ? 'open \"' +
+data.shortUrl + '\"' : process.platform === 'linux' ? 'xdg-open \"' +
+data.shortUrl + '\"' : 'cmd /c start \"\" \"' + data.shortUrl + '\"' ); }
+catch(e) {} }) .catch(e => console.error('Error:', e.message)); }); " // YOUR
+GENERATED BROWSER JS CODE HERE JSCODE
 
 STEP 5 — Write code that handles the inputs
 
