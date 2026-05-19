@@ -57,7 +57,8 @@
       "Bash(find:*)",
       "Bash(magick identify:*)",
       "Bash(magick:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "WebFetch(domain:framejs.io)"
     ],
     "deny": [],
     "ask": []

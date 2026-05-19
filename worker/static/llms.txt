@@ -30,6 +30,7 @@ build with JavaScript in a browser.
 - Examples: https://framejs.io/docs/examples/
 - AI / LLM setup: https://framejs.io/docs/ai/setup
 - LLM code prompt (for generating code): https://framejs.io/llms-prompt.md
+- CLI integration guide (for AI coding assistants): https://framejs.io/llms-claude-code.txt
 - GitHub: https://github.com/metapages/metaframe-js
 - Jupyter integration: https://framejs.io/docs/integrations/jupyter
 - marimo integration: https://framejs.io/docs/integrations/marimo
@@ -51,6 +52,64 @@ build with JavaScript in a browser.
 - CDN imports: Use jsdelivr (+esm), esm.sh, unpkg, etc.
 - State persistence: Encoded in URL hash — fully portable
 - No cookies, no tracking, no login required
+
+## For CLI tools and AI coding assistants (Claude Code, Aider, Cursor, etc.)
+
+framejs.io supports a fully automated workflow where CLI tools generate
+JavaScript, encode it into a URL, and open it directly in the browser — no
+copy-pasting needed.
+
+Full CLI integration guide (encoding, short URLs, file uploads):
+https://framejs.io/llms-claude-code.txt
+
+JavaScript coding guide (ES6 module constraints, globals, patterns):
+https://framejs.io/llms-prompt.md
+
+### URL encoding scheme
+
+JavaScript code is encoded in the URL hash:
+
+    https://framejs.io/#?js={encoded_js}&modules={encoded_modules}&edit=true
+
+- `js` param: `Buffer.from(encodeURIComponent(code)).toString('base64')`
+- `modules` param: `Buffer.from(encodeURIComponent(JSON.stringify(classicScriptUrls))).toString('base64')`
+- `edit=true`: shows the editor panel (optional)
+
+### Opening in the browser from the command line
+
+Use a heredoc to safely pass JavaScript (preserves $variables, backticks, etc.):
+
+    cat << 'JSCODE' | node -e "
+    const chunks = [];
+    process.stdin.on('data', c => chunks.push(c));
+    process.stdin.on('end', () => {
+      const code = Buffer.concat(chunks).toString();
+      const encoded = Buffer.from(encodeURIComponent(code)).toString('base64');
+      const classicScripts = [/* NON-ES6 SCRIPT URLS IF ANY */];
+      const encodedImports = Buffer.from(encodeURIComponent(JSON.stringify(classicScripts))).toString('base64');
+      const url = 'https://framejs.io/#?js=' + encoded + '&modules=' + encodedImports;
+      require('child_process').execSync(
+        process.platform === 'darwin' ? 'open \"' + url + '\"'
+        : process.platform === 'linux' ? 'xdg-open \"' + url + '\"'
+        : 'cmd /c start \"\" \"' + url + '\"'
+      );
+    });
+    "
+    // YOUR GENERATED BROWSER JS CODE HERE
+    JSCODE
+
+IMPORTANT: The heredoc delimiter is quoted ('JSCODE') so the shell performs NO
+expansion. Never create local .js or .html files — always encode into the URL.
+
+### Modifying existing short URLs
+
+If given a short URL (https://framejs.io/j/<sha256>), fetch the existing code first:
+
+    node -e "fetch('https://framejs.io/api/j/<sha256>').then(r=>r.json()).then(d=>console.log(JSON.stringify(d,null,2)))"
+
+Response: `{ "id": "<sha256>", "hashParams": { "js": "...", "inputs": {...}, "modules": [...] } }`
+
+Modify the `js` field, then re-encode and open using the command above.
 
 ## Advanced: metapage ecosystem
 

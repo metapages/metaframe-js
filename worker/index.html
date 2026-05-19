@@ -10,6 +10,9 @@
       name="description"
       content="framejs.io lets you create interactive visualizations, dashboards, and apps with AI or by hand. Share via URL — no server, no login, no build step. Just write JavaScript and share the link."
     >
+    <link rel="help" href="/llms.txt" title="LLM site overview and URL encoding scheme" />
+    <link rel="help" href="/llms-claude-code.txt" title="Full CLI integration guide for AI coding assistants" />
+    <link rel="help" href="/llms-prompt.md" title="JavaScript coding guide for LLMs" />
     <!-- OG_START -->
     <meta property="og:type" content="website">
     <meta
@@ -261,8 +264,13 @@
       Write code (or use AI), get a shareable URL. No server, no login, no build step.
       Docs: https://framejs.io/docs/
       GitHub: https://github.com/metapages/metaframe-js
-      AI code generation prompt: https://framejs.io/llms-prompt.md
-      Site info for LLMs: https://framejs.io/llms.txt
+
+      For AI/LLM tools:
+      - Site overview + URL encoding scheme: https://framejs.io/llms.txt
+      - Full CLI integration guide (encoding, opening, short URLs, file uploads): https://framejs.io/llms-claude-code.txt
+      - JavaScript coding constraints and patterns: https://framejs.io/llms-prompt.md
+
+      CLI tools: generate JS, encode into URL with btoa(encodeURIComponent(code)), open https://framejs.io/#?js={encoded}
     -->
 
     <button id="menu-button" class="invisible-until-hover">
