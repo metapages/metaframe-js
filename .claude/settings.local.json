@@ -58,7 +58,8 @@
       "Bash(magick identify:*)",
       "Bash(magick:*)",
       "Bash(node:*)",
-      "WebFetch(domain:framejs.io)"
+      "WebFetch(domain:framejs.io)",
+      "Bash(echo \"exit: $?\")"
     ],
     "deny": [],
     "ask": []

@@ -34,7 +34,7 @@ Use this exact pattern:
 cat << 'JSCODE' | node -e " const chunks = []; process.stdin.on('data', c =>
 chunks.push(c)); process.stdin.on('end', () => { const code =
 Buffer.concat(chunks).toString(); const body = { js: code, modules: [/* CLASSIC
-SCRIPT URLS IF ANY */] }; fetch('https://framejs.io/api/shorten/json', { method:
+SCRIPT URLS IF ANY */], og: { title: 'SHORT TITLE', description: 'ONE-SENTENCE SUMMARY' } /* OPEN GRAPH section — always set when missing */ }; fetch('https://framejs.io/api/shorten/json', { method:
 'POST', headers: { 'Content-Type': 'application/json' }, body:
 JSON.stringify(body) }) .then(r => r.json()) .then(data => {
 console.log(data.shortUrl); try { require('child_process').execSync(
@@ -53,6 +53,34 @@ verbatim. Place classic script URLs in the modules array inside the node -e
 The short URL (https://framejs.io/j/<sha256>) is ALWAYS printed to the console.
 The browser open is attempted but may fail in sandboxes — the printed URL is the
 primary output. On every update or iteration, re-run to create a NEW short URL.
+
+# ========================================================================== OPEN GRAPH PREVIEW TAGS (og) — ALWAYS SET WHEN MISSING
+
+The short URL server-renders Open Graph meta tags (og:title, og:description) so
+the link unfurls with a meaningful title and summary when shared in Slack,
+iMessage, social media, etc. Set them with an `og` object in the body, alongside
+`js` / `modules` / `inputs`:
+
+  og: { title: 'Short Title', description: 'One-sentence summary of the app' }
+
+It is stored in the hash params and round-trips via the JSON API exactly like
+js, modules, and inputs (fetching /api/j/<sha256> returns hashParams.og).
+
+RULES — apply on EVERY run:
+
+- Creating a NEW app: ALWAYS include `og` with your best recommendation. Derive
+  the title and description from the user's request and the code you generated —
+  do NOT use the placeholder text. Make it specific to what the visualization
+  actually shows/does.
+    - title: concise and specific, aim for <= ~60 characters (avoids truncation).
+    - description: ~110-150 characters; say what it shows and, if interactive,
+      how to use it. Avoid trailing fluff that gets cut off.
+- Modifying an EXISTING short URL: if the fetched hashParams.og already exists,
+  PRESERVE it verbatim (carry it through unchanged) unless the user explicitly
+  asks to change the title/description. If hashParams.og is missing, ADD one
+  with a recommended title/description following the rules above.
+- Only the user changing copy overrides an existing og. Never silently drop or
+  overwrite an og the user (or a previous run) already set.
 
 # ========================================================================== USER REQUEST: $ARGUMENTS
 
@@ -89,7 +117,8 @@ JavaScript source code", "inputs": { "input-name": <value>, ... }, "modules": [
 
 Key fields in hashParams: js — the existing JavaScript source code (decoded,
 plain text) inputs — (optional) JSON object of input name → value pairs modules
-— (optional) array of classic script URLs to import
+— (optional) array of classic script URLs to import og — (optional) { title,
+description } Open Graph preview tags
 
 STEP 3 — Use the fetched code as the starting point
 
@@ -99,6 +128,9 @@ STEP 3 — Use the fetched code as the starting point
   Preserve input handling unless the user asks to change it.
 - If "modules" exist, keep them in the modules array unless the user asks to
   remove or replace them.
+- If "og" exists, carry it through UNCHANGED in the new body unless the user
+  explicitly asks to change the title/description. If "og" is missing, ADD one
+  with a recommended title/description (see OPEN GRAPH section).
 - Apply the user's requested changes to the existing code, then deliver the
   modified version using the standard node command (see above).
 
@@ -165,7 +197,7 @@ Pass the inputs in the body alongside the code. Use the same heredoc pattern:
 cat << 'JSCODE' | node -e " const chunks = []; process.stdin.on('data', c =>
 chunks.push(c)); process.stdin.on('end', () => { const code =
 Buffer.concat(chunks).toString(); const body = { js: code, modules: [], inputs:
-{ 'data.csv': { type: 'url', value: 'https://framejs.io/f/abc123...' } } };
+{ 'data.csv': { type: 'url', value: 'https://framejs.io/f/abc123...' } }, og: { title: 'SHORT TITLE', description: 'ONE-SENTENCE SUMMARY' } /* OPEN GRAPH section — always set when missing */ };
 fetch('https://framejs.io/api/shorten/json', { method: 'POST', headers: {
 'Content-Type': 'application/json' }, body: JSON.stringify(body) }) .then(r =>
 r.json()) .then(data => { console.log(data.shortUrl); try {
@@ -307,4 +339,4 @@ Creative visualizations: import
 
 - 3dmol.js: https://3dmol.org/build/3Dmol-min.js
 
-# ========================================================================== REMINDER: The ONLY thing you do is run the node command to create a short URL via the framejs.io API, print it to the console, and open it in the browser. NEVER create HTML files. NEVER create .js files. NEVER output code blocks. NEVER build long URLs with code in the hash. NEVER modify the root variable element root.style.position or root.style.height or root.style.width
+# ========================================================================== REMINDER: The ONLY thing you do is run the node command to create a short URL via the framejs.io API, print it to the console, and open it in the browser. ALWAYS include an og {title, description} in the body when one does not already exist (preserve an existing og unless the user asks to change it). NEVER create HTML files. NEVER create .js files. NEVER output code blocks. NEVER build long URLs with code in the hash. NEVER modify the root variable element root.style.position or root.style.height or root.style.width
