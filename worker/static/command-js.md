@@ -316,24 +316,28 @@ elements };
 
 # ========================================================================== AVAILABLE CDN LIBRARIES
 
-3D or 2D plots: import "https://cdn.plot.ly/plotly-3.3.0.min.js" import * as d3
-from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+3D or 2D plots:
+ - import "https://cdn.plot.ly/plotly-3.3.0.min.js"
+ - import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
-2D plots: import * as echarts from
-'https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.esm.min.js';
+2D plots:
+ - import * as echarts from 'https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.esm.min.js';
 
-2D animations: import gsap from 'https://cdn.jsdelivr.net/npm/gsap@3.13.0/+esm';
+2D animations:
+ - import gsap from 'https://cdn.jsdelivr.net/npm/gsap@3.13.0/+esm';
 
-Sound: import howler from 'https://cdn.jsdelivr.net/npm/howler@2.2.4/+esm'
-import * as Tone from 'https://cdn.jsdelivr.net/npm/tone@15.1.22/+esm';
+Sound:
+ - import howler from 'https://cdn.jsdelivr.net/npm/howler@2.2.4/+esm'
+ - import * as Tone from 'https://cdn.jsdelivr.net/npm/tone@15.1.22/+esm';
 
-Creative visualizations: import
-'https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js';
+Creative visualizations:
+ - import 'https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js';
 
-2D physics: import Matter from
-"https://cdn.jsdelivr.net/npm/matter-js@0.20.0/+esm";
+2D physics:
+ - import Matter from "https://cdn.jsdelivr.net/npm/matter-js@0.20.0/+esm";
 
-3D rendering: import "https://cdn.babylonjs.com/babylon.js"
+3D rendering:
+ - import "https://cdn.babylonjs.com/babylon.js"
 
 # ========================================================================== Modules that must be put in the modules array (hash param) rather then es6 imports:
 
