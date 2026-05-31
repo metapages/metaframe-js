@@ -100,6 +100,17 @@ export const ButtonShortenUrl: React.FC<{
       const shortUrl = `${origin}/j/${sha256}`;
       setShortenedUrl(shortUrl);
 
+      // When embedded (e.g. the Jupyter/marimo widget), notify the host of the
+      // freshly-minted short URL so it can persist it. The host is same-origin
+      // to neither us nor /api/shorten, so it can't mint this itself — only the
+      // editor (same-origin to the worker) can. Harmless if no host is listening.
+      if (window.parent !== window) {
+        window.parent.postMessage(
+          { type: "metaframe-widget:shorturl", url: shortUrl },
+          "*",
+        );
+      }
+
       // Copy to clipboard
       onCopy(shortUrl);
       setTimeout(() => {

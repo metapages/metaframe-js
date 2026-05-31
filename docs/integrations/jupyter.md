@@ -78,6 +78,28 @@ w = MetaframeWidget(url="https://framejs.io/j/xxx")
 w
 ```
 
+This is the most compact way to embed a metaframe — the code lives behind the
+short URL instead of being inlined in the cell.
+
+#### Editing and saving back
+
+You can edit the code directly inside the widget. When you click **Save and
+Shorten URL** in the editor toolbar, a new short URL is minted and shown in the
+"Saved:" bar at the bottom of the widget. It is also available in Python:
+
+```python
+w.saved_url  # → "https://framejs.io/j/yyy"
+```
+
+Copy that value into your cell (replacing the old URL) to persist your edits
+across notebook re-runs. To react to saves programmatically:
+
+```python
+w.on_saved_url_change(lambda change: print("Saved:", change["new"]))
+```
+
+Saving does not reload the iframe, so your editing session is never interrupted.
+
 ### From a full URL
 
 You can paste any full metaframe URL. These tend to be long since they encode the code in the hash:

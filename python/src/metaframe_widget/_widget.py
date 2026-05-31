@@ -26,6 +26,9 @@ class MetaframeWidget(anywidget.AnyWidget):
         width: CSS width for the widget container (default "100%").
         height: CSS height for the widget container (default "400px").
         allow: iframe allow attribute string (e.g. "camera; microphone").
+        saved_url: Latest short URL minted by editing+saving inside the widget
+            (read-only). Copy this into your cell to persist edits across
+            notebook re-runs.
     """
 
     _esm = ESM
@@ -36,6 +39,10 @@ class MetaframeWidget(anywidget.AnyWidget):
     width = traitlets.Unicode("100%").tag(sync=True)
     height = traitlets.Unicode("400px").tag(sync=True)
     allow = traitlets.Unicode("").tag(sync=True)
+    # Set by the ESM when the user clicks "Save and Shorten URL" inside the
+    # embedded editor. Read-only from Python's perspective; updating it does not
+    # reload the iframe (so editing is not interrupted).
+    saved_url = traitlets.Unicode("").tag(sync=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -66,6 +73,15 @@ class MetaframeWidget(anywidget.AnyWidget):
         The callback receives a change dict with 'old' and 'new' keys.
         """
         self.observe(callback, names=["outputs"])
+
+    def on_saved_url_change(self, callback):
+        """Register a callback for when the user saves edits to a new short URL.
+
+        Fires after the user clicks "Save and Shorten URL" inside the embedded
+        editor. The callback receives a change dict whose 'new' key holds the
+        freshly-minted short URL.
+        """
+        self.observe(callback, names=["saved_url"])
 
     @classmethod
     def from_code(

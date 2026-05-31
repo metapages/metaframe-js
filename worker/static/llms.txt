@@ -115,8 +115,8 @@ The optional `og` hash param holds Open Graph preview tags as
 `{ "title", "description" }`. The server renders these as og:title /
 og:description so the link unfurls with a meaningful title and summary when
 shared (Slack, iMessage, social media). If `og` is empty or missing, generate
-one from the data, the user's prompt, and the existing code: a concise title
-(<= ~60 chars) and a ~110-150 char description of what the app shows and, if
+one from the data, the user's prompt, and the existing code: a concise title (<=
+~60 chars) and a ~110-150 char description of what the app shows and, if
 interactive, how to use it.
 
 ### Modifying existing short URLs
