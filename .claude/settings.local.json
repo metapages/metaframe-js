@@ -59,7 +59,11 @@
       "Bash(magick:*)",
       "Bash(node:*)",
       "WebFetch(domain:framejs.io)",
-      "Bash(echo \"exit: $?\")"
+      "Bash(echo \"exit: $?\")",
+      "Bash(examples/jupyter/.venv/bin/python -c ' *)",
+      "Bash(examples/jupyter/.venv/bin/python3 --version)",
+      "Bash(/tmp/mfw-venv/bin/pip install *)",
+      "Bash(/tmp/mfw-venv/bin/python *)"
     ],
     "deny": [],
     "ask": []

@@ -34,16 +34,17 @@ Use this exact pattern:
 cat << 'JSCODE' | node -e " const chunks = []; process.stdin.on('data', c =>
 chunks.push(c)); process.stdin.on('end', () => { const code =
 Buffer.concat(chunks).toString(); const body = { js: code, modules: [/* CLASSIC
-SCRIPT URLS IF ANY */], og: { title: 'SHORT TITLE', description: 'ONE-SENTENCE SUMMARY' } /* OPEN GRAPH section — always set when missing */ }; fetch('https://framejs.io/api/shorten/json', { method:
-'POST', headers: { 'Content-Type': 'application/json' }, body:
-JSON.stringify(body) }) .then(r => r.json()) .then(data => {
-console.log(data.shortUrl); try { require('child_process').execSync(
-process.platform === 'darwin' ? 'open \"' + data.shortUrl + '\"' :
-process.platform === 'linux' ? 'xdg-open \"' + data.shortUrl + '\"' : 'cmd /c
-start \"\" \"' + data.shortUrl + '\"' ); } catch(e) {} }) .catch(e =>
-console.error('Error:', e.message)); }); " // YOUR GENERATED BROWSER JS CODE
-HERE // $variables, backticks, and all special characters are safe inside the
-heredoc JSCODE
+SCRIPT URLS IF ANY _/], og: { title: 'SHORT TITLE', description: 'ONE-SENTENCE
+SUMMARY' } /_ OPEN GRAPH section — always set when missing */ };
+fetch('https://framejs.io/api/shorten/json', { method: 'POST', headers: {
+'Content-Type': 'application/json' }, body: JSON.stringify(body) }) .then(r =>
+r.json()) .then(data => { console.log(data.shortUrl); try {
+require('child_process').execSync( process.platform === 'darwin' ? 'open \"' +
+data.shortUrl + '\"' : process.platform === 'linux' ? 'xdg-open \"' +
+data.shortUrl + '\"' : 'cmd /c start \"\" \"' + data.shortUrl + '\"' ); }
+catch(e) {} }) .catch(e => console.error('Error:', e.message)); }); " // YOUR
+GENERATED BROWSER JS CODE HERE // $variables, backticks, and all special
+characters are safe inside the heredoc JSCODE
 
 The heredoc delimiter is quoted ('JSCODE') so the shell performs NO expansion —
 dollar signs, backticks, and backslashes in the code are passed through
@@ -61,7 +62,7 @@ the link unfurls with a meaningful title and summary when shared in Slack,
 iMessage, social media, etc. Set them with an `og` object in the body, alongside
 `js` / `modules` / `inputs`:
 
-  og: { title: 'Short Title', description: 'One-sentence summary of the app' }
+og: { title: 'Short Title', description: 'One-sentence summary of the app' }
 
 It is stored in the hash params and round-trips via the JSON API exactly like
 js, modules, and inputs (fetching /api/j/<sha256> returns hashParams.og).
@@ -72,9 +73,9 @@ RULES — apply on EVERY run:
   the title and description from the user's request and the code you generated —
   do NOT use the placeholder text. Make it specific to what the visualization
   actually shows/does.
-    - title: concise and specific, aim for <= ~60 characters (avoids truncation).
-    - description: ~110-150 characters; say what it shows and, if interactive,
-      how to use it. Avoid trailing fluff that gets cut off.
+  - title: concise and specific, aim for <= ~60 characters (avoids truncation).
+  - description: ~110-150 characters; say what it shows and, if interactive, how
+    to use it. Avoid trailing fluff that gets cut off.
 - Modifying an EXISTING short URL: if the fetched hashParams.og already exists,
   PRESERVE it verbatim (carry it through unchanged) unless the user explicitly
   asks to change the title/description. If hashParams.og is missing, ADD one
@@ -197,7 +198,9 @@ Pass the inputs in the body alongside the code. Use the same heredoc pattern:
 cat << 'JSCODE' | node -e " const chunks = []; process.stdin.on('data', c =>
 chunks.push(c)); process.stdin.on('end', () => { const code =
 Buffer.concat(chunks).toString(); const body = { js: code, modules: [], inputs:
-{ 'data.csv': { type: 'url', value: 'https://framejs.io/f/abc123...' } }, og: { title: 'SHORT TITLE', description: 'ONE-SENTENCE SUMMARY' } /* OPEN GRAPH section — always set when missing */ };
+{ 'data.csv': { type: 'url', value: 'https://framejs.io/f/abc123...' } }, og: {
+title: 'SHORT TITLE', description: 'ONE-SENTENCE SUMMARY' } /* OPEN GRAPH
+section — always set when missing */ };
 fetch('https://framejs.io/api/shorten/json', { method: 'POST', headers: {
 'Content-Type': 'application/json' }, body: JSON.stringify(body) }) .then(r =>
 r.json()) .then(data => { console.log(data.shortUrl); try {
@@ -317,27 +320,35 @@ elements };
 # ========================================================================== AVAILABLE CDN LIBRARIES
 
 3D or 2D plots:
- - import "https://cdn.plot.ly/plotly-3.3.0.min.js"
- - import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+
+- import "https://cdn.plot.ly/plotly-3.3.0.min.js"
+- import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 2D plots:
- - import * as echarts from 'https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.esm.min.js';
+
+- import * as echarts from
+  'https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.esm.min.js';
 
 2D animations:
- - import gsap from 'https://cdn.jsdelivr.net/npm/gsap@3.13.0/+esm';
+
+- import gsap from 'https://cdn.jsdelivr.net/npm/gsap@3.13.0/+esm';
 
 Sound:
- - import howler from 'https://cdn.jsdelivr.net/npm/howler@2.2.4/+esm'
- - import * as Tone from 'https://cdn.jsdelivr.net/npm/tone@15.1.22/+esm';
+
+- import howler from 'https://cdn.jsdelivr.net/npm/howler@2.2.4/+esm'
+- import * as Tone from 'https://cdn.jsdelivr.net/npm/tone@15.1.22/+esm';
 
 Creative visualizations:
- - import 'https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js';
+
+- import 'https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js';
 
 2D physics:
- - import Matter from "https://cdn.jsdelivr.net/npm/matter-js@0.20.0/+esm";
+
+- import Matter from "https://cdn.jsdelivr.net/npm/matter-js@0.20.0/+esm";
 
 3D rendering:
- - import "https://cdn.babylonjs.com/babylon.js"
+
+- import "https://cdn.babylonjs.com/babylon.js"
 
 # ========================================================================== Modules that must be put in the modules array (hash param) rather then es6 imports:
 
