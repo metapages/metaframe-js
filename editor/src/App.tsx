@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useRef } from "react";
 import { useStore } from "/@/store";
 import { useHandleFilesUploaded, uploadFile } from "/@/hooks/useFileUpload";
 import { useShortUrlMode } from "/@/hooks/useShortUrlMode";
+import { useCssHashParam } from "/@/hooks/useCssHashParam";
 
 import { Box, useToast, VStack } from "@chakra-ui/react";
 
@@ -14,6 +15,7 @@ import { PanelSettings } from "./components/sections/PanelSettings";
 
 export const App: React.FC = () => {
   useShortUrlMode();
+  useCssHashParam();
   const shownPanel = useStore((state) => state.shownPanel);
   const setFileUploadTrigger = useStore((state) => state.setFileUploadTrigger);
   const fileInputRef = useRef<HTMLInputElement>(null);
