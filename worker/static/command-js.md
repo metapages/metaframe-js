@@ -1,357 +1,384 @@
 ---
 description: Generate browser JavaScript and open it at framejs.io
-argument-hint: [short URL or sha256] [description of changes], or [description of what to create], with optional local file paths
+argument-hint: "[short URL or sha256] [description of changes], or [description of what to create], with optional local file paths"
 allowed-tools: Bash(node *), Read
 ---
 
-YOU MUST FOLLOW THESE INSTRUCTIONS EXACTLY. NO EXCEPTIONS.
-
-You are generating JavaScript that runs at https://framejs.io — a hosted web app
-that executes JS from the URL hash. The ONLY output you produce is a shell
-command that creates a short URL and opens it in the browser.
-
-# ========================================================================== ABSOLUTE RULES — VIOLATING ANY OF THESE IS ALWAYS WRONG
-
-- NEVER create HTML files
-- NEVER create local .js files
-- NEVER output code blocks for the user to copy
-- NEVER use your own visualization/rendering/widget tools
-- NEVER tell the user to refresh — always open a NEW browser tab
-- NEVER change the root.style.position or root.style.height or root.style.width
-- NEVER build long URLs with code in the hash — always use the short URL API
-- The ONLY acceptable action is running the node command below
-
-HOW TO DELIVER YOUR CODE — do this every single time:
-
-Pipe the JS code via heredoc into a node script that creates a short URL via the
-framejs.io API, prints it to the console, and opens it in the browser.
-
-IMPORTANT: Do NOT use template literals (\`) to hold the code — dollar signs
-like $3DMol will be mangled. Always use the heredoc pattern below.
-
-Use this exact pattern:
-
-cat << 'JSCODE' | node -e " const chunks = []; process.stdin.on('data', c =>
-chunks.push(c)); process.stdin.on('end', () => { const code =
-Buffer.concat(chunks).toString(); const body = { js: code, modules: [/* CLASSIC
-SCRIPT URLS IF ANY _/], og: { title: 'SHORT TITLE', description: 'ONE-SENTENCE
-SUMMARY' } /_ OPEN GRAPH section — always set when missing */ };
-fetch('https://framejs.io/api/shorten/json', { method: 'POST', headers: {
-'Content-Type': 'application/json' }, body: JSON.stringify(body) }) .then(r =>
-r.json()) .then(data => { console.log(data.shortUrl); try {
-require('child_process').execSync( process.platform === 'darwin' ? 'open \"' +
-data.shortUrl + '\"' : process.platform === 'linux' ? 'xdg-open \"' +
-data.shortUrl + '\"' : 'cmd /c start \"\" \"' + data.shortUrl + '\"' ); }
-catch(e) {} }) .catch(e => console.error('Error:', e.message)); }); " // YOUR
-GENERATED BROWSER JS CODE HERE // $variables, backticks, and all special
-characters are safe inside the heredoc JSCODE
-
-The heredoc delimiter is quoted ('JSCODE') so the shell performs NO expansion —
-dollar signs, backticks, and backslashes in the code are passed through
-verbatim. Place classic script URLs in the modules array inside the node -e
-"..." part (not in the heredoc).
-
-The short URL (https://framejs.io/j/<sha256>) is ALWAYS printed to the console.
-The browser open is attempted but may fail in sandboxes — the printed URL is the
-primary output. On every update or iteration, re-run to create a NEW short URL.
-
-# ========================================================================== OPEN GRAPH PREVIEW TAGS (og) — ALWAYS SET WHEN MISSING
-
-The short URL server-renders Open Graph meta tags (og:title, og:description) so
-the link unfurls with a meaningful title and summary when shared in Slack,
-iMessage, social media, etc. Set them with an `og` object in the body, alongside
-`js` / `modules` / `inputs`:
-
-og: { title: 'Short Title', description: 'One-sentence summary of the app' }
-
-It is stored in the hash params and round-trips via the JSON API exactly like
-js, modules, and inputs (fetching /api/j/<sha256> returns hashParams.og).
-
-RULES — apply on EVERY run:
-
-- Creating a NEW app: ALWAYS include `og` with your best recommendation. Derive
-  the title and description from the user's request and the code you generated —
-  do NOT use the placeholder text. Make it specific to what the visualization
-  actually shows/does.
-  - title: concise and specific, aim for <= ~60 characters (avoids truncation).
-  - description: ~110-150 characters; say what it shows and, if interactive, how
-    to use it. Avoid trailing fluff that gets cut off.
-- Modifying an EXISTING short URL: if the fetched hashParams.og already exists,
-  PRESERVE it verbatim (carry it through unchanged) unless the user explicitly
-  asks to change the title/description. If hashParams.og is missing, ADD one
-  with a recommended title/description following the rules above.
-- Only the user changing copy overrides an existing og. Never silently drop or
-  overwrite an og the user (or a previous run) already set.
-
-# ========================================================================== USER REQUEST: $ARGUMENTS
-
-$ARGUMENTS can be:
-
-1. A short URL + modification prompt: /js https://framejs.io/j/<sha256> make the
-   background red /js <sha256> add a click counter
-2. A description of what to create from scratch: /js a bouncing ball animation
-3. A description referencing local files as data inputs: /js visualize
-   ./data/sales.csv as a bar chart /js plot the data in /tmp/results.json using
-   d3
-
-# ========================================================================== HANDLING SHORT URLs — FETCH EXISTING CODE BEFORE MODIFYING
-
-If $ARGUMENTS contains a short URL (https://framejs.io/j/<sha256>) or a bare
-64-character hex string (<sha256>), you MUST fetch the existing code and inputs
-BEFORE generating any code.
-
-STEP 1 — Extract the sha256 ID From full URL: https://framejs.io/j/8a3b1c... →
-8a3b1c... From bare hex:
-8a3b1c9f4e2d7a6b5c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b
-
-STEP 2 — Fetch the existing code and inputs via the JSON API
-
-Run this node command to retrieve the stored code:
-
-node -e " fetch('https://framejs.io/api/j/<sha256>') .then(r => r.json())
-.then(d => console.log(JSON.stringify(d, null, 2))) .catch(e =>
-console.error(e)); "
-
-The response is JSON: { "id": "<sha256>", "hashParams": { "js": "// the existing
-JavaScript source code", "inputs": { "input-name": <value>, ... }, "modules": [
-"https://cdn.example.com/lib.js", ... ], ... } }
-
-Key fields in hashParams: js — the existing JavaScript source code (decoded,
-plain text) inputs — (optional) JSON object of input name → value pairs modules
-— (optional) array of classic script URLs to import og — (optional) { title,
-description } Open Graph preview tags
-
-STEP 3 — Use the fetched code as the starting point
-
-- The "js" field is the EXISTING code. Modify it according to the user's prompt
-  (the remaining text in $ARGUMENTS after the URL/sha256).
-- If "inputs" exist, the code already expects those inputs in onInputs().
-  Preserve input handling unless the user asks to change it.
-- If "modules" exist, keep them in the modules array unless the user asks to
-  remove or replace them.
-- If "og" exists, carry it through UNCHANGED in the new body unless the user
-  explicitly asks to change the title/description. If "og" is missing, ADD one
-  with a recommended title/description (see OPEN GRAPH section).
-- Apply the user's requested changes to the existing code, then deliver the
-  modified version using the standard node command (see above).
-
-IMPORTANT: Do NOT discard or rewrite the existing code from scratch. The user
-wants their existing code MODIFIED, not replaced.
-
-# ========================================================================== LOCAL FILE INPUTS — UPLOAD FILES AND PASS AS INPUTS
-
-If $ARGUMENTS references local file paths (e.g. ./data.csv, /tmp/results.json),
-upload each file to framejs.io and pass them as inputs. This creates a
-standalone, shareable visualization powered by the uploaded data.
-
-STEP 1 — Read the local file to understand its structure
-
-Use the Read tool to inspect the file contents so you can generate appropriate
-visualization code.
-
-STEP 2 — Upload each file and collect the URLs
-
-Run this node command for EACH local file:
-
-node -e " const fs = require('fs'); const crypto = require('crypto'); const path
-= require('path');
-
-const filePath = '<LOCAL_FILE_PATH>'; const fileBuffer =
-fs.readFileSync(filePath);
-
-// Compute SHA256 const sha256 =
-crypto.createHash('sha256').update(fileBuffer).digest('hex');
-
-// Detect content type from extension const ext =
-path.extname(filePath).toLowerCase(); const typeMap = { '.json':
-'application/json', '.csv': 'text/csv', '.tsv': 'text/tab-separated-values',
-'.txt': 'text/plain', '.xml': 'text/xml', '.html': 'text/html', '.png':
-'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif',
-'.svg': 'image/svg+xml', '.webp': 'image/webp', '.mp3': 'audio/mpeg', '.wav':
-'audio/wav', '.mp4': 'video/mp4', '.pdf': 'application/pdf', }; const
-contentType = typeMap[ext] || 'application/octet-stream';
-
-// Get presigned upload URL fetch('https://framejs.io/api/upload/presign', {
-method: 'POST', headers: { 'Content-Type': 'application/json' }, body:
-JSON.stringify({ contentType, fileSize: fileBuffer.length, sha256 }), }) .then(r
-=> r.json()) .then(async ({ presignedUrl, canonicalPath }) => { // Upload file
-to S3 await fetch(presignedUrl, { method: 'PUT', headers: { 'Content-Type':
-contentType }, body: fileBuffer, }); console.log(JSON.stringify({ name:
-path.basename(filePath), url: 'https://framejs.io' + canonicalPath, contentType,
-})); }) .catch(e => console.error(e)); "
-
-The output is JSON with the uploaded file URL:
-{"name":"data.csv","url":"https://framejs.io/f/abc123...","contentType":"text/csv"}
-
-STEP 3 — Build the inputs object
-
-Inputs are DataRef objects with "type" and "value" fields. For uploaded files
-use type "url":
-
-{ "data.csv": { "type": "url", "value": "https://framejs.io/f/abc123..." },
-"config.json": { "type": "url", "value": "https://framejs.io/f/def456..." } }
-
-STEP 4 — Include inputs in the short URL
-
-Pass the inputs in the body alongside the code. Use the same heredoc pattern:
-
-cat << 'JSCODE' | node -e " const chunks = []; process.stdin.on('data', c =>
-chunks.push(c)); process.stdin.on('end', () => { const code =
-Buffer.concat(chunks).toString(); const body = { js: code, modules: [], inputs:
-{ 'data.csv': { type: 'url', value: 'https://framejs.io/f/abc123...' } }, og: {
-title: 'SHORT TITLE', description: 'ONE-SENTENCE SUMMARY' } /* OPEN GRAPH
-section — always set when missing */ };
-fetch('https://framejs.io/api/shorten/json', { method: 'POST', headers: {
-'Content-Type': 'application/json' }, body: JSON.stringify(body) }) .then(r =>
-r.json()) .then(data => { console.log(data.shortUrl); try {
-require('child_process').execSync( process.platform === 'darwin' ? 'open \"' +
-data.shortUrl + '\"' : process.platform === 'linux' ? 'xdg-open \"' +
-data.shortUrl + '\"' : 'cmd /c start \"\" \"' + data.shortUrl + '\"' ); }
-catch(e) {} }) .catch(e => console.error('Error:', e.message)); }); " // YOUR
-GENERATED BROWSER JS CODE HERE JSCODE
-
-STEP 5 — Write code that handles the inputs
-
-The runtime automatically resolves URL DataRefs before calling onInputs(). Based
-on Content-Type:
-
-- application/json → parsed JSON object
-- text/* → plain string (CSV, TSV, XML, etc.)
-- image/* → Blob
-- other → Blob
-
-Your generated code receives the RESOLVED data (not the URL):
-
-export function onInputs(inputs) { const csvText = inputs["data.csv"]; // string
-(text/csv) const jsonData = inputs["config.json"]; // parsed object
-(application/json) // Use the data to render your visualization }
-
-IMPORTANT:
-
-- Upload files BEFORE building the final URL — you need the upload URLs.
-- The input name in onInputs() must match the key in the inputs object.
-- Uploaded files are content-addressed (same file = same URL) and persist.
-- The resulting URL is fully standalone and shareable — anyone can open it and
-  see the visualization with the uploaded data, no local files needed.
-
-# ========================================================================== BROWSER JAVASCRIPT CODING GUIDE
-
-The code you write is an ES6 module that runs in the browser inside an iframe.
-It is NOT Node.js. Use browser APIs only.
-
-CRITICAL: MUST USE ES6 MODULE SYNTAX export function onInputs(inputs) {} export
-const onInputs = (inputs) => {} WRONG: function onInputs(inputs) {} // missing
-export!
-
-Top-level await is supported. "use strict" is added automatically — don't
-include it.
-
-# ========================================================================== CLASSIC VS ES6 imports
-
-Prefer es6 imports at the top of the code. If the code is not an es6 import then
-add to the modules array of strings in the body object
-
-# ========================================================================== PRE-DEFINED GLOBALS (no import needed)
-
-setOutput("outputName", value) — send an output setOutputs({ out1: "val", out2:
-42 }) — send multiple outputs log("message") — visual log (writes to display)
-logStdout("message") — stdout log logStderr("error") — stderr log root — the
-display div, already exists root.innerHTML = '<h1>Hello</h1>'
-root.getBoundingClientRect().width
-
-Output types: strings, numbers, booleans, objects, arrays, ArrayBuffers,
-Uint8Array, other typed arrays.
-
-# ========================================================================== REQUIRED EXPORTS
-
-// Handle inputs (required) export function onInputs(inputs) { const data =
-inputs["input.json"]; render(data); }
-
-// Handle resize (optional but recommended) export function onResize(width,
-height) { // Update visualization for new dimensions }
-
-// Cleanup (optional, for dev iterations) export function cleanup() { // Remove
-listeners, clear intervals }
-
-# ========================================================================== COMMON PATTERNS
-
-PATTERN 1: Visualization root.innerHTML =
-'<div style="width:100%;height:100%"><h1 id="title">Title</h1></div>';
-IMPORTANT: avoid styling the root div directly — create a child div instead
-export function onInputs(inputs) { document.getElementById("title").innerHTML =
-inputs["data"].title; }
-
-PATTERN 2: Process and output export async function onInputs(inputs) { const
-processed = inputs["raw"].map(x => x * 2); setOutput("result.json", processed);
+<!-- GENERATED FILE — do not edit. Source of truth: worker/static/skill/framejs/ (regenerate with `just build-skill`). -->
+<!-- Prefer the portable `framejs` Agent Skill: https://framejs.io/skill/framejs/SKILL.md -->
+
+You generate JavaScript that runs at https://framejs.io — a hosted web app that
+executes an ES6 module from the URL. The ONLY output you produce is the result
+of running a node command that creates a short URL and opens it in the browser.
+
+# USER REQUEST: $ARGUMENTS
+
+`$ARGUMENTS` can be: (1) a description to create from scratch; (2) a short URL
+(`https://framejs.io/j/<sha256>`) or bare 64-char hex id plus a change request —
+fetch and modify the existing app; (3) local file paths to visualize — upload
+and pass as inputs.
+
+# HOW TO DELIVER (this is a standalone command — use the inline-node commands below)
+
+ALWAYS deliver by creating a short URL and printing it. NEVER create HTML files,
+NEVER write local .js files, NEVER output a code block for the user to copy, and
+NEVER build a long URL with the code in the hash. On every update, create a NEW
+short URL.
+
+A framejs.io app is fully described by its hash params (`js`, optional
+`modules`, `inputs`, `og`). The short-URL API stores those params server-side
+and returns a clean `/j/<sha256>` link. Base URL is `https://framejs.io`
+(override with `FRAMEJS_BASE` when using the helper script).
+
+## Create a short URL
+
+`POST /api/shorten/json` with a JSON body — the server handles all encoding:
+
+```json
+{
+  "js": "raw JavaScript source (plain text)",
+  "modules": ["https://cdn.example.com/classic-script.js"],
+  "inputs": {
+    "data.csv": { "type": "url", "value": "https://framejs.io/f/abc..." }
+  },
+  "og": { "title": "Short title", "description": "One-sentence summary" }
+}
+```
+
+Only `js` is required. Response:
+
+```json
+{ "shortUrl": "https://framejs.io/j/<sha256>", "id": "<sha256>" }
+```
+
+The short URL is the primary output — **always print it**. Opening a browser is
+best-effort and may fail in sandboxes. On every update/iteration, create a NEW
+short URL.
+
+### With the helper script
+
+```bash
+cat app.js | node scripts/framejs.mjs create \
+  --title "Bouncing ball" \
+  --description "A ball bouncing around the canvas with gravity" \
+  --module https://3dmol.org/build/3Dmol-min.js
+```
+
+### Inline fallback (no bundled script)
+
+Pipe code via a quoted heredoc so the shell performs NO expansion (`$`,
+backticks, and backslashes pass through verbatim — never hold the code in a
+template literal):
+
+```bash
+cat << 'JSCODE' | node -e "
+const chunks = [];
+process.stdin.on('data', c => chunks.push(c));
+process.stdin.on('end', () => {
+  const body = {
+    js: Buffer.concat(chunks).toString(),
+    modules: [/* classic-script URLs, if any */],
+    og: { title: 'SHORT TITLE', description: 'ONE-SENTENCE SUMMARY' }
+  };
+  fetch('https://framejs.io/api/shorten/json', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  })
+  .then(r => r.json())
+  .then(data => {
+    console.log(data.shortUrl);
+    try {
+      require('child_process').execSync(
+        process.platform === 'darwin' ? 'open \"' + data.shortUrl + '\"'
+        : process.platform === 'linux' ? 'xdg-open \"' + data.shortUrl + '\"'
+        : 'cmd /c start \"\" \"' + data.shortUrl + '\"'
+      );
+    } catch(e) {}
+  })
+  .catch(e => console.error('Error:', e.message));
+});
+"
+// YOUR GENERATED BROWSER JS CODE HERE — $vars, backticks, all special chars are safe inside the heredoc
+JSCODE
+```
+
+## Open Graph preview tags (`og`) — always set when missing
+
+The server renders `og:title` / `og:description` so the link unfurls with a
+meaningful title and summary when shared (Slack, iMessage, social media). `og`
+round-trips through the API exactly like `js` / `modules` / `inputs`.
+
+- **New app:** ALWAYS include `og`, derived from the user's request and the code
+  you generated (not placeholder text).
+  - `title`: concise and specific, aim for ≤ ~60 characters (avoids truncation).
+  - `description`: ~110–150 characters; say what it shows and, if interactive,
+    how to use it.
+- **Modifying an existing app:** if the fetched `hashParams.og` exists, carry it
+  through UNCHANGED unless the user explicitly asks to change the copy. If it is
+  missing, ADD one following the rules above. Never silently drop or overwrite
+  an `og` the user (or a previous run) already set.
+
+## Modify an existing short URL — fetch first
+
+When the request includes a short URL (`https://framejs.io/j/<sha256>`) or a
+bare 64-char hex id, you MUST fetch the existing app BEFORE generating code:
+
+```bash
+node scripts/framejs.mjs fetch <sha256>     # or: fetch https://framejs.io/j/<sha256>
+# inline fallback:
+node -e "fetch('https://framejs.io/api/j/<sha256>').then(r=>r.json()).then(d=>console.log(JSON.stringify(d,null,2)))"
+```
+
+`GET /api/j/<sha256>` returns:
+
+```json
+{
+  "id": "<sha256>",
+  "hashParams": { "js": "...", "inputs": {}, "modules": [], "og": {} }
+}
+```
+
+- `js` is the EXISTING code — MODIFY it per the user's request; do NOT rewrite
+  from scratch.
+- Preserve `inputs` handling and `modules` unless the user asks to change them.
+- Preserve `og` per the rules above.
+
+Then re-create a new short URL with the modified body.
+
+# LOCAL FILE INPUTS
+
+When the request references local file paths (e.g. `./data.csv`,
+`/tmp/results.json`), upload each file to framejs.io and pass them as `inputs`.
+The result is a standalone, shareable app powered by the uploaded data — anyone
+who opens the link sees the visualization with no local files needed.
+
+## Step 1 — inspect the file
+
+Read the file to understand its structure so you can generate appropriate
+visualization code (column names, shape, types, etc.).
+
+## Step 2 — upload each file
+
+```bash
+node scripts/framejs.mjs upload ./data/sales.csv
+# → {"name":"sales.csv","url":"https://framejs.io/f/abc123...","contentType":"text/csv"}
+```
+
+The helper computes the SHA256, detects the content type from the extension,
+gets a presigned URL from `POST /api/upload/presign`, and `PUT`s the bytes to
+S3. Uploaded files are content-addressed (same bytes → same URL) and persist.
+
+### Inline fallback
+
+```bash
+node -e "
+const fs = require('fs'), crypto = require('crypto'), path = require('path');
+const filePath = '<LOCAL_FILE_PATH>';
+const buf = fs.readFileSync(filePath);
+const sha256 = crypto.createHash('sha256').update(buf).digest('hex');
+const ext = path.extname(filePath).toLowerCase();
+const types = { '.json':'application/json', '.csv':'text/csv', '.tsv':'text/tab-separated-values', '.txt':'text/plain', '.xml':'text/xml', '.html':'text/html', '.png':'image/png', '.jpg':'image/jpeg', '.jpeg':'image/jpeg', '.gif':'image/gif', '.svg':'image/svg+xml', '.webp':'image/webp', '.mp3':'audio/mpeg', '.wav':'audio/wav', '.mp4':'video/mp4', '.pdf':'application/pdf' };
+const contentType = types[ext] || 'application/octet-stream';
+fetch('https://framejs.io/api/upload/presign', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contentType, fileSize: buf.length, sha256 }) })
+  .then(r => r.json())
+  .then(async ({ presignedUrl, canonicalPath }) => {
+    await fetch(presignedUrl, { method:'PUT', headers:{'Content-Type':contentType}, body: buf });
+    console.log(JSON.stringify({ name: path.basename(filePath), url: 'https://framejs.io' + canonicalPath, contentType }));
+  })
+  .catch(e => console.error(e));
+"
+```
+
+## Step 3 — build the `inputs` object
+
+Inputs are DataRef objects with `type` and `value`. For uploaded files use type
+`url`:
+
+```json
+{
+  "data.csv": { "type": "url", "value": "https://framejs.io/f/abc123..." },
+  "config.json": { "type": "url", "value": "https://framejs.io/f/def456..." }
+}
+```
+
+Pass `inputs` in the short-URL body alongside `js` (see `short-url-api.md`).
+With the helper script:
+
+```bash
+cat app.js | node scripts/framejs.mjs create \
+  --input 'data.csv={"type":"url","value":"https://framejs.io/f/abc123..."}' \
+  --title "Sales dashboard" --description "Bar chart of monthly sales from the uploaded CSV"
+```
+
+## Step 4 — handle the resolved inputs in code
+
+The runtime resolves URL DataRefs **before** calling `onInputs()`, based on the
+file's Content-Type:
+
+| Content-Type                | Value passed to `onInputs` |
+| --------------------------- | -------------------------- |
+| `application/json`          | parsed JSON object         |
+| `text/*` (csv, tsv, xml, …) | plain string               |
+| `image/*`                   | `Blob`                     |
+| other                       | `Blob`                     |
+
+Your code receives the RESOLVED data (not the URL). The input name must match
+the key in the `inputs` object:
+
+```js
+export function onInputs(inputs) {
+  const csvText = inputs["data.csv"]; // string (text/csv)
+  const config = inputs["config.json"]; // parsed object (application/json)
+  // render using the data
+}
+```
+
+**Upload files BEFORE building the short URL** — you need the upload URLs to
+populate `inputs`.
+
+# BROWSER JAVASCRIPT CODING GUIDE
+
+The code runs as an **ES6 module in the browser**, inside an iframe. It is NOT
+Node.js — use browser APIs only. `"use strict"` is added automatically; do not
+include it. Top-level `await` is supported.
+
+## Critical constraints
+
+- **MUST use ES6 module syntax** — exported handlers:
+  - ✅ `export function onInputs(inputs) {}`
+  - ✅ `export const onInputs = (inputs) => {}`
+  - ❌ `function onInputs(inputs) {}` — missing `export`!
+- **Never modify** `root.style.position`, `root.style.height`, or
+  `root.style.width` — it breaks the editor layout. To size content, create a
+  child `div` with `width:100%; height:100%` and style that instead.
+- **Always clear** `root` before building DOM: `root.innerHTML = ""`.
+
+## Pre-defined globals (no import needed)
+
+```js
+setOutput("outputName", value); // send one output
+setOutputs({ out1: "val", out2: 42 }); // send multiple outputs
+log("message"); // visual log — writes to the display
+logStdout("message"); // stdout log
+logStderr("error"); // stderr log
+root; // the display div, already exists
+root.innerHTML = "<h1>Hello</h1>";
+root.getBoundingClientRect().width;
+```
+
+For graphical apps use `console.log()` (not `log()`, which writes to the
+display).
+
+Output value types: strings, numbers, booleans, objects, arrays, `ArrayBuffer`,
+`Uint8Array`, and other typed arrays.
+
+## Exports
+
+```js
+// Handle inputs (required)
+export function onInputs(inputs) {
+  const data = inputs["input.json"];
+  render(data);
 }
 
-PATTERN 3: External libraries (use CDN with /+esm) import * as d3 from
-'https://cdn.jsdelivr.net/npm/d3@7/+esm';
-d3.select(root).append('svg').attr('width', 500);
+// Handle resize (optional but recommended)
+export function onResize(width, height) {
+  // Update visualization for new dimensions
+}
 
-# ========================================================================== KEY DETAILS
+// Cleanup (optional, for dev iterations)
+export function cleanup() {
+  // Remove listeners, clear intervals
+}
+```
 
-- No need to wait for DOMContentLoaded — code runs after page loads
-- ALWAYS clear root before creating DOM: root.innerHTML = ''
-- setOutput is fire-and-forget (async, no return value)
-- For graphical apps, use console.log() instead of log() (log writes to display)
+## Common patterns
 
-// Prevent scroll propagation to parent window.addEventListener('wheel', (e) =>
-{ if (myDiv.contains(e.target)) e.preventDefault(); }, {passive: false});
+**Visualization** — build DOM once in the main script body, then update elements
+in `onInputs` (do not recreate the DOM each time):
 
-// Save state in URL hash import { setHashParamValueJsonInWindow,
-getHashParamValueJsonFromWindow } from
-'https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.10.0/+esm';
-setHashParamValueJsonInWindow("state", {zoom: 2}); const state =
-getHashParamValueJsonFromWindow("state");
+```js
+root.innerHTML =
+  `<div style="width:100%;height:100%"><h1 id="title">Title</h1></div>`;
+export function onInputs(inputs) {
+  document.getElementById("title").innerHTML = inputs["data"].title;
+}
+```
 
-# ========================================================================== COMMON MISTAKES
+**Process and output:**
 
-WRONG: creating an HTML file — NEVER create HTML files WRONG: creating a local
-.js file — NEVER write files WRONG: outputting a code block — NEVER output code
-blocks WRONG: function onInputs(inputs) {} — not exported WRONG:
-root.appendChild(el) — forgot to clear root first WRONG: including "use strict"
-— added automatically WRONG: writing a Node.js script — this runs in the BROWSER
+```js
+export async function onInputs(inputs) {
+  const processed = inputs["raw"].map((x) => x * 2);
+  setOutput("result.json", processed);
+}
+```
 
-RIGHT: export const onInputs = (inputs) => { // update dom elements, do not
-recreate dom in onInputs // create dom in main script, then get and update
-elements };
+**External libraries** — prefer ES6 imports from a CDN (`/+esm`):
 
-# ========================================================================== AVAILABLE CDN LIBRARIES
+```js
+import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+d3.select(root).append("svg").attr("width", 500);
+```
 
-3D or 2D plots:
+## Key details
 
-- import "https://cdn.plot.ly/plotly-3.3.0.min.js"
-- import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+- No need to wait for `DOMContentLoaded` — code runs after the page loads.
+- `setOutput` is fire-and-forget (async, no return value).
+- Prevent scroll propagation to the parent page when needed:
 
-2D plots:
+  ```js
+  window.addEventListener("wheel", (e) => {
+    if (myDiv.contains(e.target)) e.preventDefault();
+  }, { passive: false });
+  ```
 
-- import * as echarts from
-  'https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.esm.min.js';
+- Persist state in the URL hash (portable, shareable):
 
-2D animations:
+  ```js
+  import {
+    getHashParamValueJsonFromWindow,
+    setHashParamValueJsonInWindow,
+  } from "https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.10.0/+esm";
 
-- import gsap from 'https://cdn.jsdelivr.net/npm/gsap@3.13.0/+esm';
+  setHashParamValueJsonInWindow("state", { zoom: 2 });
+  const state = getHashParamValueJsonFromWindow("state");
+  ```
 
-Sound:
+## Common mistakes
 
-- import howler from 'https://cdn.jsdelivr.net/npm/howler@2.2.4/+esm'
-- import * as Tone from 'https://cdn.jsdelivr.net/npm/tone@15.1.22/+esm';
+- ❌ Creating an HTML file — never create HTML files.
+- ❌ Writing a local `.js` file — never write files.
+- ❌ `function onInputs(inputs) {}` — not exported.
+- ❌ `root.appendChild(el)` before clearing — clear `root.innerHTML` first.
+- ❌ Including `"use strict"` — added automatically.
+- ❌ Changing `root.style.position` / `height` / `width`.
+- ❌ Writing a Node.js script — this runs in the BROWSER.
 
-Creative visualizations:
+## CDN libraries (use `/+esm` ES6 imports unless noted)
 
-- import 'https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js';
+- **2D/3D plots:** Plotly (preferred)
+  `import "https://cdn.plot.ly/plotly-3.3.0.min.js"`; d3
+  `import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm"`
+- **2D plots:** echarts
+  `import * as echarts from "https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.esm.min.js"`
+- **2D animation/easing:** gsap
+  `import gsap from "https://cdn.jsdelivr.net/npm/gsap@3.13.0/+esm"`
+- **Sound:** howler
+  `import howler from "https://cdn.jsdelivr.net/npm/howler@2.2.4/+esm"`; tone
+  `import * as Tone from "https://cdn.jsdelivr.net/npm/tone@15.1.22/+esm"`
+- **Creative/custom:** p5
+  `import "https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js"`
+- **2D physics:** matter
+  `import Matter from "https://cdn.jsdelivr.net/npm/matter-js@0.20.0/+esm"`
+- **3D objects/physics/rendering:** babylon
+  `import "https://cdn.babylonjs.com/babylon.js"`
 
-2D physics:
+### Classic scripts (NOT ES6 — go in the `modules` array, not an import)
 
-- import Matter from "https://cdn.jsdelivr.net/npm/matter-js@0.20.0/+esm";
+Some libraries are classic scripts that attach globals rather than ES6 modules.
+Put their URLs in the `modules` array of the short-URL body (see
+`short-url-api.md`) instead of `import`-ing them:
 
-3D rendering:
-
-- import "https://cdn.babylonjs.com/babylon.js"
-
-# ========================================================================== Modules that must be put in the modules array (hash param) rather then es6 imports:
-
-- 3dmol.js: https://3dmol.org/build/3Dmol-min.js
-
-# ========================================================================== REMINDER: The ONLY thing you do is run the node command to create a short URL via the framejs.io API, print it to the console, and open it in the browser. ALWAYS include an og {title, description} in the body when one does not already exist (preserve an existing og unless the user asks to change it). NEVER create HTML files. NEVER create .js files. NEVER output code blocks. NEVER build long URLs with code in the hash. NEVER modify the root variable element root.style.position or root.style.height or root.style.width
+- 3Dmol.js: `https://3dmol.org/build/3Dmol-min.js`

@@ -1,12 +1,3 @@
-<!-- GENERATED FILE — do not edit. Source of truth: worker/static/skill/framejs/ (regenerate with `just build-skill`). -->
-
-# OUTPUT FORMAT — READ FIRST
-
-- Respond with ONLY a single ```javascript code block. Nothing before or after.
-- Never render, embed, or execute the code. Never use any built-in visualization
-  or widget tool. The user pastes the code into the editor at
-  https://framejs.io.
-
 # Browser JavaScript coding guide (framejs.io)
 
 The code runs as an **ES6 module in the browser**, inside an iframe. It is NOT
@@ -152,7 +143,3 @@ Put their URLs in the `modules` array of the short-URL body (see
 `short-url-api.md`) instead of `import`-ing them:
 
 - 3Dmol.js: `https://3dmol.org/build/3Dmol-min.js`
-
-<!--
-Embedded inputs in the URL (if any) are injected below this line:
--->

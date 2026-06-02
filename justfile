@@ -56,10 +56,14 @@ open:
     deno run --allow-all https://deno.land/x/metapages@v0.0.17/exec/open_url.ts 'https://metapages.github.io/load-page-when-available/?url=https://{{ APP_FQDN }}:{{ APP_PORT }}'
 
 #
-build:
+build: build-skill
     just docs/build
     # build the client in editor/dist
     just editor/build
+
+# Regenerate the legacy LLM/command files from the framejs Agent Skill (single source of truth)
+build-skill:
+    node scripts/build-skill-artifacts.mjs
 
 # deno deploy to framejs.io
 deploy: build
