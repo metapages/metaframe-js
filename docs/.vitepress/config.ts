@@ -37,6 +37,10 @@ export default withMermaid(
           items: [
             { text: "Setup", link: "/ai/setup" },
             {
+              text: "Agent Skill (SKILL.md)",
+              link: "https://framejs.io/skill/framejs/SKILL.md",
+            },
+            {
               text: "command-js.md",
               link: "https://framejs.io/command-js.md",
             },

@@ -29,6 +29,9 @@ build with JavaScript in a browser.
 - Documentation: https://framejs.io/docs/
 - Examples: https://framejs.io/docs/examples/
 - AI / LLM setup: https://framejs.io/docs/ai/setup
+- Agent Skill (portable, ~40 harnesses):
+  https://framejs.io/skill/framejs/SKILL.md
+- Agent Skill bundle (tarball): https://framejs.io/skill/framejs.tar.gz
 - LLM code prompt (for generating code): https://framejs.io/llms-prompt.md
 - CLI integration guide (for AI coding assistants):
   https://framejs.io/llms-claude-code.txt
@@ -59,6 +62,12 @@ build with JavaScript in a browser.
 framejs.io supports a fully automated workflow where CLI tools generate
 JavaScript, encode it into a URL, and open it directly in the browser — no
 copy-pasting needed.
+
+The recommended, portable integration is the `framejs` Agent Skill
+(https://framejs.io/skill/framejs/SKILL.md) — a single SKILL.md folder supported
+by ~40 agent harnesses (Claude Code, Gemini CLI, Cursor, opencode, Goose, Codex,
+pi, …). It auto-routes: full automation when a shell is available, code-block
+output for chat-only agents. See https://framejs.io/docs/ai/setup to install.
 
 Full CLI integration guide (encoding, short URLs, file uploads):
 https://framejs.io/llms-claude-code.txt

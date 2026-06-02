@@ -1,59 +1,93 @@
 # AI Usage
 
-Create self-contained, editable websites, each running a single chunk of JavaScript code.
-
-Create using AI — via chat interfaces, directly from the terminal, or via APIs.
+Create self-contained, editable websites — each running a single chunk of
+JavaScript — using AI. Generate them from a chat interface, directly from your
+terminal coding agent, or via an LLM API.
 
 `framejs.io/#?js=< will always run this javascript, forever>`
 
-## Command Line: installation into Claude Code
+## The `framejs` Agent Skill (recommended)
 
-If you just want to test this command before installing: paste the URL into the AI prompt and describe what you want:
+framejs.io ships an [Agent Skill](https://agentskills.io) — a portable `SKILL.md`
+folder that works across ~40 agent harnesses (Claude Code, Gemini CLI, Cursor,
+opencode, Goose, OpenAI Codex, pi, and more). It auto-routes by capability:
 
-> https://framejs.io/command-js.txt
->
-> Make a bouncing ball animation
+- **Terminal / coding agents** (can run a shell): generates the JavaScript,
+  creates a short URL, prints it, and opens it in your browser.
+- **Chat / API agents** (no shell): returns just the JavaScript to paste into the
+  editor.
 
+One skill covers creating from a prompt, modifying an existing short URL, and
+visualizing local data files.
 
-But for easier usage install the command:
+- Skill: [`/skill/framejs/SKILL.md`](https://framejs.io/skill/framejs/SKILL.md)
+- Bundle: [`/skill/framejs.tar.gz`](https://framejs.io/skill/framejs.tar.gz)
 
-### Claude Code: install the `/js` slash command {#install-js-command}
+### Install
+
+A skill is just a `framejs/` folder containing `SKILL.md`. Drop it into your
+harness's skills directory. The universal one-liner unpacks the bundle into the
+directory you choose:
+
+```bash
+# replace <SKILLS_DIR> with your harness's skills directory (see the table below)
+mkdir -p <SKILLS_DIR> && curl -sL https://framejs.io/skill/framejs.tar.gz | tar xz -C <SKILLS_DIR>
+```
+
+| Harness | Skills directory | Notes |
+|---------|------------------|-------|
+| Claude Code | `~/.claude/skills/` (personal) or `<project>/.claude/skills/` | [docs](https://code.claude.com/docs/en/skills) |
+| Cursor | `~/.cursor/skills/` or `<project>/.cursor/skills/` | [docs](https://cursor.com/docs/context/skills) |
+| Gemini CLI | per Gemini CLI config | [docs](https://geminicli.com/docs/cli/skills/) |
+| opencode | per opencode config | [docs](https://opencode.ai/docs/skills/) |
+| Goose | per Goose config | [docs](https://block.github.io/goose/docs/guides/context-engineering/using-skills/) |
+| OpenAI Codex | per Codex config | [docs](https://developers.openai.com/codex/skills/) |
+| pi | prompt-template / skills config | [docs](https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/skills.md) |
+
+Other harnesses: see the [Agent Skills client list](https://agentskills.io/clients)
+for each tool's skills directory, then point the one-liner at it.
+
+### Use it
+
+Once installed, just describe what you want — the agent activates the skill when
+the task matches (a chart, plot, dashboard, animation, simulation, or visualizing
+a data file):
+
+```
+make a bouncing ball animation
+```
+
+```
+visualize ./data.csv as a bar chart
+```
+
+Modify an existing app by pasting its short URL (top right `Edit -> Short URL`):
+
+```
+https://framejs.io/j/<sha256> make the background white
+```
+
+## Legacy: the `/js` Claude Code command
+
+The earlier Claude-Code-specific slash command still works and is generated from
+the same skill source:
 
 ```bash
 mkdir -p ~/.claude/commands
 curl -sL https://framejs.io/command-js.md -o ~/.claude/commands/js.md
 ```
 
-#### `/js`  command prompts: {#js-command-prompts}
+Then `/js make a bouncing ball animation`, `/js visualize ./data.csv`, or
+`/js https://framejs.io/j/<sha256> update the visualization`.
 
-
-**Create a visualization from a prompt:**
-
-```
-/js make a bouncing ball animation
-```
-
-**Create a visualization from a file:**
-
-```
-/js visualize ./data.csv
-```
-
-**Modify an existing URL:**
-
-Use the short URL (top right `Edit -> Short URL`) to paste into the prompt, the full non-shortened URL is too much context to decode:
-
-```
-/js https://framejs.io/j/<sha256> update the visualization make the background white
-```
-
-
+> New setups should prefer the Agent Skill above — it is portable across harnesses
+> and avoids the Claude-Code-only install path.
 
 ## Using an AI chat interface
 
 From the component page:
 
-1. `Edit (top right)->Copy button` to copy the AI prompt
+1. `Edit (top right) -> Copy button` to copy the AI prompt
 2. Paste into Claude, ChatGPT, or any LLM chat interface
 3. Describe what you want
 4. Copy the generated JavaScript back into the editor
@@ -62,8 +96,10 @@ From the component page:
 
 ## From an AI API
 
-Give the LLM the URL [`https://framejs.io/llms-prompt.md`](https://framejs.io/llms-prompt.md) along with your request. The LLM will respond with a JavaScript code block that you can paste into the editor at [framejs.io](https://framejs.io).
-
+Give the LLM the URL
+[`https://framejs.io/llms-prompt.md`](https://framejs.io/llms-prompt.md) along
+with your request. The LLM responds with a JavaScript code block that you paste
+into the editor at [framejs.io](https://framejs.io).
 
 ## URL encoding format
 
@@ -80,22 +116,30 @@ const encoded = btoa(encodeURIComponent(code));
 const url = `https://framejs.io/#?js=${encoded}`;
 ```
 
+For shareable links, prefer the short-URL API
+(`POST https://framejs.io/api/shorten/json`) over long hash URLs — see the
+[skill's short-URL reference](https://framejs.io/skill/framejs/references/short-url-api.md).
 
 ## How it works
 
-Claude Code will:
+A shell-capable agent will:
 
-1. Encode the JavaScript in memory using `Buffer.from(encodeURIComponent(code)).toString('base64')`
-2. Open `https://framejs.io/#?js={encoded}&edit=true` in your browser
+1. Generate the browser JavaScript.
+2. Create a short URL via `POST https://framejs.io/api/shorten/json` (the server
+   handles encoding) and print the resulting `https://framejs.io/j/<sha256>`.
+3. Open it in your browser.
 
-No files are written — everything happens in a single `node -e` command. The `&edit=true` parameter opens the editor so you can modify the code. Every update opens a new tab with the latest code.
-
+No local files are written — the short URL is standalone and shareable. Every
+update creates a new short URL.
 
 ## LLM integration files
 
+All of these are generated from the single source of truth, the `framejs` skill
+at `worker/static/skill/framejs/`, so they never drift:
+
 | File | Purpose |
 |------|---------|
-| [`/llms-prompt.md`](https://framejs.io/llms-prompt.md) | For AI chat / API — outputs a JavaScript code block |
-| [`/command-js.md`](https://framejs.io/command-js.md) | For Claude Code terminal — encodes and opens browser directly |
-
-Both files contain the same JavaScript coding guidance (ES6 modules, globals, patterns, available libraries). They differ only in how the output is delivered.
+| [`/skill/framejs/SKILL.md`](https://framejs.io/skill/framejs/SKILL.md) | Portable Agent Skill — combines all use cases, auto-routes by capability |
+| [`/command-js.md`](https://framejs.io/command-js.md) | Claude Code slash command — generates + opens a short URL |
+| [`/llms-prompt.md`](https://framejs.io/llms-prompt.md) | AI chat / API — outputs a JavaScript code block |
+| [`/llms-claude-code.txt`](https://framejs.io/llms-claude-code.txt) | CLI integration guide (short URLs, file uploads, coding guide) |
