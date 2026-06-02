@@ -46,7 +46,6 @@ services:
   worker:
     build:
       context: ./worker
-    # image: denoland/deno:alpine-1.38.3
     command: deno run -A --watch ./server.ts
     working_dir: /app/worker
     depends_on:

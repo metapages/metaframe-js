@@ -22,10 +22,9 @@ Choose based on what you can do — not on the request:
   then create a short URL via the framejs.io API, **print the short URL**, and
   open it in the browser. This is the default whenever a shell is available.
 - **Code-block mode — chat / API only, no shell:** respond with **only** a
-  single
-  ```javascript code block. The user pastes it into the editor at framejs.io.
-  Do not write files, build URLs, or add prose around the block.
-  ```
+  single fenced JavaScript code block (open it with a `javascript` info string)
+  and nothing else — no surrounding prose, no files, no URLs. The user pastes it
+  into the editor at framejs.io.
 
 In both modes the JavaScript you write follows the same rules — read
 [references/coding-guide.md](references/coding-guide.md).
@@ -56,6 +55,14 @@ The helper prints the `https://framejs.io/j/<sha256>` short URL and opens the
 browser (`--no-open` to skip). Re-run to create a NEW short URL on every update.
 Add `--module <url>` for classic scripts and `--input name=value` for inputs.
 
+`scripts/framejs.mjs` is resolved **relative to this skill's directory**, not
+your current working directory — run it from the skill folder, or use its
+absolute path (Claude Code exposes that directory as `${CLAUDE_SKILL_DIR}`, so
+`${CLAUDE_SKILL_DIR}/scripts/framejs.mjs` always works). If you cannot locate or
+run the bundled helper, use the inline-node fallback in
+[references/short-url-api.md](references/short-url-api.md) — it needs no script
+file.
+
 Always include Open Graph preview tags (`--title` / `--description`, or the `og`
 body field) so the link unfurls nicely when shared — see the OG rules in
 [references/short-url-api.md](references/short-url-api.md). When modifying an
@@ -71,7 +78,8 @@ existing app, preserve its `og` unless the user asks to change the copy.
   `root.style.width`.
 - In automation mode, NEVER output a code block for the user to copy and NEVER
   build a long URL with the code in the hash — always use the short-URL API.
-- In code-block mode, output ONLY the ```javascript block — nothing else.
+- In code-block mode, output ONLY the single fenced JavaScript code block —
+  nothing else.
 
 ## References
 

@@ -40,7 +40,11 @@ jobs:
       - name: Setup deno
         uses: denoland/setup-deno@v2
         with:
-          deno-version: v2.7.12
+          deno-version: v2.8.1 
+
+      # Gate the deploy: regenerate + validate the framejs skill before publishing
+      - name: Validate framejs skill
+        run: just check-skill
 
       - name: Unignore build output for deploy
         run: find . -type f -name .gitignore -delete

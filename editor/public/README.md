@@ -8,6 +8,21 @@ Edit and run javascript code in the browser. Share and connect the self-containe
 
 Copy and paste into AI such as Claude Code or ChatGPT and create shareable code that will always run.
 
+## Use with AI coding agents (Agent Skill)
+
+framejs.io ships a portable [Agent Skill](https://agentskills.io) that works across ~40 agent harnesses (Claude Code, Gemini CLI, Cursor, opencode, Goose, OpenAI Codex, pi, and more). The agent generates the JavaScript, creates a shareable short URL, and opens it — or, in chat-only tools, returns the code to paste.
+
+Install it (defaults to `~/.claude/skills`; pass another harness's skills dir as an argument):
+
+```bash
+curl -fsSL https://framejs.io/skill/install.sh | sh
+```
+
+Then just ask: _"make a bouncing ball animation"_, _"visualize ./data.csv as a bar chart"_, or paste a `framejs.io/j/<sha256>` short URL to modify it.
+
+- Skill: <https://framejs.io/skill/framejs/SKILL.md>
+- Setup & per-harness install: <https://framejs.io/docs/ai/setup>
+
 ## Edit with AI
 
 1. Copy the AI prompt, paste into e.g. Claude Code or ChatGPT, the ask what you want
