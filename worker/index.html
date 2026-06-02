@@ -1551,6 +1551,46 @@ Available cache utilities (loaded on-demand):
 
       // TODO: do same as above (modules in hash params) for config
 
+      // The id used to tag the injected <style>/<link> so we can find/replace/
+      // remove it when the `css` hash param changes.
+      const CSS_HASH_PARAM_ELEMENT_ID = "mtfm-css-hash-param";
+
+      // A decoded value is treated as a stylesheet URL (injected as <link>) when
+      // it is a single-line http(s) URL; otherwise it is raw CSS text (<style>).
+      const isCssStylesheetUrl = (value) => {
+        const trimmed = value.trim();
+        return /^https?:\/\/\S+$/.test(trimmed) && !/\s/.test(trimmed);
+      };
+
+      // Loads a global stylesheet from the transient `css` hash param. The value
+      // is base64-encoded and is either raw CSS text or a URL to a stylesheet.
+      //
+      // This param is intentionally NOT in the canonical/allowed hash param
+      // lists, so it is never persisted into the metaframe definition, copied
+      // external links, or shortened URLs. It is appended at runtime to apply a
+      // global style across the rendered output without modifying its content
+      // (so the underlying short URLs stay valid).
+      const applyCssFromUrl = () => {
+        // Always remove any previously injected element first so changing or
+        // clearing the param fully replaces the prior stylesheet.
+        document.getElementById(CSS_HASH_PARAM_ELEMENT_ID)?.remove();
+
+        const css = getHashParamValueBase64DecodedFromWindow("css");
+        if (!css) return;
+
+        let element;
+        if (isCssStylesheetUrl(css)) {
+          element = document.createElement("link");
+          element.rel = "stylesheet";
+          element.href = css.trim();
+        } else {
+          element = document.createElement("style");
+          element.textContent = css;
+        }
+        element.id = CSS_HASH_PARAM_ELEMENT_ID;
+        document.head.appendChild(element);
+      };
+
       const runJsFromUrl = async () => {
         // if there is a scriptUnload function, run it
         // The previous script has the option to put a cleanup function on the window
@@ -1797,6 +1837,9 @@ Available cache utilities (loaded on-demand):
 
       metaframe.connected().then(() => metaframe.log("connected"));
 
+      // Apply the transient `css` hash param stylesheet on initial load.
+      applyCssFromUrl();
+
       // Handle Safari timing issue: check if page is already loaded.
       // We capture the promise so that short-URL cleanup can wait for it.
       var initialRunPromise;
@@ -1810,8 +1853,10 @@ Available cache utilities (loaded on-demand):
         });
       }
 
-      // Hash params that do NOT require JS re-execution (metadata-only)
-      const NON_EXECUTION_PARAMS = new Set(["og"]);
+      // Hash params that do NOT require JS re-execution (metadata-only).
+      // `css` is applied separately via applyCssFromUrl() on hashchange, so it
+      // must not trigger a full re-run of the user's JS.
+      const NON_EXECUTION_PARAMS = new Set(["og", "css"]);
 
       // Build a lightweight snapshot from the raw hash string by filtering
       // out non-execution params. Avoids full parse + JSON.stringify of
@@ -1853,6 +1898,9 @@ Available cache utilities (loaded on-demand):
         if (globalThis.serviceWorkerManager.registration) {
           globalThis.serviceWorkerManager.updateConfig(newConfig);
         }
+        // Apply the transient `css` param on every hash change (it is excluded
+        // from the execution snapshot above, so it never re-runs the user JS).
+        applyCssFromUrl();
         if (hasExecutionParamsChanged()) {
           runJsFromUrl();
         }

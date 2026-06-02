@@ -63,7 +63,9 @@
       "Bash(examples/jupyter/.venv/bin/python -c ' *)",
       "Bash(examples/jupyter/.venv/bin/python3 --version)",
       "Bash(/tmp/mfw-venv/bin/pip install *)",
-      "Bash(/tmp/mfw-venv/bin/python *)"
+      "Bash(/tmp/mfw-venv/bin/python *)",
+      "Bash(APP_FQDN=server1.localhost APP_PORT=4470 npx playwright test css-hash-param.spec.ts)",
+      "Bash(APP_FQDN=server1.localhost APP_PORT=4470 npx playwright test)"
     ],
     "deny": [],
     "ask": []
