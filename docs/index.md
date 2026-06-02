@@ -4,7 +4,7 @@ layout: home
 hero:
   name: framejs.io
   text: URL with editable javascript embedded
-  tagline: Interactive visualizations that live in a URL. Prompt Claude to build them, share by link or immutable hash, embed in Jupyter or anywhere else
+  tagline: Interactive visualizations that live in a URL. Prompt AI to build them, embed or share anywhere, add to notebooks
   actions:
     - theme: alt
       text: Intro
