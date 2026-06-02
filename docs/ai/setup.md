@@ -26,12 +26,21 @@ visualizing local data files.
 ### Install
 
 A skill is just a `framejs/` folder containing `SKILL.md`. Drop it into your
-harness's skills directory. The universal one-liner unpacks the bundle into the
-directory you choose:
+harness's skills directory.
+
+**One-liner** (installs into `~/.claude/skills` by default; pass any other
+harness's skills directory as an argument):
 
 ```bash
-# replace <SKILLS_DIR> with your harness's skills directory (see the table below)
-mkdir -p <SKILLS_DIR> && curl -sL https://framejs.io/skill/framejs.tar.gz | tar xz -C <SKILLS_DIR>
+curl -fsSL https://framejs.io/skill/install.sh | sh
+# or target another harness — pass its skills directory (see the table below):
+curl -fsSL https://framejs.io/skill/install.sh | sh -s -- <SKILLS_DIR>
+```
+
+Re-run any time to update. Prefer to do it by hand? Unpack the bundle yourself:
+
+```bash
+mkdir -p <SKILLS_DIR> && curl -fsSL https://framejs.io/skill/framejs.tar.gz | tar xz -C <SKILLS_DIR>
 ```
 
 | Harness | Skills directory | Notes |

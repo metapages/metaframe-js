@@ -31,7 +31,7 @@ cyan := "\\e[36m"
     echo -e "        {{ cyan }}examples{{ normal }}"
 
 # Run the server in development mode
-@dev +args="": _mkcert open
+@dev +args="": build-skill _mkcert open
     docker compose up --build {{ args }}
 
 # Shut down the local server
@@ -64,6 +64,12 @@ build: build-skill
 # Regenerate the legacy LLM/command files from the framejs Agent Skill (single source of truth)
 build-skill:
     node scripts/build-skill-artifacts.mjs
+    # Format generated markdown so it matches `just fmt` output — keeps the two idempotent and prevents fmt from ever rewriting (or re-breaking) generated files
+    deno fmt worker/static/command-js.md worker/static/llms-prompt.md > /dev/null
+
+# Validate the framejs Agent Skill (spec compliance + regenerates artifacts)
+check-skill: build-skill
+    node scripts/validate-skill.mjs
 
 # deno deploy to framejs.io
 deploy: build
@@ -85,6 +91,7 @@ deploy: build
 
 # Checks and tests
 test:
+    just check-skill
     just editor/test
     just worker/test
     just _integration-test
