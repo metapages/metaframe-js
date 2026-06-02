@@ -32,11 +32,12 @@ pip install metaframe-widget jupyterlab
 
 This installs both JupyterLab (the notebook interface) and `metaframe-widget` (the metaframe integration). The widget is built on [anywidget](https://anywidget.dev/), so all widget dependencies are handled automatically.
 
-!!! tip "Already have Jupyter installed?"
-    If you already have a Jupyter environment, you only need:
-    ```bash
-    pip install metaframe-widget
-    ```
+::: tip Already have Jupyter installed?
+If you already have a Jupyter environment, you only need:
+```bash
+pip install metaframe-widget
+```
+:::
 
 ## Step 3: Launch JupyterLab
 
@@ -54,7 +55,7 @@ This opens JupyterLab in your browser (usually at `http://localhost:8888`). If i
 
 ## Step 5: Display your first widget
 
-In the first cell of your notebook, type and run (++shift+enter++):
+In the first cell of your notebook, type and run (`Shift+Enter`):
 
 ```python
 from metaframe_widget import MetaframeWidget
@@ -174,8 +175,9 @@ The widget updates live — no need to re-run the cell that displays it.
 print(w.outputs)
 ```
 
-!!! note "Outputs are asynchronous"
-    The widget runs in an iframe, so outputs arrive asynchronously. If `w.outputs` shows `{}`, wait a moment and re-run the cell. The outputs populate once the widget's JavaScript has executed.
+::: info Outputs are asynchronous
+The widget runs in an iframe, so outputs arrive asynchronously. If `w.outputs` shows `{}`, wait a moment and re-run the cell. The outputs populate once the widget's JavaScript has executed.
+:::
 
 ### React to output changes
 

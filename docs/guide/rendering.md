@@ -13,7 +13,7 @@ You can render any metaframe-js widget directly in your own website simply as an
 ></iframe>
 ```
 
-If you want to send or access inputs/ouputs: use the `@metapages/metapage` npm package. This gives you full I/O control — send inputs into the metaframe and receive outputs from it — along with lifecycle management, no manual iframe wiring needed.
+If you want to send or access inputs/outputs: use the `@metapages/metapage` npm package. This gives you full I/O control — send inputs into the metaframe and receive outputs from it — along with lifecycle management, no manual iframe wiring needed.
 
 This is the key advantage over a plain iframe embed: you get a programmatic interface to **send data in** and **get data out** of the running metaframe.
 

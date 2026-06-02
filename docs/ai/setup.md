@@ -1,6 +1,6 @@
 # AI Usage
 
-Create self contained editable websites, running a single chunk of javascript code.
+Create self-contained, editable websites, each running a single chunk of JavaScript code.
 
 Create using AI — via chat interfaces, directly from the terminal, or via APIs.
 

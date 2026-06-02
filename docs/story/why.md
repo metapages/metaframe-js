@@ -8,7 +8,7 @@ I kept building the same thing.
 
 For the AI researchers, they needed dynamic yet editable dashboards. Another team needed workflows with visualization. Notebook components that needed to be simple yet portable. Every time I would be circling the same primitive: run some JavaScript, some visualization, that can be embedded, edited in place, that always just **works**. Reliably. Every time someone else opens it. No login, or broken database link, no gating. And when someone opens it, they have *everything*.
 
-The primitive I needed didn't exist, but the patterns needed to build it where all around me.
+The primitive I needed didn't exist, but the patterns needed to build it were all around me.
 
 ## The Mermaid moment
 
@@ -43,7 +43,7 @@ People assume sharing and privacy are in tension. The more shareable a thing is,
 
 But to make something *truly* shareable across apps, across domains, across people who don't have accounts on your service, the thing has to be fully self-contained. It can't be scattered across rows in your database and assets on your CDN and config in your auth service. It has to be one bundle, complete in itself. Being shareable *within* an app is trivial, and creates more lock-in, and platform owners are often incentivised to keep everything in-app.
 
-Yhe moment a thing is fully self-contained, privacy comes for free. If you don't share it, nobody has it. There's no server-side copy with your name on it, sitting in a backup, waiting to be queried by someone who isn't you. The same property that makes it portable is the property that makes it private.
+The moment a thing is fully self-contained, privacy comes for free. If you don't share it, nobody has it. There's no server-side copy with your name on it, sitting in a backup, waiting to be queried by someone who isn't you. The same property that makes it portable is the property that makes it private.
 
 So the paradox dissolves. Self-contained → shareable. Self-contained → private. They're the same property pointing in two directions.
 
@@ -59,7 +59,7 @@ Which means: you can let your users edit the code. Real code. Running in your pr
 
 For most of web history this has been a wildly impractical idea. You'd need a sandbox, a code review pipeline, a way to revoke things, terms of service nobody reads. With Frames, the sandbox is the iframe, the storage is the URL, and there's no shared state to compromise. The user types, the Frame re-renders, the parent page is fine. If the user shares the URL with a friend, the friend gets exactly the same thing.
 
-This is a small primitive with surprisingly large consequences. It means a product can ship with a 30%-finished feature and let users finish the other 70% themselves, for their own use cases, without the product team having to anticipate every shape that "their own use cases" might take. Combined with AI that can generate these little components on demand,  which is now a thing that happens, users aren't just customizing settings. They're authoring software inside your software. Safely.
+This is a small primitive with surprisingly large consequences. It means a product can ship with a 30%-finished feature and let users finish the other 70% themselves, for their own use cases, without the product team having to anticipate every shape that "their own use cases" might take. Combined with AI that can generate these little components on demand, which is now a thing that happens, users aren't just customizing settings. They're authoring software inside your software. Safely.
 
 ## The bigger shape
 
@@ -67,7 +67,7 @@ Frames are not just isolated pages. The [Metapage framework](https://docs.metapa
 
 I think there's a version of the web that leans into this shape. Where the small useful thing you made — the calculator, the visualization, the data-cleaning utility, the diagram — doesn't have to become A Product with a backend to be useful to someone else. You just send the link. They have it. They can use it, edit it, fork it, embed it in their thing, and you didn't have to host anything for any of that to be true.
 
-With the development of tools such as Claude Code, creating self-contained websites is now available to everyone with a voice
+With the development of tools such as Claude Code, creating self-contained websites is now available to everyone with a voice.
 
 
 ## Example <a href="https://framejs.io/j/8e5d5eed5c3fda9c5094b186169feadecde2bf007fcd58b7fa0df52e3e3c34be" target="_blank" rel="noopener noreferrer">↗</a>

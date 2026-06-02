@@ -10,6 +10,7 @@ import {
   setHashParamValueJsonInWindow,
   setHashParamValueBase64EncodedInWindow,
   getHashParamValueBase64DecodedFromWindow,
+  deleteHashParamFromWindow,
 } from "https://cdn.jsdelivr.net/npm/@metapages/hash-query@0.10.0/+esm";
 
 // Get JSON stored in URL

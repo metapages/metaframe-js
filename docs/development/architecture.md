@@ -7,7 +7,7 @@ metaframe-js runs user JavaScript modules embedded in the URL. The key design pr
 - All code and configuration lives in the URL hash
 - The server simply serves a static `index.html`
 - The client extracts and runs the embedded JavaScript — code is never sent to the server
-- Current URL length limits are large or not specifically limited in modern browsers
+- URL length limits in modern browsers are large, and often not specifically limited at all
 
 ## Project structure
 
