@@ -10,6 +10,7 @@
 //
 // Examples:
 //   cat app.js | node framejs.mjs create --title "Bouncing ball" --description "A ball bouncing in the canvas"
+//   cat app.js | node framejs.mjs create --og '{"title":"...","description":"...","image":"..."}'  # preserve fetched og verbatim
 //   node framejs.mjs fetch 8a3b1c...   # prints { id, hashParams: { js, inputs, modules, og } }
 //   node framejs.mjs upload ./data.csv # prints { name, url, contentType }
 
@@ -80,7 +81,14 @@ function parseFlags(argv) {
     else if (a === "--module") flags.modules.push(argv[++i]);
     else if (a === "--title") flags.title = argv[++i];
     else if (a === "--description") flags.description = argv[++i];
-    else if (a === "--inputs") {
+    else if (a === "--og") {
+      const raw = argv[++i] || "";
+      try {
+        flags.og = JSON.parse(raw);
+      } catch {
+        die(`--og expects a JSON object string, got "${raw}"`);
+      }
+    } else if (a === "--inputs") {
       Object.assign(flags.inputs, JSON.parse(readFileSync(argv[++i], "utf8")));
     } else if (a === "--input") {
       const pair = argv[++i] || "";
@@ -108,7 +116,12 @@ async function cmdCreate(argv) {
   const body = { js: code };
   if (flags.modules.length) body.modules = flags.modules;
   if (Object.keys(flags.inputs).length) body.inputs = flags.inputs;
-  if (flags.title || flags.description) {
+  // `--og` carries a full og object through verbatim (incl. `image`) — use it
+  // when MODIFYING an app to preserve the existing og without recalculating.
+  // `--title`/`--description` build a fresh og and are only a fallback.
+  if (flags.og !== undefined) {
+    body.og = flags.og;
+  } else if (flags.title || flags.description) {
     body.og = {
       title: flags.title || "",
       description: flags.description || "",
@@ -174,7 +187,7 @@ const [cmd, ...rest] = process.argv.slice(2);
 const handlers = { create: cmdCreate, fetch: cmdFetch, upload: cmdUpload };
 if (!handlers[cmd]) {
   die(
-    `usage: framejs.mjs <create|fetch|upload> [...]\n  create  (reads JS from stdin)  --module <url> --input name=value --inputs <file.json> --title <t> --description <d> --no-open\n  fetch   <sha256 | /j/sha256>\n  upload  <file-path>`,
+    `usage: framejs.mjs <create|fetch|upload> [...]\n  create  (reads JS from stdin)  --module <url> --input name=value --inputs <file.json> --title <t> --description <d> --og <json> --no-open\n  fetch   <sha256 | /j/sha256>\n  upload  <file-path>`,
   );
 }
 handlers[cmd](rest).catch((e) => die(e?.message || String(e)));

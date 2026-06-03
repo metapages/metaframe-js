@@ -89,10 +89,19 @@ round-trips through the API exactly like `js` / `modules` / `inputs`.
   - `title`: concise and specific, aim for ≤ ~60 characters (avoids truncation).
   - `description`: ~110–150 characters; say what it shows and, if interactive,
     how to use it.
-- **Modifying an existing app:** if the fetched `hashParams.og` exists, carry it
-  through UNCHANGED unless the user explicitly asks to change the copy. If it is
-  missing, ADD one following the rules above. Never silently drop or overwrite
-  an `og` the user (or a previous run) already set.
+- **Modifying an existing app:** the `fetch` response includes `hashParams.og`
+  whenever the app already has one. If it exists, DO NOT recalculate it — pass
+  the exact fetched object back through with `--og '<json>'` (or the `og` body
+  field in the inline fallback). This round-trips every field, including
+  `image`, which `--title`/`--description` cannot preserve. Only when the
+  fetched `og` is missing should you ADD one following the rules above. Never
+  silently drop or overwrite an `og` the user (or a previous run) already set.
+
+```bash
+# Preserve the fetched og verbatim while changing the code:
+cat app.js | node scripts/framejs.mjs create \
+  --og '{"title":"Existing title","description":"Existing summary","image":"https://…"}'
+```
 
 ## Modify an existing short URL — fetch first
 
@@ -117,6 +126,7 @@ node -e "fetch('https://framejs.io/api/j/<sha256>').then(r=>r.json()).then(d=>co
 - `js` is the EXISTING code — MODIFY it per the user's request; do NOT rewrite
   from scratch.
 - Preserve `inputs` handling and `modules` unless the user asks to change them.
-- Preserve `og` per the rules above.
+- Preserve `og` per the rules above: pass the fetched `hashParams.og` back
+  through with `--og` rather than regenerating it.
 
 Then re-create a new short URL with the modified body.

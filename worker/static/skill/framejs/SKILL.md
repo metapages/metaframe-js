@@ -63,10 +63,15 @@ run the bundled helper, use the inline-node fallback in
 [references/short-url-api.md](references/short-url-api.md) — it needs no script
 file.
 
-Always include Open Graph preview tags (`--title` / `--description`, or the `og`
-body field) so the link unfurls nicely when shared — see the OG rules in
-[references/short-url-api.md](references/short-url-api.md). When modifying an
-existing app, preserve its `og` unless the user asks to change the copy.
+Always include Open Graph preview tags so the link unfurls nicely when shared —
+see the OG rules in [references/short-url-api.md](references/short-url-api.md):
+
+- **New app:** derive fresh copy with `--title` / `--description`.
+- **Modifying an existing app:** the fetched app already carries `og` (the
+  `fetch` command returns it). Do NOT recalculate it — pass the fetched object
+  straight back through with `--og '<the fetched og JSON>'`, which preserves
+  every field (including `image`). Only set new `--title`/`--description` if the
+  user explicitly asked to change the preview copy.
 
 ## Absolute rules (both modes)
 
