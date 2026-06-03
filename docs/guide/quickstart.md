@@ -1,17 +1,13 @@
 # Quickstart
 
-## 1. Install the `/js` slash command in Claude Code:
+1. [Install framejs skill](../ai/setup#install) into your AI chat (Claude, Gemini, Pi, OpenCode, etc):
 
-```bash
-mkdir -p ~/.claude/commands
-curl -sL https://framejs.io/command-js.md -o ~/.claude/commands/js.md
-```
 
-## In Claude Code:
+2. In your AI tool (e.g.Claude Code):
 
-> /js Create an interactive visualization of world population and individual country population over time
+> Create an interactive visualization of world population and individual country population over time
 
-## Result <a href="https://framejs.io/j/f78d4225732a192149f431d01d256d076af35dfff71966cc33defe13c2a0cf64" target="_blank" rel="noopener noreferrer">↗</a>
+3. Result automatically opens in the browser <a href="https://framejs.io/j/f78d4225732a192149f431d01d256d076af35dfff71966cc33defe13c2a0cf64" target="_blank" rel="noopener noreferrer">↗</a>
 
 <iframe
   src="https://framejs.io/j/f78d4225732a192149f431d01d256d076af35dfff71966cc33defe13c2a0cf64"

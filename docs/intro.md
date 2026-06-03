@@ -15,8 +15,9 @@ It is designed for embedding code safely anywhere, creating custom, editable das
 
 Describe what you want in plain language — visualizations, dashboards, apps, games — and AI builds it for you. Works with Claude, ChatGPT, or any LLM.
 
+[After installation of the skill](ai/setup):
 ```
-/js show a range of ways of visualization using this platform with a slider
+show a range of ways of visualization using framejs.io platform with a slider
 ```
 
 <div class="feature-embed">
