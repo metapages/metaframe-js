@@ -19,6 +19,7 @@ import {
   DEFAULT_METAFRAME_DEFINITION,
   getAllowedHashParams,
 } from "./src/metaframe-definition.ts";
+import { detectSource, track } from "./src/analytics.ts";
 
 /** Escape a string for safe use inside an HTML attribute (double-quoted). */
 function escapeHtmlAttr(s: string): string {
@@ -196,7 +197,10 @@ const serveIndex = async () => {
   });
 };
 
-app.get("/", () => serveIndex());
+app.get("/", (c) => {
+  track(c); // pageview — main app load
+  return serveIndex();
+});
 app.get("/index.html", () => serveIndex());
 
 app.get("/sw.js", async () => {
@@ -316,6 +320,8 @@ app.post("/api/shorten", async (c) => {
 
     await s3Client.send(command);
 
+    track(c, { name: "shorten", source: detectSource(c) });
+
     return c.json({
       success: true,
       id: sha256,
@@ -391,6 +397,8 @@ app.post("/api/shorten/json", async (c) => {
     const host = c.req.header("host");
     const origin = `${protocol}://${host}`;
 
+    track(c, { name: "shorten", source: detectSource(c) });
+
     return c.json({
       id: sha256,
       shortUrl: `${origin}/j/${sha256}`,
@@ -416,6 +424,8 @@ app.get("/j/:sha256", async (c) => {
     if (!sha256 || !/^[a-f0-9]{64}$/.test(sha256)) {
       return c.json({ error: "Invalid shortened URL ID" }, 400);
     }
+
+    track(c); // pageview — short URL opened (shared app load)
 
     const key = `j/${sha256}`;
 
@@ -563,6 +573,8 @@ app.get("/api/j/:sha256", async (c) => {
     const response = await s3Client.send(command);
     if (!response.Body) throw new Error("S3 response body is empty");
     const hashParams = await response.Body.transformToString();
+
+    track(c, { name: "fetch", source: detectSource(c) });
 
     c.header("Cache-Control", "public, max-age=31536000, immutable");
     return c.json({
