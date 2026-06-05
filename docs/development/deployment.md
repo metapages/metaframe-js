@@ -15,6 +15,10 @@ This command:
 
 Requires `DENO_DEPLOY_TOKEN` env var (or interactive login).
 
+Optional: set `UMAMI_HOST` and `UMAMI_WEBSITE_ID` in the Deno Deploy project
+env to enable cookieless server-side usage analytics
+(see [worker docs](./worker.md#analytics-optional)).
+
 ## Python package (PyPI)
 
 The `metaframe-widget` package is published to PyPI:

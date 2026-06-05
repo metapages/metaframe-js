@@ -24,6 +24,10 @@ const BASE = (process.env.FRAMEJS_BASE || "https://framejs.io").replace(
   "",
 );
 
+// Identifies this client (the framejs Agent Skill) to the server so usage from
+// AI agents can be distinguished from web-editor traffic in analytics.
+const CLIENT_TAG = "skill/1.0";
+
 const CONTENT_TYPES = {
   ".json": "application/json",
   ".csv": "text/csv",
@@ -130,7 +134,10 @@ async function cmdCreate(argv) {
 
   const res = await fetch(`${BASE}/api/shorten/json`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "X-Framejs-Client": CLIENT_TAG,
+    },
     body: JSON.stringify(body),
   });
   if (!res.ok) die(`shorten failed: ${res.status} ${await res.text()}`);
@@ -144,7 +151,9 @@ async function cmdFetch(argv) {
   if (!/^[0-9a-f]{64}$/i.test(id)) {
     die("fetch expects a sha256 id or /j/<sha256> URL");
   }
-  const res = await fetch(`${BASE}/api/j/${id}`);
+  const res = await fetch(`${BASE}/api/j/${id}`, {
+    headers: { "X-Framejs-Client": CLIENT_TAG },
+  });
   if (!res.ok) die(`fetch failed: ${res.status} ${await res.text()}`);
   console.log(JSON.stringify(await res.json(), null, 2));
 }
@@ -159,7 +168,10 @@ async function cmdUpload(argv) {
 
   const presignRes = await fetch(`${BASE}/api/upload/presign`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "X-Framejs-Client": CLIENT_TAG,
+    },
     body: JSON.stringify({ contentType, fileSize: buf.length, sha256 }),
   });
   if (!presignRes.ok) {

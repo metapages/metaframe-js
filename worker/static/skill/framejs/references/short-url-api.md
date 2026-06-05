@@ -57,7 +57,7 @@ process.stdin.on('end', () => {
   };
   fetch('https://framejs.io/api/shorten/json', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'X-Framejs-Client': 'skill/1.0' },
     body: JSON.stringify(body)
   })
   .then(r => r.json())

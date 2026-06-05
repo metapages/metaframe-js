@@ -72,6 +72,8 @@ services:
       # the path maps directly to the key, so the /f suffix is needed here too.
       - "S3_PUBLIC_URL=${S3_PUBLIC_URL:-https://s3.localhost:${APP_PORT:-443}/uploads/f}"
       - "S3_UPLOAD_MAX_SIZE_MB=${S3_UPLOAD_MAX_SIZE_MB:-500}"
+      - "UMAMI_HOST=${UMAMI_HOST:-https://umami.framejs.io}"
+      - "UMAMI_WEBSITE_ID=${UMAMI_WEBSITE_ID:-}"
     expose:
       - 3000
     volumes:
