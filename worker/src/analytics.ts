@@ -16,7 +16,7 @@
 import type { Context } from "@hono/hono";
 
 const UMAMI_HOST = (Deno.env.get("UMAMI_HOST") || "").replace(/\/+$/, "") ||
-  "https://umami.framejs.io";
+  "https://cloud.umami.is";
 const UMAMI_WEBSITE_ID = Deno.env.get("UMAMI_WEBSITE_ID") || "";
 
 export const analyticsEnabled: boolean = !!(UMAMI_HOST && UMAMI_WEBSITE_ID);
