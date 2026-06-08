@@ -1,6 +1,7 @@
 {
   "name": "@metapages/metaframe-js",
   "version": "0.1.33",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/metapages/metaframe-js"

@@ -616,3 +616,7 @@ The server runs on https://deno.com/deploy which is
 - fast
 - very performant
 - deploys immediately with a simply push to the repository
+
+## License
+
+[MIT](https://github.com/metapages/metaframe-js/blob/main/LICENSE)
