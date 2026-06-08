@@ -103,7 +103,7 @@ export default withMermaid(
       socialLinks: [
         {
           icon: "github",
-          link: "https://github.com/metapages/metaframe-js",
+          link: "https://github.com/metapages/framejs.io",
         },
       ],
     },

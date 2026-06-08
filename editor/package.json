@@ -4,7 +4,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/metapages/metaframe-js"
+    "url": "https://github.com/metapages/framejs.io"
   },
   "files": [
     "dist/**/*"
@@ -12,7 +12,7 @@
   "type": "module",
   "types": "dist/index.d.ts",
   "main": "dist/index.js",
-  "homepage": "https://github.com/metapages/metaframe-js/tree/main/docs#readme",
+  "homepage": "https://github.com/metapages/framejs.io/tree/main/docs#readme",
   "scripts": {
     "preinstall": "npm set progress=false && npm set audit false && npm config set fund false",
     "start": "vite",

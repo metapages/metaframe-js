@@ -2,7 +2,7 @@
 
 [Official Docs](https://framejs.io/docs)
 
-<a href="https://github.com/metapages/metaframe-js" target="_top" rel="noopener noreferrer">Github</a>
+<a href="https://github.com/metapages/framejs.io" target="_top" rel="noopener noreferrer">Github</a>
 
 Edit and run javascript code in the browser. Share and connect the self-contained websites with other chunks of code and visualization.
 
@@ -619,4 +619,4 @@ The server runs on https://deno.com/deploy which is
 
 ## License
 
-[MIT](https://github.com/metapages/metaframe-js/blob/main/LICENSE)
+[MIT](https://github.com/metapages/framejs.io/blob/main/LICENSE)

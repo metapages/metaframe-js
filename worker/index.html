@@ -1,69 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
+
   <head>
-    <meta charset="utf-8" />
-    <base target="_parent" />
+    <meta charset="utf-8"/>
+    <base target="_parent"/>
     <title>
       framejs.io — Create and share JavaScript visualizations and apps instantly
     </title>
-    <meta
-      name="description"
-      content="framejs.io lets you create interactive visualizations, dashboards, and apps with AI or by hand. Share via URL — no server, no login, no build step. Just write JavaScript and share the link."
-    >
-    <link
-      rel="help"
-      href="/llms.txt"
-      title="LLM site overview and URL encoding scheme"
-    />
-    <link
-      rel="help"
-      href="/llms-claude-code.txt"
-      title="Full CLI integration guide for AI coding assistants"
-    />
-    <link
-      rel="help"
-      href="/llms-prompt.md"
-      title="JavaScript coding guide for LLMs"
-    />
+    <meta name="description" content="framejs.io lets you create interactive visualizations, dashboards, and apps with AI or by hand. Share via URL — no server, no login, no build step. Just write JavaScript and share the link.">
+    <link rel="help" href="/llms.txt" title="LLM site overview and URL encoding scheme"/>
+    <link rel="help" href="/llms-claude-code.txt" title="Full CLI integration guide for AI coding assistants"/>
+    <link rel="help" href="/llms-prompt.md" title="JavaScript coding guide for LLMs"/>
     <!-- OG_START -->
     <meta property="og:type" content="website">
-    <meta
-      property="og:title"
-      content="framejs.io — Create and share JavaScript visualizations and apps instantly"
-    >
-    <meta
-      property="og:description"
-      content="Create interactive visualizations, dashboards, and apps with AI or by hand. Share via URL — no server, no login, no build step."
-    >
+    <meta property="og:title" content="framejs.io — Create and share JavaScript visualizations and apps instantly">
+    <meta property="og:description" content="Create interactive visualizations, dashboards, and apps with AI or by hand. Share via URL — no server, no login, no build step.">
     <meta property="og:url" content="https://framejs.io/">
     <meta property="og:site_name" content="framejs.io">
     <meta name="twitter:card" content="summary">
-    <meta
-      name="twitter:title"
-      content="framejs.io — Create and share JavaScript visualizations and apps instantly"
-    >
-    <meta
-      name="twitter:description"
-      content="Create interactive visualizations, dashboards, and apps with AI or by hand. Share via URL."
-    >
+    <meta name="twitter:title" content="framejs.io — Create and share JavaScript visualizations and apps instantly">
+    <meta name="twitter:description" content="Create interactive visualizations, dashboards, and apps with AI or by hand. Share via URL.">
     <!-- OG_END -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "framejs.io",
-      "url": "https://framejs.io",
-      "description": "Create and share interactive JavaScript visualizations, dashboards, and apps instantly. Use AI or write code by hand. Everything lives in a shareable URL — no server, no login, no build step.",
-      "applicationCategory": "DeveloperApplication",
-      "operatingSystem": "Any",
-      "browserRequirements": "Requires a modern web browser with ES6 module support",
-      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "author": {
-        "@type": "Organization",
-        "name": "Metapages",
-        "url": "https://github.com/metapages"
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "framejs.io",
+        "url": "https://framejs.io",
+        "description": "Create and share interactive JavaScript visualizations, dashboards, and apps instantly. Use AI or write code by hand. Everything lives in a shareable URL — no server, no login, no build step.",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires a modern web browser with ES6 module support",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "author": {
+          "@type": "Organization",
+          "name": "Metapages",
+          "url": "https://github.com/metapages"
+        }
       }
-    }
     </script>
     <style>
       body,
@@ -271,190 +249,103 @@
   </head>
 
   <body>
-    <!--
-      framejs.io — Create and share interactive JavaScript apps instantly.
-      Write code (or use AI), get a shareable URL. No server, no login, no build step.
-      Docs: https://framejs.io/docs/
-      GitHub: https://github.com/metapages/metaframe-js
-
-      For AI/LLM tools:
-      - Site overview + URL encoding scheme: https://framejs.io/llms.txt
-      - Full CLI integration guide (encoding, opening, short URLs, file uploads): https://framejs.io/llms-claude-code.txt
-      - JavaScript coding constraints and patterns: https://framejs.io/llms-prompt.md
-
-      CLI tools: generate JS, encode into URL with btoa(encodeURIComponent(code)), open https://framejs.io/#?js={encoded}
-    -->
+    <!-- framejs.io — Create and share interactive JavaScript apps instantly. Write code (or use AI), get a shareable URL. No server, no login, no build step. Docs: https://framejs.io/docs/ GitHub: https://github.com/metapages/framejs.io For AI/LLM tools: - Site overview + URL encoding scheme: https://framejs.io/llms.txt - Full CLI integration guide (encoding, opening, short URLs, file uploads): https://framejs.io/llms-claude-code.txt - JavaScript coding constraints and patterns: https://framejs.io/llms-prompt.md CLI tools: generate JS, encode into URL with btoa(encodeURIComponent(code)), open https://framejs.io/#?js={encoded} -->
 
     <button id="menu-button" class="invisible-until-hover">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="15"
-        height="15"
-        fill="#818382"
-        viewbox="0 0 256 256"
-      >
-        <path
-          d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z"
-        >
-        </path>
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="#818382" viewbox="0 0 256 256">
+        <path d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z"></path>
       </svg>
       <span>Edit</span>
     </button>
 
     <div id="root" class="root borderFatSolidGreen transparent">
-      <div
-        id="landing-content"
-        style="display: none; max-width: 740px; margin: 48px auto; padding: 0 24px; font-family: 'Inter', system-ui, -apple-system, sans-serif; color: #1c1c1c; line-height: 1.6"
-      >
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;500&display=swap"
-        >
-        <h1
-          style="font-size: 2.8rem; font-weight: 800; letter-spacing: -0.03em; margin: 0 0 8px; color: #2563eb"
-        >
+      <div id="landing-content" style="display: none; max-width: 740px; margin: 48px auto; padding: 0 24px; font-family: 'Inter', system-ui, -apple-system, sans-serif; color: #1c1c1c; line-height: 1.6">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;500&display=swap">
+        <h1 style="font-size: 2.8rem; font-weight: 800; letter-spacing: -0.03em; margin: 0 0 8px; color: #2563eb">
           framejs.io
         </h1>
         <p style="font-size: 1.25rem; color: #444; margin: 0 0 12px">
-          Create and share interactive visualizations, dashboards, and apps —
-          with AI or by hand.
+          Create and share interactive visualizations, dashboards, and apps — with AI or by hand.
         </p>
         <p style="font-size: 0.95rem; color: #666; margin: 0 0 32px">
-          Write JavaScript, get a shareable URL. No server, no login, no build
-          step. The entire app lives in the link.
+          Write JavaScript, get a shareable URL. No server, no login, no build step. The entire app lives in the link.
         </p>
 
-        <div
-          style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 36px"
-        >
-          <a
-            href="/docs/ai/setup"
-            style="background: #f8f9fa; border: 1px solid #e2e5e9; border-radius: 8px; padding: 16px 18px; text-decoration: none; color: inherit; transition: border-color 0.2s"
-            onmouseover='this.style.borderColor = "#93a3b8"'
-            onmouseout='this.style.borderColor = "#e2e5e9"'
-          ><strong style="color: #333">Ask AI to build it</strong><br><span
-              style="font-size: 0.9rem; color: #555"
-            >Describe what you want, paste the code, share the link.</span></a>
-          <a
-            href="/docs/guide/quickstart"
-            style="background: #f8f9fa; border: 1px solid #e2e5e9; border-radius: 8px; padding: 16px 18px; text-decoration: none; color: inherit; transition: border-color 0.2s"
-            onmouseover='this.style.borderColor = "#93a3b8"'
-            onmouseout='this.style.borderColor = "#e2e5e9"'
-          ><strong style="color: #333">Share via URL</strong><br><span
-              style="font-size: 0.9rem; color: #555"
-            >The link is the app. No deploy, no hosting, no accounts.</span></a>
-          <a
-            href="/docs/guide/embedding"
-            style="background: #f8f9fa; border: 1px solid #e2e5e9; border-radius: 8px; padding: 16px 18px; text-decoration: none; color: inherit; transition: border-color 0.2s"
-            onmouseover='this.style.borderColor = "#93a3b8"'
-            onmouseout='this.style.borderColor = "#e2e5e9"'
-          ><strong style="color: #333">Embed anywhere</strong><br><span
-              style="font-size: 0.9rem; color: #555"
-            >Notion, Jupyter, Confluence, blogs — just paste the URL.</span></a>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 36px">
+          <a href="/docs/ai/setup" style="background: #f8f9fa; border: 1px solid #e2e5e9; border-radius: 8px; padding: 16px 18px; text-decoration: none; color: inherit; transition: border-color 0.2s" onmouseover='this.style.borderColor = "#93a3b8"' onmouseout='this.style.borderColor = "#e2e5e9"'>
+            <strong style="color: #333">Ask AI to build it</strong><br>
+            <span style="font-size: 0.9rem; color: #555">Describe what you want, paste the code, share the link.</span></a>
+          <a href="/docs/guide/quickstart" style="background: #f8f9fa; border: 1px solid #e2e5e9; border-radius: 8px; padding: 16px 18px; text-decoration: none; color: inherit; transition: border-color 0.2s" onmouseover='this.style.borderColor = "#93a3b8"' onmouseout='this.style.borderColor = "#e2e5e9"'>
+            <strong style="color: #333">Share via URL</strong><br>
+            <span style="font-size: 0.9rem; color: #555">The link is the app. No deploy, no hosting, no accounts.</span></a>
+          <a href="/docs/guide/embedding" style="background: #f8f9fa; border: 1px solid #e2e5e9; border-radius: 8px; padding: 16px 18px; text-decoration: none; color: inherit; transition: border-color 0.2s" onmouseover='this.style.borderColor = "#93a3b8"' onmouseout='this.style.borderColor = "#e2e5e9"'>
+            <strong style="color: #333">Embed anywhere</strong><br>
+            <span style="font-size: 0.9rem; color: #555">Notion, Jupyter, Confluence, blogs — just paste the URL.</span></a>
         </div>
 
-        <h2
-          style="font-size: 1.1rem; font-weight: 600; margin: 0 0 12px; color: #333"
-        >
+        <h2 style="font-size: 1.1rem; font-weight: 600; margin: 0 0 12px; color: #333">
           Example — real-time animated particles
         </h2>
         <div style="position: relative; margin: 0 0 32px">
-          <button
-            onclick='navigator.clipboard.writeText(
+          <button onclick='navigator.clipboard.writeText(
   this.parentElement.querySelector("code").textContent,
 ).then(() => {
   this.textContent = "Copied!";
   setTimeout(() => {
     this.textContent = "Copy";
   }, 1500);
-})'
-            style="position: absolute; top: 10px; right: 10px; background: #3a3a3a; color: #ddd; border: none; border-radius: 5px; padding: 5px 12px; font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; cursor: pointer; z-index: 1; transition: background 0.2s"
-            onmouseover='this.style.background = "#555"'
-            onmouseout='this.style.background = "#3a3a3a"'
-          >
+})' style="position: absolute; top: 10px; right: 10px; background: #3a3a3a; color: #ddd; border: none; border-radius: 5px; padding: 5px 12px; font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; cursor: pointer; z-index: 1; transition: background 0.2s" onmouseover='this.style.background = "#555"' onmouseout='this.style.background = "#3a3a3a"'>
             Copy
           </button>
-          <pre
-            style="background: #1a1a1a; color: #d4d4d4; border-radius: 8px; padding: 18px 20px; overflow: auto; max-height: 280px; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; line-height: 1.5; margin: 0"
-          ><code>const canvas = document.createElement("canvas");
-canvas.width = root.getBoundingClientRect().width;
-canvas.height = root.getBoundingClientRect().height;
-root.appendChild(canvas);
-const ctx = canvas.getContext("2d");
+          <pre style="background: #1a1a1a; color: #d4d4d4; border-radius: 8px; padding: 18px 20px; overflow: auto; max-height: 280px; font-family: 'jetbrains mono', monospace; font-size: 0.82rem; line-height: 1.5; margin: 0"><code>const canvas = document.createelement("canvas");
+canvas.width = root.getboundingclientrect().width;
+canvas.height = root.getboundingclientrect().height;
+root.appendchild(canvas);
+const ctx = canvas.getcontext("2d");
 
-let particles = Array.from({length: 80}, () => ({
-  x: Math.random() * root.getBoundingClientRect().width, y: Math.random() * root.getBoundingClientRect().height,
-  vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2,
-  r: Math.random() * 3 + 1
+let particles = array.from({length: 80}, () => ({
+  x: math.random() * root.getboundingclientrect().width, y: math.random() * root.getboundingclientrect().height,
+  vx: (math.random() - 0.5) * 2, vy: (math.random() - 0.5) * 2,
+  r: math.random() * 3 + 1
 }));
 
 function frame() {
-  ctx.fillStyle = "rgba(0,0,0,0.08)";
-  ctx.fillRect(0, 0, root.getBoundingClientRect().width, root.getBoundingClientRect().height);
+  ctx.fillstyle = "rgba(0,0,0,0.08)";
+  ctx.fillrect(0, 0, root.getboundingclientrect().width, root.getboundingclientrect().height);
   for (const p of particles) {
     p.x += p.vx; p.y += p.vy;
-    if (p.x < 0 || p.x > root.getBoundingClientRect().width) p.vx *= -1;
-    if (p.y < 0 || p.y > root.getBoundingClientRect().height) p.vy *= -1;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-    ctx.fillStyle = `hsl(210, 40%, ${50 + p.r * 10}%)`;
+    if (p.x < 0 || p.x > root.getboundingclientrect().width) p.vx *= -1;
+    if (p.y < 0 || p.y > root.getboundingclientrect().height) p.vy *= -1;
+    ctx.beginpath();
+    ctx.arc(p.x, p.y, p.r, 0, math.pi * 2);
+    ctx.fillstyle = `hsl(210, 40%, ${50 + p.r * 10}%)`;
     ctx.fill();
   }
-  requestAnimationFrame(frame);
+  requestanimationframe(frame);
 }
 frame();</code></pre>
         </div>
 
-        <div
-          style="display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.9rem; margin-bottom: 24px"
-        >
-          <a
-            href="/docs/"
-            style="color: #4b7be5; text-decoration: none; font-weight: 500"
-            onmouseover='this.style.textDecoration = "underline"'
-            onmouseout='this.style.textDecoration = "none"'
-          >Docs</a>
-          <a
-            href="/docs/examples/"
-            style="color: #4b7be5; text-decoration: none; font-weight: 500"
-            onmouseover='this.style.textDecoration = "underline"'
-            onmouseout='this.style.textDecoration = "none"'
-          >Examples</a>
-          <a
-            href="/docs/ai/setup"
-            style="color: #4b7be5; text-decoration: none; font-weight: 500"
-            onmouseover='this.style.textDecoration = "underline"'
-            onmouseout='this.style.textDecoration = "none"'
-          >AI setup</a>
-          <a
-            href="https://github.com/metapages/metaframe-js"
-            style="color: #4b7be5; text-decoration: none; font-weight: 500"
-            onmouseover='this.style.textDecoration = "underline"'
-            onmouseout='this.style.textDecoration = "none"'
-          >GitHub</a>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.9rem; margin-bottom: 24px">
+          <a href="/docs/" style="color: #4b7be5; text-decoration: none; font-weight: 500" onmouseover='this.style.textDecoration = "underline"' onmouseout='this.style.textDecoration = "none"'>Docs</a>
+          <a href="/docs/examples/" style="color: #4b7be5; text-decoration: none; font-weight: 500" onmouseover='this.style.textDecoration = "underline"' onmouseout='this.style.textDecoration = "none"'>Examples</a>
+          <a href="/docs/ai/setup" style="color: #4b7be5; text-decoration: none; font-weight: 500" onmouseover='this.style.textDecoration = "underline"' onmouseout='this.style.textDecoration = "none"'>AI setup</a>
+          <a href="https://github.com/metapages/framejs.io" style="color: #4b7be5; text-decoration: none; font-weight: 500" onmouseover='this.style.textDecoration = "underline"' onmouseout='this.style.textDecoration = "none"'>GitHub</a>
         </div>
 
-        <div
-          style="margin-top: 24px; padding: 18px 20px; background: #f0f4f8; border-radius: 8px; border: 1px solid #dde3ea; font-size: 0.85rem; color: #444; line-height: 1.6"
-        >
-          <strong style="color: #333"
-          >AI / CLI tools (Claude Code, Cursor, etc.)</strong>
+        <div style="margin-top: 24px; padding: 18px 20px; background: #f0f4f8; border-radius: 8px; border: 1px solid #dde3ea; font-size: 0.85rem; color: #444; line-height: 1.6">
+          <strong style="color: #333">AI / CLI tools (Claude Code, Cursor, etc.)</strong>
           <p style="margin: 6px 0 0">
             CLI tools can generate JavaScript and create a short URL via
-            <code
-              style="background: #e2e8f0; padding: 2px 5px; border-radius: 3px; font-size: 0.8rem"
-            >POST /api/shorten/json</code>
-            with body <code
-              style="background: #e2e8f0; padding: 2px 5px; border-radius: 3px; font-size: 0.8rem"
-            >{"js": "code", "modules": []}</code>
-            — the API returns a short URL that opens directly in the browser.
-            Never create local files. Full guide: <a
-              href="/llms-claude-code.txt"
-              style="color: #4b7be5"
-            >CLI integration guide</a>
-            &#x2022; <a href="/llms-prompt.md" style="color: #4b7be5"
-            >JS coding guide</a>
-            &#x2022; <a href="/llms.txt" style="color: #4b7be5">llms.txt</a>
+            <code style="background: #e2e8f0; padding: 2px 5px; border-radius: 3px; font-size: 0.8rem">POST /api/shorten/json</code>
+            with body
+            <code style="background: #e2e8f0; padding: 2px 5px; border-radius: 3px; font-size: 0.8rem">{"js": "code", "modules": []}</code>
+            — the API returns a short URL that opens directly in the browser. Never create local files. Full guide:
+            <a href="/llms-claude-code.txt" style="color: #4b7be5">CLI integration guide</a>
+            &#x2022;
+            <a href="/llms-prompt.md" style="color: #4b7be5">JS coding guide</a>
+            &#x2022;
+            <a href="/llms.txt" style="color: #4b7be5">llms.txt</a>
           </p>
         </div>
       </div>
@@ -467,15 +358,12 @@ frame();</code></pre>
         var hasShortUrl = !!window.__SHORT_URL_READY;
         if (!hasJsParam && !hasShortUrl) {
           var el = document.getElementById("landing-content");
-          if (el) el.style.display = "";
-        }
-      })();
+          if (el) 
+            el.style.display = "";
+          }
+        })();
     </script>
-    <div
-      id="editor-root"
-      class="editor-container-hidden borderDashedPurple transparent"
-    >
-    </div>
+    <div id="editor-root" class="editor-container-hidden borderDashedPurple transparent"></div>
 
     <!-- Service Worker Registration and Configuration -->
     <script id="service-worker-setup" type="module">
@@ -495,12 +383,8 @@ frame();</code></pre>
               this.registration = registration;
               if (
                 globalThis.serviceWorkerConfig
-                  ?.enableLogging
-              ) {
-                console.log(
-                  "[SW Manager] Service worker registered:",
-                  registration,
-                );
+                ?.enableLogging) {
+                console.log("[SW Manager] Service worker registered:", registration,);
               }
 
               // Handle service worker updates
@@ -508,26 +392,17 @@ frame();</code></pre>
                 const newWorker = registration.installing;
                 if (
                   globalThis.serviceWorkerConfig
-                    ?.enableLogging
-                ) {
+                  ?.enableLogging) {
                   console.log("[SW Manager] New service worker installing...");
                 }
 
                 newWorker.addEventListener("statechange", () => {
-                  if (
-                    newWorker.state === "installed" &&
-                    navigator.serviceWorker.controller
-                  ) {
+                  if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
                     if (
                       globalThis.serviceWorkerConfig
-                        ?.enableLogging
-                    ) {
-                      console.log(
-                        "[SW Manager] New service worker installed, will activate on page refresh",
-                      );
-                      console.log(
-                        "🔄 Website updated! Refresh the page to get the latest version.",
-                      );
+                      ?.enableLogging) {
+                      console.log("[SW Manager] New service worker installed, will activate on page refresh",);
+                      console.log("🔄 Website updated! Refresh the page to get the latest version.",);
                     }
                   }
                 });
@@ -539,11 +414,8 @@ frame();</code></pre>
                 .addEventListener("controllerchange", () => {
                   if (
                     globalThis.serviceWorkerConfig
-                      ?.enableLogging
-                  ) {
-                    console.log(
-                      "[SW Manager] Service worker updated and active",
-                    );
+                    ?.enableLogging) {
+                    console.log("[SW Manager] Service worker updated and active",);
                   }
                   // Send configuration to new service worker
                   setTimeout(() => {
@@ -560,20 +432,15 @@ frame();</code></pre>
             } catch (error) {
               if (
                 globalThis.serviceWorkerConfig
-                  ?.enableLogging
-              ) {
-                console.error(
-                  "[SW Manager] Service worker registration failed:",
-                  error,
-                );
+                ?.enableLogging) {
+                console.error("[SW Manager] Service worker registration failed:", error,);
               }
               throw error;
             }
           } else {
             if (
               globalThis.serviceWorkerConfig
-                ?.enableLogging
-            ) {
+              ?.enableLogging) {
               console.warn("[SW Manager] Service workers not supported");
             }
             throw new Error("Service workers not supported");
@@ -584,11 +451,8 @@ frame();</code></pre>
           if (!navigator.serviceWorker.controller) {
             if (
               globalThis.serviceWorkerConfig
-                ?.enableLogging
-            ) {
-              console.warn(
-                "[SW Manager] No active service worker to configure",
-              );
+              ?.enableLogging) {
+              console.warn("[SW Manager] No active service worker to configure",);
             }
             return;
           }
@@ -599,8 +463,7 @@ frame();</code></pre>
               if (event.data.success) {
                 if (
                   globalThis.serviceWorkerConfig
-                    ?.enableLogging
-                ) {
+                  ?.enableLogging) {
                   console.log("[SW Manager] Configuration updated");
                 }
                 resolve(event.data);
@@ -614,7 +477,7 @@ frame();</code></pre>
               .controller
               .postMessage({
                 type: "UPDATE_CONFIG",
-                payload: config,
+                payload: config
               }, [channel.port2]);
           });
         },
@@ -634,7 +497,7 @@ frame();</code></pre>
               .serviceWorker
               .controller
               .postMessage({
-                type: "GET_CONFIG",
+                type: "GET_CONFIG"
               }, [channel.port2]);
           });
         },
@@ -659,7 +522,7 @@ frame();</code></pre>
               .serviceWorker
               .controller
               .postMessage({
-                type: "CLEAR_CACHE",
+                type: "CLEAR_CACHE"
               }, [channel.port2]);
           });
         },
@@ -679,7 +542,7 @@ frame();</code></pre>
               .serviceWorker
               .controller
               .postMessage({
-                type: "GET_CACHE_INFO",
+                type: "GET_CACHE_INFO"
               }, [channel.port2]);
           });
         },
@@ -691,8 +554,7 @@ frame();</code></pre>
 
           if (
             globalThis.serviceWorkerConfig
-              ?.enableLogging
-          ) {
+            ?.enableLogging) {
             console.log("[SW Manager] Checking for service worker updates...");
           }
           await this
@@ -703,16 +565,14 @@ frame();</code></pre>
             if (this.registration.installing) {
               if (
                 globalThis.serviceWorkerConfig
-                  ?.enableLogging
-              ) {
+                ?.enableLogging) {
                 console.log("[SW Manager] Update found, installing...");
               }
               resolve(true);
             } else {
               if (
                 globalThis.serviceWorkerConfig
-                  ?.enableLogging
-              ) {
+                ?.enableLogging) {
                 console.log("[SW Manager] No updates found");
               }
               resolve(false);
@@ -727,8 +587,7 @@ frame();</code></pre>
 
           if (
             globalThis.serviceWorkerConfig
-              ?.enableLogging
-          ) {
+            ?.enableLogging) {
             console.log("[SW Manager] Forcing service worker update...");
           }
           await this
@@ -737,16 +596,14 @@ frame();</code></pre>
           window
             .location
             .reload();
-        },
+        }
       };
 
       // Only enable the caching service worker on production or when explicitly forced via ?sw=force.
       // In dev, unregister any previously registered SW to avoid stale caches.
       const PRODUCTION_HOSTS = ["framejs.io", "js.mtfm.io"];
-      const forceSW =
-        new URLSearchParams(window.location.search).get("sw") === "force";
-      const isProduction =
-        PRODUCTION_HOSTS.includes(window.location.hostname) || forceSW;
+      const forceSW = new URLSearchParams(window.location.search).get("sw") === "force";
+      const isProduction = PRODUCTION_HOSTS.includes(window.location.hostname) || forceSW;
 
       async function unregisterAllServiceWorkers() {
         if ("serviceWorker" in navigator) {
@@ -757,11 +614,7 @@ frame();</code></pre>
             await reg.unregister();
           }
           if (registrations.length > 0) {
-            console.log(
-              "[SW Manager] Dev mode: unregistered",
-              registrations.length,
-              "service worker(s)",
-            );
+            console.log("[SW Manager] Dev mode: unregistered", registrations.length, "service worker(s)",);
           }
         }
       }
@@ -775,8 +628,7 @@ frame();</code></pre>
         setTimeout(() => {
           if (
             globalThis.serviceWorkerConfig
-              ?.enableLogging
-          ) {
+            ?.enableLogging) {
             console.log(`
 🚀 Metaframe JS with Stale-While-Revalidate Caching (Debug Mode)
 
@@ -811,12 +663,8 @@ Available cache utilities (loaded on-demand):
           } catch (error) {
             if (
               globalThis.serviceWorkerConfig
-                ?.enableLogging
-            ) {
-              console.error(
-                "[SW Manager] Failed to initialize service worker:",
-                error,
-              );
+              ?.enableLogging) {
+              console.error("[SW Manager] Failed to initialize service worker:", error,);
             }
           }
         });
@@ -828,12 +676,8 @@ Available cache utilities (loaded on-demand):
           initServiceWorker().catch((error) => {
             if (
               globalThis.serviceWorkerConfig
-                ?.enableLogging
-            ) {
-              console.error(
-                "[SW Manager] Failed to initialize service worker:",
-                error,
-              );
+              ?.enableLogging) {
+              console.error("[SW Manager] Failed to initialize service worker:", error,);
             }
           });
         }
@@ -844,21 +688,22 @@ Available cache utilities (loaded on-demand):
       window.fetch = async function (...args) {
         const response = await originalFetch.apply(this, args);
 
-        if (globalThis.serviceWorkerConfig?.enableLogging) {
+        if (
+          globalThis.serviceWorkerConfig
+          ?.enableLogging) {
           const cacheStatus = response
             .headers
             .get("sw-cache-status");
           if (cacheStatus) {
-            const url = typeof args[0] === "string" ? args[0] : args[0].url;
+            const url = typeof args[0] === "string"
+              ? args[0]
+              : args[0].url;
             const statusEmoji = {
               "fresh": "✅",
               "stale": "📡",
-              "miss": "🌐",
+              "miss": "🌐"
             };
-            console.log(
-              `${statusEmoji[cacheStatus] || "❓"} Cache ${cacheStatus}:`,
-              url,
-            );
+            console.log(`${statusEmoji[cacheStatus] || "❓"} Cache ${cacheStatus}:`, url,);
           }
         }
 
@@ -2124,5 +1969,6 @@ Available cache utilities (loaded on-demand):
         });
       }
     </script>
-  </body>
+</body>
+
 </html>

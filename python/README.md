@@ -73,6 +73,6 @@ source.pipe_to(sink, output_key="result", input_key="data")
 
 ## Links
 
-- [GitHub](https://github.com/metapages/metaframe-js)
-- [Jupyter examples](https://github.com/metapages/metaframe-js/tree/main/examples/jupyter)
-- [marimo examples](https://github.com/metapages/metaframe-js/tree/main/examples/marimo)
+- [GitHub](https://github.com/metapages/framejs.io)
+- [Jupyter examples](https://github.com/metapages/framejs.io/tree/main/examples/jupyter)
+- [marimo examples](https://github.com/metapages/framejs.io/tree/main/examples/marimo)

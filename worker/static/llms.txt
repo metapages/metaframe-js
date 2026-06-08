@@ -35,7 +35,7 @@ build with JavaScript in a browser.
 - LLM code prompt (for generating code): https://framejs.io/llms-prompt.md
 - CLI integration guide (for AI coding assistants):
   https://framejs.io/llms-claude-code.txt
-- GitHub: https://github.com/metapages/metaframe-js
+- GitHub: https://github.com/metapages/framejs.io
 - Jupyter integration: https://framejs.io/docs/integrations/jupyter
 - marimo integration: https://framejs.io/docs/integrations/marimo
 

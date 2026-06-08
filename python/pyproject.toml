@@ -26,9 +26,9 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/metapages/metaframe-js"
-Repository = "https://github.com/metapages/metaframe-js"
-Issues = "https://github.com/metapages/metaframe-js/issues"
+Homepage = "https://github.com/metapages/framejs.io"
+Repository = "https://github.com/metapages/framejs.io"
+Issues = "https://github.com/metapages/framejs.io/issues"
 
 [project.optional-dependencies]
 jupyter = ["jupyterlab"]
