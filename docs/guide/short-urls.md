@@ -107,6 +107,24 @@ Response:
 https://framejs.io/#?js=Y29uc29sZS5sb2coImhlbGxvIik%3D
 ```
 
+### `GET /j/:sha256/qrcode.png` — QR code image
+
+Returns a PNG QR code that encodes the short URL `https://framejs.io/j/<sha256>`. The response has CORS open (`Access-Control-Allow-Origin: *`) and is cached immutably, so the image can be embedded directly anywhere — `<img>` tags, Markdown, slides, printed material:
+
+```html
+<img src="https://framejs.io/j/8a3b1c9f.../qrcode.png" alt="QR code" />
+```
+
+Any extra query parameters on the request are appended to the encoded URL. This lets you generate QR codes that open the short URL with additional hash/query state, for example to point at a specific tab or view:
+
+```
+https://framejs.io/j/8a3b1c9f.../qrcode.png?foo=bar
+```
+
+encodes `https://framejs.io/j/8a3b1c9f...?foo=bar`.
+
+The encoded URL always uses the canonical `framejs.io` origin, regardless of which host served the image — so QR codes stay valid even when generated from an alias or preview domain.
+
 ### `POST /api/upload/presign` — Get presigned upload URL
 
 Generate a presigned S3 URL for direct browser-to-storage file upload. Files are content-addressed by SHA256.

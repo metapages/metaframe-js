@@ -14,6 +14,7 @@ import {
   S3Client,
 } from "npm:@aws-sdk/client-s3";
 import { getSignedUrl } from "npm:@aws-sdk/s3-request-presigner";
+import QRCode from "qrcode";
 import {
   computeMetaframeDefinition,
   DEFAULT_METAFRAME_DEFINITION,
@@ -139,6 +140,10 @@ const S3_ACCESS_KEY_ID = Deno.env.get("S3_ACCESS_KEY_ID");
 const S3_SECRET_ACCESS_KEY = Deno.env.get("S3_SECRET_ACCESS_KEY");
 const S3_BUCKET_NAME = Deno.env.get("S3_BUCKET_NAME") || "uploads";
 const S3_PUBLIC_URL = Deno.env.get("S3_PUBLIC_URL");
+// Canonical public origin, used for durable artifacts like QR codes so the
+// encoded URL is stable regardless of which host the request arrived on.
+const PUBLIC_ORIGIN = (Deno.env.get("PUBLIC_ORIGIN") || "https://framejs.io")
+  .replace(/\/$/, "");
 const S3_UPLOAD_MAX_SIZE_MB = parseInt(
   Deno.env.get("S3_UPLOAD_MAX_SIZE_MB") || "500",
 );
@@ -511,6 +516,47 @@ app.get("/j/:sha256", async (c) => {
     }
 
     return c.json({ error: "Failed to retrieve shortened URL" }, 500);
+  }
+});
+
+// Short URL QR code — returns a PNG QR code encoding the short URL /j/<sha256>.
+// Any extra query params on this request are appended to the encoded URL, so
+// QR codes for these short URLs can be dynamically embedded (e.g. in an <img>).
+app.get("/j/:sha256/qrcode.png", async (c) => {
+  try {
+    const sha256 = c.req.param("sha256");
+
+    if (!sha256 || !/^[a-f0-9]{64}$/.test(sha256)) {
+      return c.json({ error: "Invalid shortened URL ID" }, 400);
+    }
+
+    // Pin the canonical origin so the QR encodes a stable, public URL
+    // regardless of which host (alias, *.deno.dev, etc.) served the request.
+    const target = new URL(`${PUBLIC_ORIGIN}/j/${sha256}`);
+
+    // Forward any extra query params onto the encoded URL.
+    const incoming = new URL(c.req.url);
+    for (const [key, value] of incoming.searchParams) {
+      target.searchParams.append(key, value);
+    }
+
+    const png = await QRCode.toBuffer(target.toString(), {
+      type: "png",
+      errorCorrectionLevel: "M",
+      margin: 2,
+      width: 512,
+    });
+
+    return new Response(new Blob([png], { type: "image/png" }), {
+      headers: {
+        "Content-Type": "image/png",
+        "Access-Control-Allow-Origin": "*",
+        "Cache-Control": "public, max-age=31536000, immutable",
+      },
+    });
+  } catch (error) {
+    console.error("Short URL QR code error:", error);
+    return c.json({ error: "Failed to generate QR code" }, 500);
   }
 });
 
