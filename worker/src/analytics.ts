@@ -51,6 +51,34 @@ export function detectSource(c: Context): Source {
   return "api-other";
 }
 
+/**
+ * If this request is loading the app inside a frame, returns the embedding
+ * page's origin (e.g. "https://app.example.com"); otherwise undefined.
+ *
+ * Relies on headers the browser sets when fetching framed content, so it needs
+ * no client-side code and stays within the server-only analytics model:
+ *  - Sec-Fetch-Dest: iframe | frame  marks the request as a nested (embedded)
+ *    document, vs "document" for a normal top-level navigation.
+ *  - Referer  the embedding page's URL. Under the default referrer policy
+ *    (strict-origin-when-cross-origin) a cross-origin embed sends only the
+ *    origin, which is exactly what we want; we normalize to the origin anyway.
+ *
+ * Returns undefined when the load is top-level (not embedded), or when the
+ * parent suppressed the Referer (e.g. referrerpolicy="no-referrer"), in which
+ * case the embedding origin is simply unknowable from the server.
+ */
+export function detectEmbed(c: Context): string | undefined {
+  const dest = c.req.header("sec-fetch-dest");
+  if (dest !== "iframe" && dest !== "frame") return undefined;
+  const referer = c.req.header("referer");
+  if (!referer) return undefined;
+  try {
+    return new URL(referer).origin;
+  } catch {
+    return undefined;
+  }
+}
+
 /** First IP in an X-Forwarded-For chain (the original client). */
 function clientIp(c: Context): string {
   const xff = c.req.header("x-forwarded-for") || c.req.header("x-real-ip") ||
@@ -68,7 +96,7 @@ function clientIp(c: Context): string {
  */
 export function track(
   c: Context,
-  opts: { name?: string; source?: Source } = {},
+  opts: { name?: string; source?: Source; embedOrigin?: string } = {},
 ): void {
   if (!analyticsEnabled) return;
   try {
@@ -86,7 +114,10 @@ export function track(
     };
     if (ip) payload.ip = ip; // honored by self-hosted Umami
     if (opts.name) payload.name = opts.name;
-    if (opts.source) payload.data = { source: opts.source };
+    const data: Record<string, unknown> = {};
+    if (opts.source) data.source = opts.source;
+    if (opts.embedOrigin) data.origin = opts.embedOrigin;
+    if (Object.keys(data).length) payload.data = data;
 
     const headers: Record<string, string> = {
       "Content-Type": "application/json",

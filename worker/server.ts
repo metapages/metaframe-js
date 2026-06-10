@@ -20,7 +20,7 @@ import {
   DEFAULT_METAFRAME_DEFINITION,
   getAllowedHashParams,
 } from "./src/metaframe-definition.ts";
-import { detectSource, track } from "./src/analytics.ts";
+import { detectEmbed, detectSource, track } from "./src/analytics.ts";
 
 /** Escape a string for safe use inside an HTML attribute (double-quoted). */
 function escapeHtmlAttr(s: string): string {
@@ -204,6 +204,12 @@ const serveIndex = async () => {
 
 app.get("/", (c) => {
   track(c); // pageview — main app load
+  const embedOrigin = detectEmbed(c);
+  if (embedOrigin) {
+    // Embedded in an iframe — record the embedding origin so the dashboard can
+    // count and break down where the app is being embedded.
+    track(c, { name: "embed", source: "browser", embedOrigin });
+  }
   return serveIndex();
 });
 app.get("/index.html", () => serveIndex());
@@ -431,6 +437,10 @@ app.get("/j/:sha256", async (c) => {
     }
 
     track(c); // pageview — short URL opened (shared app load)
+    const embedOrigin = detectEmbed(c);
+    if (embedOrigin) {
+      track(c, { name: "embed", source: "browser", embedOrigin });
+    }
 
     const key = `j/${sha256}`;
 
